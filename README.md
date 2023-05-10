@@ -1,8 +1,5 @@
-# NSWI153 - WebCrawler
+# NSWI153
 Repository for Advanced Technologies for Web Applications semestral project 
-
-# Specification
-Webik Server      del { background-color: #fbb; } ins { background-color: #d4fcbc; text-decoration: none; }
 
 WebCrawler
 ==========
