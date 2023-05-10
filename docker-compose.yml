@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  client:
+    build:
+      context: ./client/
+      target: base
+    command: npm run start
+    ports:
+      - 8080:3000
+    volumes:
+      - ./client/public/:/app/public/
+      - ./client/src/:/app/src/
+      - ./client/package.json:/app/package.json
+      - ./client/package-lock.json:/app/package-lock.json

@@ -1,0 +1,181 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\asus\\Desktop\\MFF UK\\webove aplikacie\\pokrocile\\semestral work\\mff_adv_web_apps_crawler\\api\\WebCrawler\\WebCrawler\\WebCrawler.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\asus\\Desktop\\MFF UK\\webove aplikacie\\pokrocile\\semestral work\\mff_adv_web_apps_crawler\\api\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\asus\\Desktop\\MFF UK\\webove aplikacie\\pokrocile\\semestral work\\mff_adv_web_apps_crawler\\api\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj",
+        "projectName": "WebCrawler.DataAccessLayer",
+        "projectPath": "C:\\Users\\asus\\Desktop\\MFF UK\\webove aplikacie\\pokrocile\\semestral work\\mff_adv_web_apps_crawler\\api\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj",
+        "packagesPath": "C:\\Users\\asus\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\asus\\Desktop\\MFF UK\\webove aplikacie\\pokrocile\\semestral work\\mff_adv_web_apps_crawler\\api\\WebCrawler\\WebCrawler.DataAccessLayer\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\asus\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {},
+          "https://pkgs.dev.azure.com/rigantitfs/_packaging/RIGANTI/nuget/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "dependencies": {
+            "AutoMapper": {
+              "target": "Package",
+              "version": "[11.0.1, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[6.0.3, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[6.0.3, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[6.0.3, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[6.0.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.300\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\asus\\Desktop\\MFF UK\\webove aplikacie\\pokrocile\\semestral work\\mff_adv_web_apps_crawler\\api\\WebCrawler\\WebCrawler\\WebCrawler.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\asus\\Desktop\\MFF UK\\webove aplikacie\\pokrocile\\semestral work\\mff_adv_web_apps_crawler\\api\\WebCrawler\\WebCrawler\\WebCrawler.csproj",
+        "projectName": "WebCrawler",
+        "projectPath": "C:\\Users\\asus\\Desktop\\MFF UK\\webove aplikacie\\pokrocile\\semestral work\\mff_adv_web_apps_crawler\\api\\WebCrawler\\WebCrawler\\WebCrawler.csproj",
+        "packagesPath": "C:\\Users\\asus\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\asus\\Desktop\\MFF UK\\webove aplikacie\\pokrocile\\semestral work\\mff_adv_web_apps_crawler\\api\\WebCrawler\\WebCrawler\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\asus\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {},
+          "https://pkgs.dev.azure.com/rigantitfs/_packaging/RIGANTI/nuget/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {
+              "C:\\Users\\asus\\Desktop\\MFF UK\\webove aplikacie\\pokrocile\\semestral work\\mff_adv_web_apps_crawler\\api\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj": {
+                "projectPath": "C:\\Users\\asus\\Desktop\\MFF UK\\webove aplikacie\\pokrocile\\semestral work\\mff_adv_web_apps_crawler\\api\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "dependencies": {
+            "DotVVM.AspNetCore": {
+              "target": "Package",
+              "version": "[4.0.0-preview03-final, )"
+            },
+            "DotVVM.HotReload.AspNetCore": {
+              "target": "Package",
+              "version": "[4.0.0-preview03-final, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[6.0.3, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[6.0.3, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[6.0.3, )"
+            },
+            "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
+              "target": "Package",
+              "version": "[1.14.0, )"
+            },
+            "Microsoft.Web.LibraryManager.Build": {
+              "target": "Package",
+              "version": "[2.1.113, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.300\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,136 @@
+﻿@viewModel WebCrawler.Web.ViewModels.RecordsViewModel, WebCrawler.Web
+@masterPage Views/MasterPage.dotmaster
+@js MyModuleWithComponent
+
+<dot:Content ContentPlaceHolderID="MainContent">
+
+    <dot:Button Text="Sort options" />
+    <dot:CheckBox Text="URL" Checked="{value: URLSort}" />
+    <dot:RadioButton Text="A-Z" CheckedItem="{value: Alphabetically}" CheckedValue="{value: true}" GroupName="alhpabet" />
+    <dot:RadioButton Text="Z-A" CheckedItem="{value: Alphabetically}" CheckedValue="{value: false}" GroupName="alphabet" />
+    <dot:CheckBox Text="Last Crawling" Checked="{value: LastCrawlingSort}" />
+    <dot:RadioButton Text="Newest" CheckedItem="{value: NewestToOldest}" CheckedValue="{value: true}" GroupName="time" />
+    <dot:RadioButton Text="Oldest" CheckedItem="{value: NewestToOldest}" CheckedValue="{value: false}" GroupName="time" />
+    <dot:Button Click="{command: SortFilter()}" Text="Sort" />
+
+    <dot:Button Text="Filter Options" />
+    <span>Choose Tags</span>
+    <dot:ComboBox DataSource="{value: TagsForFiltering}" SelectedValue="{value: SelectedTag}" SelectionChanged="{command: AddStringToFilter(1)}" />
+    <span>Choose Labels</span>
+    <dot:ComboBox DataSource="{value: LabelsForFiltering}" SelectedValue="{value: SelectedLabel}" SelectionChanged="{command: AddStringToFilter(2)}" />
+    <span>Choose URLs</span>
+    <dot:ComboBox DataSource="{value: URLsForFiltering}" SelectedValue="{value: SelectedURL}" SelectionChanged="{command: AddStringToFilter(3)}" />
+    
+    <h2>Tags For Filtering</h2>
+    <dot:Repeater DataSource="{value: ChosenTagsForFiltering}" RenderWrapperTag="false">
+        <ItemTemplate>
+            <span>{{value: _this}}</span>
+            <span><dot:Button Text="X" Click="{command: _parent.CancelStringFromFilter(1,_this)}"/></span>
+        </ItemTemplate>
+    </dot:Repeater>
+
+    <h2>Labels For Filtering</h2>
+    <dot:Repeater DataSource="{value: ChosenLabelsForFiltering}" RenderWrapperTag="false">
+        <ItemTemplate>
+            <span>{{value: _this}}</span>
+            <span><dot:Button Text="X" Click="{command: _parent.CancelStringFromFilter(2,_this)}" /></span>
+        </ItemTemplate>
+    </dot:Repeater>
+
+    <h2>URLs for filtering</h2>
+    <dot:Repeater DataSource="{value: ChosenURLsForFiltering}" RenderWrapperTag="false">
+        <ItemTemplate>
+            <span>{{value: _this}}</span>
+            <span><dot:Button Text="X" Click="{command: _parent.CancelStringFromFilter(3,_this)}" /></span>
+        </ItemTemplate>
+    </dot:Repeater>
+
+
+    <table>
+        <thead>
+            <tr>
+                <th>URL</th>
+                <th>Periodicity</th>
+                <th>Label</th>
+                <th>Last Execution</th>
+                <th>Status of last Execution</th>
+                <th>Tags</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <dot:Repeater DataSource="{value: WebsiteRecords}" WrapperTagName="tbody">
+            <ItemTemplate>
+                <tr>
+                    <td>
+                        {{value: URL}}
+                    </td>
+                    <td>
+                        {{value: Periodicity}}
+                    </td>
+                    <td>
+                        {{value: Label}}
+                    </td>
+                    <td>
+                        {{value: LastExecution}}
+                    </td>
+                    <td>
+                        {{value: ExecutionStatus}}
+                    </td>
+                    <td>
+                        <dot:Repeater DataSource="{value: tagDTOs}" RenderWrapperTag="false">
+                            <ItemTemplate>
+                                <span> {{value: Content + " "}} </span>
+                            </ItemTemplate>
+                        </dot:Repeater>
+                    </td>
+                    <td>
+                        <dot:RouteLink RouteName="Record" Param-Id="{value: Id}">
+                            <dot:Button Text="View" />
+                        </dot:RouteLink>
+                    </td>
+                    <td>
+
+                        <dot:RouteLink RouteName="RecordEdit" Param-Id="{value: Id}">
+                            <dot:Button Text="Edit" />
+                        </dot:RouteLink>
+                    </td>
+                    <td>
+                        <dot:Button Click="{command: _parent.DeleteRecord(_this)}" Text="Remove" />
+                    </td>
+                </tr>
+            </ItemTemplate>
+        </dot:Repeater>
+    </table>
+
+    <dot:Button Click="{command: AddRecord()}" Text="Add a record" />
+    <div>
+        <h4>Minutes</h4>
+        <dot:TextBox Text="{value: newRecord.Minutes}" />
+        <h4>Hours</h4>
+        <dot:TextBox Text="{value: newRecord.Hours}" />
+        <h4>Days</h4>
+        <dot:TextBox Text="{value: newRecord.Days}" />
+        <h4>URL</h4>
+        <dot:TextBox Text="{value: newRecord.URL}" />
+        <h4>Label</h4>
+        <dot:TextBox Text="{value: newRecord.Label}" />
+        <h4>RegExp</h4>
+        <dot:TextBox Text="{value: newRecord.RegExp}" />
+        <h4>Active</h4>
+        <dot:CheckBox Text="Active" Checked="{value: newRecord.Active}" />
+        <h4>Tags</h4>
+        <dot:Repeater DataSource="{value: tagDTOs}" RenderWrapperTag="false">
+            <ItemTemplate>
+                <span> {{value: Content + " "}} </span>
+                <span> <dot:Button Click="{command: _parent.CancelTag(_this)}" Text="X" /> </span>
+            </ItemTemplate>
+        </dot:Repeater>
+        <h4>New Tag</h4>
+        <dot:TextBox Text="{value: newTag.Content}" />
+        <dot:Button Click="{command: SaveNewTag()}" Text="Add a tag" />
+        <dot:Button Click="{command: SaveNewRecord()}" Text="Add a record" />
+    </div>
+</dot:Content>
+
