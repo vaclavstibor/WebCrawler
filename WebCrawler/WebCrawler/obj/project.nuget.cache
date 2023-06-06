@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "3/69NYzgj4aXd2byZI/zlLs/ZTbEM0+EOrPeslxNwoWfQMwmVCTrr4d7HKZpTwelnOY1GabGhSbXRz1ruH8Zew==",
+  "dgSpecHash": "JfdqbESR5S7hD+cNrZJIOKTgVx5OY2mc6wB4+w94A0uNPFhBqZmWjhp3+wQyolg70Is3AJQCd+lrK8mY2vjOzA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\asus\\Desktop\\tryingDocker\\WebCrawler\\WebCrawler\\WebCrawler.Web.csproj",
+  "projectFilePath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler\\WebCrawler.Web.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\asus\\.nuget\\packages\\automapper\\11.0.1\\automapper.11.0.1.nupkg.sha512",
     "C:\\Users\\asus\\.nuget\\packages\\ben.demystifier\\0.1.0\\ben.demystifier.0.1.0.nupkg.sha512",

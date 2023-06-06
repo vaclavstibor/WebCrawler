@@ -174,11 +174,15 @@ namespace WebCrawler.BusinessLayer.Services
             await db.SaveChangesAsync();
         }
 
-        public async Task DeleteWebsiteRecord(WebsiteRecordDTO record)
+        public async Task<bool> DeleteWebsiteRecord(int recordId)
         {
-            db.Tags.RemoveRange(db.Tags.Where(x => x.WebsiteRecordId == record.Id).ToList());
-            db.Records.Remove(await db.Records.SingleAsync(x => x.Id == record.Id));
+            if (!await db.Records.AnyAsync(x => x.Id == recordId))
+                return false;
+
+            db.Tags.RemoveRange(db.Tags.Where(x => x.WebsiteRecordId == recordId).ToList());
+            db.Records.Remove(await db.Records.SingleAsync(x => x.Id == recordId));
             await db.SaveChangesAsync();
+            return true;
         }
 
         public async Task UpdateWebsiteRecord(WebsiteRecordDTO record)

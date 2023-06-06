@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { IRecord } from './record/record';
 
@@ -7,7 +7,7 @@ import { IRecord } from './record/record';
   providedIn: 'root'
 })
 export class SharedService {
-  ApiUrl = "/api";
+  ApiUrl = "https://localhost:7170/api";
 
   constructor(private http: HttpClient) { }
 
@@ -16,6 +16,7 @@ export class SharedService {
   }
 
   getMessage(): Observable<string> {
-    return this.http.get<string>(this.ApiUrl + "Hello");
+    return this.http
+      .get(this.ApiUrl , {observe : "body", responseType: "text"});
   }
 }

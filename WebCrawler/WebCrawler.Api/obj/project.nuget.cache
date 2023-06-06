@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "38ZNS1oB74R9dexQnykVko7DIQ8c1ktwM3Cn53K3Y5H3w3Q5y7llzFnIjrA/ml1lHaoSp5KvdFPeowrLS+cdTg==",
+  "dgSpecHash": "seNJk9KUD9uPbTOY77VpRq0qExSCgd8KOQQTpZmb/A5DOstm6nJSOhKAqIW6NvQ5+7GKNImQPYfoQEXh08TFWA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\asus\\Desktop\\tryingDocker\\WebCrawler\\WebCrawler.Api\\WebCrawler.Api.csproj",
+  "projectFilePath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.Api\\WebCrawler.Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\asus\\.nuget\\packages\\automapper\\11.0.1\\automapper.11.0.1.nupkg.sha512",
     "C:\\Users\\asus\\.nuget\\packages\\microsoft.aspnetcore.openapi\\7.0.5\\microsoft.aspnetcore.openapi.7.0.5.nupkg.sha512",

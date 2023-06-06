@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "pYrAx/IiGlQcR/FrJ9P0FkDxBwIMIUiwVCzt9yooXxU/65Ym+25G3HMiImZKEbJmT8Q7FIfpKtEC5oHQrROb6A==",
+  "dgSpecHash": "Z9J+IlyaDbW5OHbVPTyamLL2+btvUf7bPryis+hVq/bGCBkmMVLoprNUtDaQuiPrAiNzTX8Fa/WgRT5+OrN3Ow==",
   "success": true,
-  "projectFilePath": "C:\\Users\\asus\\Desktop\\tryingDocker\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj",
+  "projectFilePath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\asus\\.nuget\\packages\\automapper\\11.0.1\\automapper.11.0.1.nupkg.sha512",
     "C:\\Users\\asus\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",

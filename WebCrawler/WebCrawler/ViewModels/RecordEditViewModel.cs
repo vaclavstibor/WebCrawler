@@ -30,11 +30,6 @@ namespace WebCrawler.Web.ViewModels
             await base.PreRender();
         }
 
-        public async Task DeleteRecord()
-        {
-            await recordsService.DeleteWebsiteRecord(Record);
-            Context.RedirectToUrl("/");
-        }
 
         public async Task Cancel()
         {

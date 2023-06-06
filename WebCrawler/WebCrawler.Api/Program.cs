@@ -43,9 +43,11 @@ namespace WebCrawler.Api
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            app.UseRouting();
 
             app.UseCors("AllowOrigin");
+
+            app.UseAuthorization();
 
             app.MapControllers();
 

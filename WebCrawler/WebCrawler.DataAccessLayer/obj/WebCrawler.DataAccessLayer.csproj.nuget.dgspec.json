@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\asus\\Desktop\\tryingDocker\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj": {}
+    "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj": {}
   },
   "projects": {
-    "C:\\Users\\asus\\Desktop\\tryingDocker\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj": {
+    "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\asus\\Desktop\\tryingDocker\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj",
+        "projectUniqueName": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj",
         "projectName": "WebCrawler.DataAccessLayer",
-        "projectPath": "C:\\Users\\asus\\Desktop\\tryingDocker\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj",
+        "projectPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj",
         "packagesPath": "C:\\Users\\asus\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\asus\\Desktop\\tryingDocker\\WebCrawler\\WebCrawler.DataAccessLayer\\obj\\",
+        "outputPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\asus\\AppData\\Roaming\\NuGet\\NuGet.Config",

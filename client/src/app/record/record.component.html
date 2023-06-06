@@ -11,24 +11,24 @@
             <th>Active</th>
         </tr>
     </thead>
+    <tbody>
+        *ngIf="record"
+        <tr>
+            <td>
+                {{record?.Periodicity}}
+            </td>
+            <td>
+                {{record?.Label}}
+            </td>
+            <td>
+                {{record?.LastExecution}}
+            </td>
+            <td>
+                {{record?.ExecutionStatus}}
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+    </tbody>
 </table>
-<tbody>
-    *ngIf="record"
-    <tr>
-        <td>
-            {{record?.Periodicity}}
-        </td>
-        <td>
-            {{record?.Label}}
-        </td>
-        <td>
-            {{record?.LastExecution}}
-        </td>
-        <td>
-            {{record?.ExecutionStatus}}
-        </td>
-        <td>
-            
-        </td>
-    </tr>
-</tbody>

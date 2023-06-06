@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "FrT9nzYvLMg8gV+tn4aTAz4JdLg6zQ0SP1QmzlGgG8bBWnUr6B8jV6V0WTTRfnTiFmvuWPlE+SxVBaq5DJCwDA==",
+  "dgSpecHash": "ONULlgZgdygSzRfZPIfX0dglewk9d3MGeyzVcYBIpeeoyOKQLoKzwRG9fsKpossxwRTJDygSrx+ZWzpGB10zbg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\asus\\Desktop\\tryingDocker\\WebCrawler\\WebCrawler.BusinessLayer\\WebCrawler.BusinessLayer.csproj",
+  "projectFilePath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.BusinessLayer\\WebCrawler.BusinessLayer.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\asus\\.nuget\\packages\\automapper\\11.0.1\\automapper.11.0.1.nupkg.sha512",
     "C:\\Users\\asus\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
