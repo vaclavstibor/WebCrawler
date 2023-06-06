@@ -1,15 +1,13 @@
 version: "3.9"
 
 services:
+  api:
+    build: 
+        context: ./WebCrawler
+    ports: 
+        - "4200:80"
   client:
-    build:
-      context: ./client/
-      target: base
-    command: npm run start
+    build: 
+        context: ./client
     ports:
-      - 8080:3000
-    volumes:
-      - ./client/public/:/app/public/
-      - ./client/src/:/app/src/
-      - ./client/package.json:/app/package.json
-      - ./client/package-lock.json:/app/package-lock.json
+        - "80:80"
