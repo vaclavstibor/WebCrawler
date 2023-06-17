@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SharedService } from './shared.service';
 import { ActivatedRoute } from '@angular/router';
+import { WebsiteRecord } from './models/WebsiteRecord';
 
 @Component({
   selector: 'app-root',
@@ -9,13 +10,13 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class AppComponent implements OnInit{
   title = 'Hello';
-  message: string = ""; 
+  message: WebsiteRecord[] = []; 
 
   constructor(private sharedService: SharedService,
     private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    this.sharedService.getMessage().subscribe(data => {
+    this.sharedService.getWebRecords().subscribe(data => {
       this.message = data;
     });
   }
