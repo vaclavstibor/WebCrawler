@@ -5,7 +5,7 @@ export interface WebsiteRecord
 {
     id: number;
     url: string;
-    rexExp: string;
+    regExp: string;
     hours: number;
     minutes: number;
     days: number;
@@ -13,4 +13,6 @@ export interface WebsiteRecord
     active: boolean;
     lastExecution: Time;
     tagDTOs: Tag[];
+    executionStatus: boolean;
+    periodicity: string;
 }
