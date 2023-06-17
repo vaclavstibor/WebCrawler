@@ -15,7 +15,6 @@ export class AppComponent implements OnInit{
     private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get("id"));
     this.sharedService.getMessage().subscribe(data => {
       this.message = data;
     });

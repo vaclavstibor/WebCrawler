@@ -241,3 +241,5 @@ C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\obj\Debug\net7.0\refi
 C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\obj\Debug\net7.0\WebCrawler.Api.pdb
 C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\obj\Debug\net7.0\WebCrawler.Api.genruntimeconfig.cache
 C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\obj\Debug\net7.0\ref\WebCrawler.Api.dll
+C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\bin\Debug\net7.0\Humanizer.dll
+C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\bin\Debug\net7.0\Microsoft.EntityFrameworkCore.Design.dll

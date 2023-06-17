@@ -37,6 +37,7 @@ namespace WebCrawler.BusinessLayer.Services
             else
                 return periodicity;
         }
+
         public async Task<WebsiteRecordDTO> GetARecord(int recordId)
         {
             var record = await db.Records
@@ -62,77 +63,28 @@ namespace WebCrawler.BusinessLayer.Services
             }).ToList();
             return recordDtO;
         }
-        public async Task<List<WebsiteRecordDTO>> GetAllRecords(SortOptions sortOptions = null, FilterOptions filterOptions = null)
+
+        public async Task<List<WebsiteRecordDTO>> GetAllRecords()
         {
-            var DTOes = new List<WebsiteRecordDTO>();
-            var records = await db.Records
-                .Include(x => x.Tags)
-                .Select(x => new
+            return await db.Records
+            .Include(x => x.Tags)
+            .Select(x => new WebsiteRecordDTO
+            {
+                URL = x.URL,
+                Id = x.Id,
+                Hours = x.Hours,
+                Minutes = x.Minutes,
+                Days = x.Days,
+                Label = x.Label,
+                tagDTOs = x.Tags.Select(x => new TagDTO
                 {
-                    URL = x.URL,
                     Id = x.Id,
-                    Hours = x.Hours,
-                    Minutes = x.Minutes,
-                    Days = x.Days,
-                    Label = x.Label,
-                    tags = x.Tags,
-                    LastExecution = x.LastExecution,
-                    ExecutionStatus = x.ExecutionStatus
-                }).ToListAsync();
-            if (filterOptions != null)
-            {
-                if (filterOptions.URLs.Count != 0)
-                {
-                    records = records.Where(x => filterOptions.URLs.Any(y => y == x.URL)).ToList();
-                }
-                if (filterOptions.Labels.Count != 0)
-                {
-                    records = records.Where(x => filterOptions.Labels.Any(y => y == x.Label)).ToList();
-                }
-                if (filterOptions.Tags.Count != 0)
-                {
-                    records = records.Where(x => filterOptions.Tags.Any(y => x.tags.Any(z => z.Content == y))).ToList();
-
-                }
-            }
-
-            foreach (var record in records)
-            {
-                DTOes.Add(new WebsiteRecordDTO
-                {
-                    URL = record.URL,
-                    Id = record.Id,
-                    Hours = record.Hours,
-                    Minutes = record.Minutes,
-                    Days = record.Days,
-                    Label = record.Label,
-                    tagDTOs = record.tags.Select(x => new TagDTO
-                    { 
-                        Id = x.Id,
-                        WebsiteRecordId = x.WebsiteRecordId,
-                        Content = x.Content
-                    }).ToList(),
-                    LastExecution = record.LastExecution,
-                    ExecutionStatus = record.ExecutionStatus,
-                    Periodicity = ComputePeriodicity(record.Minutes ?? 0, record.Hours ?? 0, record.Days ?? 0)
-                }) ;
-            }
-
-            if (sortOptions != null)
-            {
-                if (sortOptions.AlphabeticalSorting)
-                    if (sortOptions.Alphabetically)
-                        DTOes = DTOes.OrderBy(x => x.URL).ToList();
-                    else
-                        DTOes = DTOes.OrderByDescending(x => x.URL).ToList();
-                if (sortOptions.TimeSorting)
-                    if (sortOptions.NewestToOldest)
-                        DTOes = DTOes.OrderBy(x => x.LastExecution).ToList();
-                    else
-                        DTOes = DTOes.OrderByDescending(x => x.LastExecution).ToList();
-            }
-            return DTOes;
-            
+                    WebsiteRecordId = x.WebsiteRecordId,
+                    Content = x.Content
+                }).ToList(),
+                LastExecution = x.LastExecution,
+                ExecutionStatus = x.ExecutionStatus
+            }).ToListAsync();
         }
 
         public List<Tag> TagDtoesToTags(List<TagDTO> tagDTOes)
@@ -187,7 +139,7 @@ namespace WebCrawler.BusinessLayer.Services
 
         public async Task UpdateWebsiteRecord(WebsiteRecordDTO record)
         {
-            var recordInDb = await db.Records.SingleAsync(x => x.Id == record.Id);
+            var recordInDb = await db.Records.SingleOrDefaultAsync(x => x.Id == record.Id);
             recordInDb.Minutes = record.Minutes;
             recordInDb.Hours = record.Hours;
             recordInDb.Days = record.Days;
@@ -195,11 +147,23 @@ namespace WebCrawler.BusinessLayer.Services
             recordInDb.URL = record.URL;
             recordInDb.Label = record.Label;
             recordInDb.RegExp = record.RegExp;
-            var tags = await db.Tags.Where(x => x.WebsiteRecordId == record.Id).ToListAsync();
-            db.Tags.RemoveRange(tags);
-            await db.SaveChangesAsync();
-            recordInDb.Tags = TagDtoesToTags(record.tagDTOs);
-            await db.SaveChangesAsync();
+
+            if (recordInDb != null)
+            {
+                
+                var tags = await db.Tags.Where(x => x.WebsiteRecordId == record.Id).ToListAsync();
+                db.Tags.RemoveRange(tags);
+
+                await db.SaveChangesAsync();
+
+                recordInDb.Tags = TagDtoesToTags(record.tagDTOs);
+                
+                await db.SaveChangesAsync();
+            }
+            else
+            { 
+                
+            }
         }
 
         public async Task AddNewTag(TagDTO tag)
@@ -210,6 +174,15 @@ namespace WebCrawler.BusinessLayer.Services
                 WebsiteRecordId = tag.WebsiteRecordId
             });
             await db.SaveChangesAsync();
+        }
+
+        public async Task DeleteTag(TagDTO tag)
+        {
+            var tagInDb = await db.Tags.FirstOrDefaultAsync(x => x.Id == tag.Id);
+            if (tagInDb == null)
+                return;
+            db.Tags.Remove(tagInDb);
+            await db.SaveChangesAsync();    
         }
     }
 }

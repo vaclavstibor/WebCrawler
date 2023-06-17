@@ -4,17 +4,19 @@ import { HttpClientModule } from "@angular/common/http"
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { RecordModule } from './record/record.module';
-
+import { WebsiteRecordsComponent } from './website-records/website-records.component';
+import { ButtonsModule } from 'ngx-bootstrap/buttons';
+import { WebsiteRecordComponent } from './website-record/website-record.component'
 
 @NgModule({
   declarations: [
     AppComponent,
+    WebsiteRecordsComponent,
+    WebsiteRecordComponent,
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
-    RecordModule,
     AppRoutingModule,
   ],
   providers: [],
