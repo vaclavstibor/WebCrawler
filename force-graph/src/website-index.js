@@ -15,19 +15,137 @@ Use page title or URL, in given order of preference, as a node label. In domain 
 
 */
 
-/*
 
+/*
  *TODO*
 
  - popis, jestli to je staticky/live a aktualni mode
  - DONE vrcholy se stejnou domenou obarvit na stejnou barvu
  - DONE zmena na graf POOUZE s DOMENOU
  - DONE obarvovani po pridani nodes 
- - URL in given order of preference 
  - list of list namísto array of list v node.Nodes
 
 */
 
+let data =  {
+    "nodes": [],
+    "links": []
+}
+
+let selectedNode = new Set();
+const graphElement = document.getElementById('3d-graph')
+
+const Graph = ForceGraph3D()(graphElement)
+    .graphData(data)
+    .nodeLabel('id')
+    .linkOpacity(0.3)
+    .nodeOpacity(0.95)
+    .linkDirectionalArrowRelPos(1)
+    .linkDirectionalArrowLength(3.5)
+    .linkCurvature(0.15)
+    .nodeAutoColorBy('domain')
+    .onNodeClick((node, event) => {
+        const untoggle = selectedNode.has(node);
+        selectedNode.clear();
+        !untoggle && selectedNode.add(node);
+
+        const distance = 75
+        const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
+
+        const newPos = node.x || node.y || node.z
+            ? { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }
+            : { x: 0, y: 0, z: distance };
+
+        Graph.cameraPosition(newPos, node, 1000);
+        document.getElementById("url-a").textContent=node.url;
+        document.getElementById("crawl-time-a").textContent=node.crawlTime;
+        DeleteRecordsList();
+        if (node.hasOwnProperty("children") && node.children != null) {
+            document.getElementById('record-a').appendChild(CreateRecordList(node.children));
+        }
+        sessionStorage.setItem("first", node.id)
+    })
+    
+
+    .onNodeDragEnd(node => {
+        node.fx = node.x;
+        node.fy = node.y;
+        node.fz = node.z;
+    })
+
+document.getElementById("btn-switch-to-domain").addEventListener("click", () => location.href = "domain-index.html");
+
+BuildGraph()
+
+// Get data from JSON file
+async function GetData(fileName) {
+    try {
+        const response = await fetch(fileName);
+        const dataJSON = await response.json();
+        return dataJSON;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+async function BuildGraph() {
+    try {
+        data = await GetData('./data.json');
+        CreateLinks();
+        Graph.graphData(data);
+        console.log(data);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+function CreateRecordList(children){
+    var list = document.createElement('ul');
+    list.setAttribute('id', 'record-list');
+
+    for (var i = 0; i < children.length; i++){
+        var item = document.createElement('li');
+        item.appendChild(document.createTextNode(children[i].url));
+        console.log(children[i].url)
+        list.appendChild(item);
+    }
+
+    return list;
+}
+
+function DeleteRecordsList() {
+    let element = document.getElementById('record-list')
+
+    if (element !== null) {
+        element.remove()
+    }
+}
+
+function CreateLinks() {
+    for (const parent of data["nodes"]) {
+        if (parent.hasOwnProperty("children") && parent.children !== null) {
+            for (const child of parent.children) {
+                const link = { "source": parent.id, "target": child.id };
+                data["links"].push(link);
+            }
+        }
+    }
+
+    console.log(data)
+}
+
+/*
+function DomainFilter() {
+    for (var node of data["nodes"]) {
+        let domain = (new URL(node.url));
+        //console.log(domain);
+        node.Domain = domain.hostname;
+        //console.log(domain.hostname);
+    }
+}
+*/
+
+/*
 const externalNode = {
     "id":5, 
     "Group":1, 
@@ -54,124 +172,7 @@ const externalNode = {
             "Time":"03:30"
         }]
 }
-
-let data =  {
-    "nodes": [],
-    "links": []
-}
-
-let selectedNode = new Set();
-const graphElement = document.getElementById('3d-graph')
-
-const Graph = ForceGraph3D()(graphElement)
-    .graphData(data)
-    .nodeLabel('id')
-    .linkOpacity(0.3)
-    .nodeOpacity(0.95)
-    .linkDirectionalArrowRelPos(1)
-    .linkDirectionalArrowLength(3.5)
-    .linkCurvature(0.15)
-    .nodeAutoColorBy('Domain')
-    .onNodeClick((node, event) => {
-        const untoggle = selectedNode.has(node);
-        selectedNode.clear();
-        !untoggle && selectedNode.add(node);
-
-        const distance = 75
-        const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
-
-        const newPos = node.x || node.y || node.z
-            ? { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }
-            : { x: 0, y: 0, z: distance };
-
-        Graph.cameraPosition(newPos, node, 1000);
-        document.getElementById("url-a").textContent=node.url;
-        document.getElementById("time-a").textContent=node.time;
-        deleteRecordsList();
-        if (node.hasOwnProperty("nodes")) {
-            document.getElementById('record-a').appendChild(createRecordList(node.nodes));
-        }
-        //addNode(externalNode)
-        sessionStorage.setItem("first", node.id)
-    })
-    
-
-    .onNodeDragEnd(node => {
-        node.fx = node.x;
-        node.fy = node.y;
-        node.fz = node.z;
-    })
-
-// document.getElementById("btn-switch-to-domain").addEventListener("click", () => addNode(externalNode));
-document.getElementById("btn-switch-to-domain").addEventListener("click", () => location.href = "domain-index.html");
-
-BuildGraph()
-
-async function GetData(fileName) {
-    try {
-        const response = await fetch(fileName);
-        const dataJSON = await response.json();
-        return dataJSON;
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-async function BuildGraph() {
-    try {
-        data = await GetData('./data.json');
-        CreateLinks();
-        DomainFilter();
-        Graph.graphData(data);
-        console.log(data);
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-function DomainFilter() {
-    for (var node of data["nodes"]) {
-        let domain = (new URL(node.url));
-        //console.log(domain);
-        node.Domain = domain.hostname;
-        //console.log(domain.hostname);
-    }
-}
-
-function createRecordList(Nodes){
-    var list = document.createElement('ul');
-    list.setAttribute('id', 'record-list');
-
-    for (var i = 0; i < Nodes.length; i++){
-        var item = document.createElement('li');
-        item.appendChild(document.createTextNode(Nodes[i].url));
-        console.log(Nodes[i].url)
-        list.appendChild(item);
-    }
-
-    return list;
-}
-
-function deleteRecordsList() {
-    let element = document.getElementById('record-list')
-
-    if (element !== null) {
-        element.remove()
-    }
-}
-
-function CreateLinks() {
-    for (const parent of data["nodes"]) {
-        if (parent.hasOwnProperty("nodes")) {
-            for (const child of parent.nodes) {
-                const link = { "source": parent.id, "target": child.id };
-                data["links"].push(link);
-            }
-        }
-    }
-
-    console.log(data)
-}
+*/
 
 /*
 function addNode(node) {

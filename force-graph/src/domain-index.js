@@ -18,7 +18,7 @@ const Graph = ForceGraph3D()(e)
     .linkDirectionalArrowRelPos(1)
     .linkDirectionalArrowLength(3.5)
     .linkCurvature(0.15)
-    .nodeAutoColorBy('Domain')
+    .nodeAutoColorBy('domain')
     .onNodeClick((node, event) => {
         const untoggle = selectedNode.has(node);
         selectedNode.clear();
@@ -33,10 +33,10 @@ const Graph = ForceGraph3D()(e)
 
         Graph.cameraPosition(newPos, node, 1000);
         document.getElementById("url-a").textContent=node.url;
-        document.getElementById("time-a").textContent=node.time;
-        deleteRecordsList();
-        if (node.hasOwnProperty("nodes")) {
-            document.getElementById('record-a').appendChild(createRecordList(node.nodes));
+        document.getElementById("crawl-time-a").textContent=node.crawlTime;
+        DeleteRecordsList();
+        if (node.hasOwnProperty("children") && node.children !== null) {
+            document.getElementById('record-a').appendChild(CreateRecordList(node.children));
         }
     })
     
@@ -78,6 +78,7 @@ async function BuildGraph() {
  * and adds it as a new 'Domain' property of each node.
  */
  function DomainFilter() {
+    /*
     // Loop through each node in the 'nodes' array of the 'data' object
     for (var node of data["nodes"]) {
         // Extract the domain name from the URL using the 'URL' built-in constructor
@@ -88,9 +89,10 @@ async function BuildGraph() {
         // Add the extracted domain name as a new 'Domain' property of the node
         node.Domain = domain.hostname;
     }
+    */
     // Filters the "nodes" within the "data" object, based on the "Domain" property of each node. Only nodes with the same domain as the node identified by "givenIdOfNode" are kept in the array.
     data["nodes"] = data["nodes"].filter(obj => {
-        return obj.Domain === data["nodes"][givenIdOfNode].Domain
+        return obj.domain === data["nodes"][givenIdOfNode].domain
     })
 
     for (var node of data["nodes"]) {
@@ -99,21 +101,21 @@ async function BuildGraph() {
 }
 
 
-function createRecordList(Nodes){
+function CreateRecordList(children){
     var list = document.createElement('ul');
     list.setAttribute('id', 'record-list');
 
-    for (var i = 0; i < Nodes.length; i++){
+    for (var i = 0; i < children.length; i++){
         var item = document.createElement('li');
-        item.appendChild(document.createTextNode(Nodes[i].url));
-        console.log(Nodes[i].url)
+        item.appendChild(document.createTextNode(children[i].url));
+        console.log(children[i].url)
         list.appendChild(item);
     }
 
     return list;
 }
 
-function deleteRecordsList() {
+function DeleteRecordsList() {
     let element = document.getElementById('record-list')
 
     if (element !== null) {
@@ -123,8 +125,8 @@ function deleteRecordsList() {
 
 function CreateLinks() {
     for (const parent of data["nodes"]) {
-        if (parent.hasOwnProperty("nodes")) {
-            for (const child of parent.nodes) {
+        if (parent.hasOwnProperty("children") && parent.children !== null) {
+            for (const child of parent.children) {
                 if (domainIds.includes(child.id)) {
                     const link = { "source": parent.id, "target": child.id };
                     data["links"].push(link);
