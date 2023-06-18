@@ -4,17 +4,22 @@ import { HttpClientModule } from "@angular/common/http";
 import { MultiSelectModule } from "primeng/multiselect";
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { PaginatorModule } from 'primeng/paginator';
+import { TableModule } from "primeng/table"
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { WebsiteRecordsComponent } from './website-records/website-records.component';
 import { WebsiteRecordComponent } from './website-record/website-record.component';
+import { EditRecordComponent } from './edit-record/edit-record.component';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
     AppComponent,
     WebsiteRecordsComponent,
     WebsiteRecordComponent,
+    EditRecordComponent,
   ],
   imports: [
     BrowserModule,
@@ -22,7 +27,16 @@ import { WebsiteRecordComponent } from './website-record/website-record.componen
     AppRoutingModule,
     MultiSelectModule,
     FormsModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    PaginatorModule,
+    TableModule,
+    RouterModule.forRoot([
+      { path: 'records', component: WebsiteRecordsComponent },
+      { path: "record/edit/:id", component: EditRecordComponent },
+      { path: "record/view/:id", component: WebsiteRecordComponent  },
+      { path: '', redirectTo: 'records', pathMatch: 'full' },
+      { path: '**', redirectTo: 'records', pathMatch: 'full' }
+    ]),
   ],
   providers: [],
   bootstrap: [AppComponent]

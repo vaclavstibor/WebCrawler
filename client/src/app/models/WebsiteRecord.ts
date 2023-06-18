@@ -11,7 +11,7 @@ export interface WebsiteRecord
     days: number;
     label: string;
     active: boolean;
-    lastExecution: Time;
+    lastExecution: Date;
     tagDTOs: Tag[];
     executionStatus: boolean;
     periodicity: string;

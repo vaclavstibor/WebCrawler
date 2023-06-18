@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { WebsiteRecord } from './models/WebsiteRecord';
 import { Tag } from './models/Tag';
+import { observableToBeFn } from 'rxjs/internal/testing/TestScheduler';
+import { HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -24,8 +26,18 @@ export class SharedService {
     return this.http.get<WebsiteRecord[]>(this.ApiUrl + "/Record/all");
   }
 
-  getMessage(): Observable<string> {
-    return this.http
-      .get(this.ApiUrl , {observe : "body", responseType: "text"});
+  updateRecord(record: WebsiteRecord) : Observable<any> 
+  {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post<WebsiteRecord>(this.ApiUrl + "/Record/updateSingle", record, httpOptions);
+  }  
+
+  deleteRecord(record: WebsiteRecord) : Observable<any>
+  {
+    return this.http.delete(this.ApiUrl + "/Record/deleteSingle/" + record.id);
   }
 }

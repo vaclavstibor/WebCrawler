@@ -3,6 +3,7 @@ import { WebsiteRecord } from '../models/WebsiteRecord';
 import { SharedService } from '../shared.service';
 import { ActivatedRoute } from '@angular/router';
 import { Tag } from '../models/Tag';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-website-records',
@@ -10,15 +11,20 @@ import { Tag } from '../models/Tag';
   styleUrls: ['./website-records.component.css']
 })
 export class WebsiteRecordsComponent implements OnInit {
+  allWebRecords: WebsiteRecord[] = [];
   webRecords: WebsiteRecord[] = [];
   tags: string[] = [];
+
+  sortByUrl: boolean = false;
+  sortByLastCrawling: boolean = false;
 
   newRecordBeingCreated: boolean = false;
   newRecord: WebsiteRecord = <WebsiteRecord>{};
   newTag: Tag = <Tag>{};  
 
   constructor(private sharedService: SharedService,
-  private route: ActivatedRoute) { }
+  private route: ActivatedRoute,
+  private router: Router) { }
 
     private _chosenTags: string[] = [];
     get chosenTags(): string[] {
@@ -46,14 +52,158 @@ export class WebsiteRecordsComponent implements OnInit {
       this._chosenLabels = value;
     }
 
+  changeCreatingMode(): void {
+    this.newRecordBeingCreated = !this.newRecordBeingCreated;
+  }
+
+  addTag() : void {
+    this.newRecord.tagDTOs.push(this.newTag);
+    this.newTag = <Tag>{};
+  }
+
+  createARecord() : void {
+    this.sharedService.updateRecord(this.newRecord).subscribe(data => 
+      {
+        this.newRecord.id = data;
+      });
+    this.allWebRecords.push(this.newRecord);
+    this.newRecord = <WebsiteRecord>{};
+    this.newRecord.tagDTOs = [];
+  }
+
+  deleteARecord(record: WebsiteRecord) : void
+  {
+    this.sharedService.deleteRecord(record).subscribe();
+    this.webRecords = this.webRecords.filter(x => x != record);
+    this.allWebRecords = this.allWebRecords.filter(x => x != record);
+  }
+
   ngOnInit(): void {
+    this.newRecord.tagDTOs = [];
     this.sharedService.getWebRecords().subscribe(data => {
       this.webRecords = data;
+      this.allWebRecords = data;
       this.webRecords.forEach(webRecord => {
         webRecord.tagDTOs.forEach(tag => {
           this.tags.push(tag.content);
         });
       });
     });
+  }
+
+  index: number = 0;
+
+  removeTagFromNewRecord(tag: Tag) : void
+  {
+    this.index = this.newRecord.tagDTOs.indexOf(tag);
+    this.newRecord.tagDTOs.splice(this.index,1);
+  }
+
+  alphabetically: boolean = false;
+  fromNewest: boolean = false;
+
+  executeSortByUrl(alphabetically: boolean) : void
+  {
+    this.alphabetically = alphabetically;
+    if (this.sortByUrl)
+    {
+      if (alphabetically)
+      {
+        this.webRecords.sort((a,b) => a.url.localeCompare(b.url));
+      }
+      else 
+      {
+        this.webRecords.sort((a,b) => b.url.localeCompare(a.url));
+      }
+    }
+  }
+
+  filter() : void
+  {
+    this.webRecords = this.allWebRecords;
+    if (this.chosenUrls.length > 0)
+    {
+      this.webRecords = this.webRecords.filter(x => this.chosenUrls.includes(x.url));
+    }
+    if (this.chosenLabels.length > 0)
+    {
+      this.webRecords = this.webRecords.filter(x => this.chosenLabels.includes(x.label));
+    }
+    if (this.chosenTags.length > 0)
+    {
+      this.webRecords = this.webRecords.filter(x => 
+      {
+        var shouldBeContained = false;
+        x.tagDTOs.forEach(element => {
+          if (this.chosenTags.includes(element.content))
+          {
+            shouldBeContained = true;
+          }
+        });  
+        return shouldBeContained;
+      });
+    }
+  }
+
+  executeSortByLastCrawling(fromNewest: boolean) : void
+  {
+    this.fromNewest = fromNewest;
+    if (this.sortByLastCrawling)
+    {
+      if (fromNewest)
+      {
+        this.webRecords.sort((a,b) => { 
+          if (a.lastExecution == null || b.lastExecution == null)
+          {
+            return 0;
+          }
+          return a.lastExecution.getTime() - b.lastExecution.getTime(); 
+        });
+      }
+      else 
+      {
+        this.webRecords.sort((b,a) => { 
+          if (a.lastExecution == null || b.lastExecution == null)
+          {
+            return 0;
+          }
+          return a.lastExecution.getTime() - b.lastExecution.getTime(); 
+        });
+      }
+    }
+  }
+
+  columns: any[] = 
+  [
+    {
+      name: "URL",
+      field: "url"
+    },
+    {
+      name: "Periodicity",
+      field: "periodicity"
+    },
+    {
+      name: "Label",
+      field: "label"
+    },
+    {
+      name: "Last Execution",
+      field: "lastExecution"
+    },
+    {
+      name: "Status of last Execution",
+      field: "executionStatus",
+    }
+  ];
+
+  navigateToView(id: number) : void
+  {
+    this.router.navigate(["record/view" , id]);
+  }
+
+  navigateToEdit(id: number) : void
+  {
+    this.router.navigate(["record/edit" , id]);
   }
 }

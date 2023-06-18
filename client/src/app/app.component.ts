@@ -8,16 +8,12 @@ import { WebsiteRecord } from './models/WebsiteRecord';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit{
+export class AppComponent{
   title = 'Hello';
   message: WebsiteRecord[] = []; 
 
   constructor(private sharedService: SharedService,
     private route: ActivatedRoute) { }
 
-  ngOnInit(): void {
-    this.sharedService.getWebRecords().subscribe(data => {
-      this.message = data;
-    });
-  }
+  
 }
