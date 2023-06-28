@@ -21,10 +21,10 @@ namespace WebCrawler.Api.Controllers
             return new JsonResult(await recordsService.GetARecord(id));
         }
 
-        [HttpDelete("deleteSingle/{id}")]
-        public async Task<StatusCodeResult> DeleteSingle([FromHeader] int recordId)
+        [HttpDelete("deleteSingle/{id:int}")]
+        public async Task<StatusCodeResult> DeleteSingle(int id)
         {
-            if (await recordsService.DeleteWebsiteRecord(recordId))
+            if (await recordsService.DeleteWebsiteRecord(id))
             { 
                 return new OkResult();
             }
@@ -32,11 +32,11 @@ namespace WebCrawler.Api.Controllers
             return new NotFoundResult();
         }
 
-        [HttpDelete("updateSingle/{id}")]
-        public async Task<StatusCodeResult> UpdateSingle([FromBody] WebsiteRecordDTO record)
+        [HttpPost("updateSingle")]
+        public async Task<int> UpdateSingle([FromBody] WebsiteRecordDTO record)
         {
-            await recordsService.UpdateWebsiteRecord(record);
-            return new OkResult();
+            var id = await recordsService.UpdateWebsiteRecord(record);
+            return id;
         }
 
         [HttpGet("all")]

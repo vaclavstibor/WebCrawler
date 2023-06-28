@@ -29,7 +29,7 @@ namespace WebCrawler.BusinessLayer.Services
                 var url = "";
                 var content = new CrawlerPostDTO
                 {
-                    Id = record.Id,
+                    Id = record.Id.Value,
                     URL = url,
                     RegExp = record.RegExp
                 };

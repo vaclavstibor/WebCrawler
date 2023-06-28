@@ -3,6 +3,7 @@ using WebCrawler.BusinessLayer.DataTransferObjects;
 using Microsoft.EntityFrameworkCore;
 using WebCrawler.DataAccessLayer.Models;
 using WebCrawler.BusinessLayer.Options;
+using System.Security.Cryptography.X509Certificates;
 
 namespace WebCrawler.BusinessLayer.Services
 {
@@ -115,7 +116,7 @@ namespace WebCrawler.BusinessLayer.Services
                 Days = record.Days,
                 Label = record.Label,
                 URL = record.URL,
-                Active = record.Active,
+                Active = record.Active.Value,
                 Minutes = record.Minutes,
                 Tags = TagDtoesToTags(tags),
                 RegExp = record.RegExp,
@@ -137,20 +138,20 @@ namespace WebCrawler.BusinessLayer.Services
             return true;
         }
 
-        public async Task UpdateWebsiteRecord(WebsiteRecordDTO record)
+        public async Task<int> UpdateWebsiteRecord(WebsiteRecordDTO record)
         {
             var recordInDb = await db.Records.SingleOrDefaultAsync(x => x.Id == record.Id);
-            recordInDb.Minutes = record.Minutes;
-            recordInDb.Hours = record.Hours;
-            recordInDb.Days = record.Days;
-            recordInDb.Active = record.Active;
-            recordInDb.URL = record.URL;
-            recordInDb.Label = record.Label;
-            recordInDb.RegExp = record.RegExp;
 
             if (recordInDb != null)
             {
-                
+                recordInDb.Minutes = record.Minutes ?? 0;
+                recordInDb.Hours = record.Hours ?? 0;
+                recordInDb.Days = record.Days ?? 0;
+                recordInDb.Active = record.Active.Value;
+                recordInDb.URL = record.URL;
+                recordInDb.Label = record.Label;
+                recordInDb.RegExp = record.RegExp;
+
                 var tags = await db.Tags.Where(x => x.WebsiteRecordId == record.Id).ToListAsync();
                 db.Tags.RemoveRange(tags);
 
@@ -161,9 +162,26 @@ namespace WebCrawler.BusinessLayer.Services
                 await db.SaveChangesAsync();
             }
             else
-            { 
-                
+            {
+                recordInDb = new WebsiteRecord
+                { 
+                    Minutes = record.Minutes,
+                    Hours = record.Hours,
+                    Days = record.Days,
+                    Active = record.Active ?? false,
+                    URL = record.URL,
+                    Label = record.Label,
+                    RegExp = record.RegExp,
+                    Tags = record.tagDTOs.Select(x => new Tag
+                    { 
+                        Content = x.Content,
+                    }).ToList()
+                };
+
+                await db.AddAsync(recordInDb);
+                await db.SaveChangesAsync();
             }
+            return recordInDb.Id;
         }
 
         public async Task AddNewTag(TagDTO tag)
