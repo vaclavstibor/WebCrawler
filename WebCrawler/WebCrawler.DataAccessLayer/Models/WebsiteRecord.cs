@@ -1,6 +1,14 @@
 ﻿
 namespace WebCrawler.DataAccessLayer.Models
 {
+
+    public enum ExecutionStatus
+    { 
+        Created,
+        Executing,
+        Executed
+    }
+
     public class WebsiteRecord
     {
         public int Id { get; set; }
@@ -12,7 +20,8 @@ namespace WebCrawler.DataAccessLayer.Models
         public string? Label { get; set; }
         public bool Active { get; set; }
         public DateTime? LastExecution { get; set; }
-        public bool? ExecutionStatus { get; set; } 
+        public ExecutionStatus? ExecutionStatus { get; set; } 
         public virtual List<Tag> Tags { get; set; }
+        public virtual StartingNode StartingNode { get; set; }
     }
 }

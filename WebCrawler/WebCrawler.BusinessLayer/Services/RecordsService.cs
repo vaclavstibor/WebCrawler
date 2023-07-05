@@ -55,7 +55,7 @@ namespace WebCrawler.BusinessLayer.Services
                 Label = record.Label,
                 Active = record.Active,
                 LastExecution = record.LastExecution,
-                ExecutionStatus = record.ExecutionStatus,
+                ExecutionStatus = record.ExecutionStatus == ExecutionStatus.Executed,
             };
             recordDtO.tagDTOs = tags.Select(x => new TagDTO()
             {
@@ -84,7 +84,7 @@ namespace WebCrawler.BusinessLayer.Services
                     Content = x.Content
                 }).ToList(),
                 LastExecution = x.LastExecution,
-                ExecutionStatus = x.ExecutionStatus
+                ExecutionStatus = x.ExecutionStatus == ExecutionStatus.Executed
             }).ToListAsync();
         }
 
@@ -120,7 +120,7 @@ namespace WebCrawler.BusinessLayer.Services
                 Minutes = record.Minutes,
                 Tags = TagDtoesToTags(tags),
                 RegExp = record.RegExp,
-                ExecutionStatus = record.ExecutionStatus,
+                ExecutionStatus = ExecutionStatus.Created,
                 LastExecution = null
             };
             await db.Records.AddAsync(newRecord);

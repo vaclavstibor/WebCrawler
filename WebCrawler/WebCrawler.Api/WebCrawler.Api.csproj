@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WebCrawler.BusinessLayer\WebCrawler.BusinessLayer.csproj" />
+    <ProjectReference Include="..\WebsiteCrawler.Services\WebsiteCrawler.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>
