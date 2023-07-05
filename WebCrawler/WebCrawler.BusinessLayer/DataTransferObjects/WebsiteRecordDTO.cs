@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebCrawler.DataAccessLayer.Models;
 
 namespace WebCrawler.BusinessLayer.DataTransferObjects
 {
@@ -18,7 +19,7 @@ namespace WebCrawler.BusinessLayer.DataTransferObjects
         public bool? Active { get; set; }
         public DateTime? LastExecution { get; set; }
         public List<TagDTO>? tagDTOs { get; set; }
-        public bool? ExecutionStatus { get; set; }
+        public ExecutionStatus? ExecutionStatus { get; set; }
         public string? Periodicity { get; set; }
 
         public WebsiteRecordDTO()

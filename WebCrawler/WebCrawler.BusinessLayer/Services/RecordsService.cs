@@ -55,7 +55,7 @@ namespace WebCrawler.BusinessLayer.Services
                 Label = record.Label,
                 Active = record.Active,
                 LastExecution = record.LastExecution,
-                ExecutionStatus = record.ExecutionStatus == ExecutionStatus.Executed,
+                ExecutionStatus = record.ExecutionStatus,
             };
             recordDtO.tagDTOs = tags.Select(x => new TagDTO()
             {
@@ -84,7 +84,7 @@ namespace WebCrawler.BusinessLayer.Services
                     Content = x.Content
                 }).ToList(),
                 LastExecution = x.LastExecution,
-                ExecutionStatus = x.ExecutionStatus == ExecutionStatus.Executed
+                ExecutionStatus = x.ExecutionStatus
             }).ToListAsync();
         }
 
@@ -100,31 +100,6 @@ namespace WebCrawler.BusinessLayer.Services
             }
             return tags;
                 
-        }
-
-        public async Task AddWebsiteRecord(WebsiteRecordDTO record, List<TagDTO> tags)
-        {
-            record.Hours += record.Minutes / 60;
-            record.Minutes = record.Minutes % 60;
-
-            record.Days += record.Hours / 24;
-            record.Hours = record.Hours % 24;
-            
-            var newRecord = new WebsiteRecord
-            {
-                Hours = record.Hours,
-                Days = record.Days,
-                Label = record.Label,
-                URL = record.URL,
-                Active = record.Active.Value,
-                Minutes = record.Minutes,
-                Tags = TagDtoesToTags(tags),
-                RegExp = record.RegExp,
-                ExecutionStatus = ExecutionStatus.Created,
-                LastExecution = null
-            };
-            await db.Records.AddAsync(newRecord);
-            await db.SaveChangesAsync();
         }
 
         public async Task<bool> DeleteWebsiteRecord(int recordId)
@@ -151,6 +126,7 @@ namespace WebCrawler.BusinessLayer.Services
                 recordInDb.URL = record.URL;
                 recordInDb.Label = record.Label;
                 recordInDb.RegExp = record.RegExp;
+                recordInDb.ExecutionStatus = record.ExecutionStatus;
 
                 var tags = await db.Tags.Where(x => x.WebsiteRecordId == record.Id).ToListAsync();
                 db.Tags.RemoveRange(tags);
@@ -175,7 +151,8 @@ namespace WebCrawler.BusinessLayer.Services
                     Tags = record.tagDTOs.Select(x => new Tag
                     { 
                         Content = x.Content,
-                    }).ToList()
+                    }).ToList(),
+                    ExecutionStatus = ExecutionStatus.Created
                 };
 
                 await db.AddAsync(recordInDb);

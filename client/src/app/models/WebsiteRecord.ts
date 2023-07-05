@@ -1,5 +1,5 @@
-import { Time } from "@angular/common";
 import { Tag } from "./Tag";
+import { CrawlingState } from "./CrawlingState";
 
 export interface WebsiteRecord
 {
@@ -13,6 +13,6 @@ export interface WebsiteRecord
     active: boolean;
     lastExecution: Date;
     tagDTOs: Tag[];
-    executionStatus: boolean;
+    executionStatus: CrawlingState;
     periodicity: string;
 }

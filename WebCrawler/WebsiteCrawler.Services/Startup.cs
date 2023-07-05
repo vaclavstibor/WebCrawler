@@ -52,20 +52,22 @@ namespace WebsiteCrawler.Services
 
                     foreach (var record in unscheduledRecords)
                     {
-                        var frequencyOfExecution = new DateTime(0, 0, record.Days ?? 0, record.Hours ?? 0, record.Minutes ?? 0, 0).Ticks;
-                        record.LastExecution ??= new DateTime(0,0,0,0,0,0);
-                        var timeDifference = DateTime.Now.Ticks - record.LastExecution.Value.Ticks;
+                        record.Days ??= 0;
+                        record.Hours ??= 0;
+                        record.Minutes ??= 0;
+                        var frequency = new TimeSpan(record.Days.Value, record.Hours.Value, record.Minutes.Value, 0);
+                        var timeDifference = DateTime.Now - record.LastExecution;
+
 
                         if (record.ExecutionStatus == WebCrawler.DataAccessLayer.Models.ExecutionStatus.Created
-                            || (frequencyOfExecution != new DateTime(0, 0, 0, 0, 0, 0).Ticks && timeDifference >= frequencyOfExecution)
+                            || (timeDifference >= frequency && frequency != new TimeSpan(0,0,0,0))
                         )
                         {
                             await Task.Run(async () => {
                                 var result = await crawler.Run(record, 1000);
-                                record.StartingNode = new WebCrawler.DataAccessLayer.Models.StartingNode
-                                {
-                                    
-                                };
+                                record.StartingNode = result;
+                                db.Update(record);
+                                await db.SaveChangesAsync();
                             });
                             
                         }
