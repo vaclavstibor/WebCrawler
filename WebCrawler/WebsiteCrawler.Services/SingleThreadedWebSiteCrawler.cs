@@ -44,10 +44,13 @@ namespace WebsiteCrawler.Service
 
             var node = new Node()
             {
-                Children = new List<Node>(),
                 Url = record.URL,
-                Domain = GetDomainFromUrl(record.URL)
+                Domain = GetDomainFromUrl(record.URL),
+                Children = new List<Node>()
             };
+            
+            // Starting node start crawl time
+            DateTime startCrawlTime = DateTime.Now;
 
             jobQueue.Enqueue(new SearchJob(record.URL, node));
 
@@ -66,6 +69,8 @@ namespace WebsiteCrawler.Service
 
                 await DiscoverLinks(record.URL, DateTime.Now);
             }
+
+            StartingNode.Node.CrawlTime = GetCrawlTime(startCrawlTime);
 
             return StartingNode;
         }
@@ -97,6 +102,7 @@ namespace WebsiteCrawler.Service
                 {
                     Url = startingSite,
                     Domain = GetDomainFromUrl(startingSite),
+                    RegExpMatch = IsRegExpMatched(startingSite,""),
                     Children = new List<Node>()
                 };
                 bool isLinkAcceptable = IsLinkAcceptable(searchJob, link);
@@ -124,8 +130,14 @@ namespace WebsiteCrawler.Service
                     return;
                 }
                 searchResult.CrawlTime = GetCrawlTime(startCrawlTime);
+
                 searchResults.Add(absoluteLink.ToString());
-                jobQueue.Enqueue(new SearchJob(absoluteLink.ToString(), searchResult));
+
+                if (searchResult.RegExpMatch != false)
+                {
+                    jobQueue.Enqueue(new SearchJob(absoluteLink.ToString(), searchResult));
+                }
+
                 searchJob.Node.Children.Add(searchResult);
             });
         }
@@ -204,14 +216,6 @@ namespace WebsiteCrawler.Service
             return true;
         }
 
-        private string GetDomainFromUrl(string url)
-        {
-            Uri uri = new Uri(url);
-            string domain = uri.Host;
-
-            return domain;
-        }
-
         private bool? IsRegExpMatched(string url, string regExp)
         {
             if (string.IsNullOrEmpty(regExp))
@@ -232,6 +236,19 @@ namespace WebsiteCrawler.Service
             TimeSpan duration = DateTime.Now.Subtract(startTime);
 
             return duration;
+        }
+
+        private string GetDomainFromUrl(string url)
+        {
+            if (url.ToLower().StartsWith("http:") || url.ToLower().StartsWith("https:"))
+            {
+                var uri = new Uri(url);
+                string domain = uri.Host;
+
+                return domain;
+            }
+
+            return ""; 
         }
     }
 }
