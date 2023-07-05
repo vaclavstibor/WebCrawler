@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "WebsiteCrawler.Executable": {
-      "commandName": "Project",
-      "commandLineArgs": "--maxsites 5 --url https://www.bbc.co.uk"
-    }
-  }
-}

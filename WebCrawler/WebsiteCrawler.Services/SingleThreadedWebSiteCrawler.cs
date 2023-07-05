@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
 using System.Net;
+using System.Text.RegularExpressions;
 using WebCrawler.DataAccessLayer.Context;
 using WebCrawler.DataAccessLayer.Models;
 using WebsiteCrawler.Infrastructure.entity;
@@ -45,6 +46,7 @@ namespace WebsiteCrawler.Service
             { 
                 Children = new List<Node>(),
                 Url = record.URL,
+                RegExpMatch = IsRegExpMatched(record.URL,null),
                 Domain = GetDomainFromUrl(record.URL)
             };
 
@@ -207,6 +209,28 @@ namespace WebsiteCrawler.Service
             string domain = uri.Host;
 
             return domain;
+        }
+
+        private bool? IsRegExpMatched(string url, string regExp)
+        {
+            if (string.IsNullOrEmpty(regExp))
+            {
+                return null;
+            }
+           
+            if (Regex.IsMatch(url, regExp, RegexOptions.IgnoreCase))
+            { 
+                return true; 
+            }
+
+            return false;
+        }
+
+        private TimeSpan GetCrawlTime(DateTime startTime)
+        {   
+            TimeSpan duration = DateTime.Now.Subtract(startTime);
+
+            return duration;
         }
     }
 }

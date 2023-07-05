@@ -18,6 +18,32 @@
           }
         }
       },
+      "Dawn.Guard/1.12.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Dawn.Guard.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Dawn.Guard.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "HtmlAgilityPack/1.11.48": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/HtmlAgilityPack.dll": {
+            "related": ".deps.json;.pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/HtmlAgilityPack.dll": {
+            "related": ".deps.json;.pdb;.xml"
+          }
+        }
+      },
       "Humanizer.Core/2.8.26": {
         "type": "package",
         "compile": {
@@ -572,6 +598,19 @@
           }
         }
       },
+      "Polly/7.2.4": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Polly.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Polly.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "Swashbuckle.AspNetCore/6.4.0": {
         "type": "package",
         "dependencies": {
@@ -942,6 +981,36 @@
         "runtime": {
           "bin/placeholder/WebCrawler.DataAccessLayer.dll": {}
         }
+      },
+      "WebsiteCrawler.Infrastructure/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v7.0",
+        "dependencies": {
+          "WebCrawler.DataAccessLayer": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/WebsiteCrawler.Infrastructure.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/WebsiteCrawler.Infrastructure.dll": {}
+        }
+      },
+      "WebsiteCrawler.Services/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v7.0",
+        "dependencies": {
+          "Dawn.Guard": "1.12.0",
+          "HtmlAgilityPack": "1.11.48",
+          "Polly": "7.2.4",
+          "WebCrawler.DataAccessLayer": "1.0.0",
+          "WebsiteCrawler.Infrastructure": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/WebsiteCrawler.Services.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/WebsiteCrawler.Services.dll": {}
+        }
       }
     }
   },
@@ -959,6 +1028,69 @@
         "icon.png",
         "lib/netstandard2.1/AutoMapper.dll",
         "lib/netstandard2.1/AutoMapper.xml"
+      ]
+    },
+    "Dawn.Guard/1.12.0": {
+      "sha512": "niOoFTH4DO3/c0rBBHgCeWUCzSpgYZLI4+TxiwPyYP0bxZrxSokhyztx5QdsvHfB6Y3ovhK6vYwZr2qD8JdiuQ==",
+      "type": "package",
+      "path": "dawn.guard/1.12.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "dawn.guard.1.12.0.nupkg.sha512",
+        "dawn.guard.nuspec",
+        "lib/netstandard1.0/Dawn.Guard.dll",
+        "lib/netstandard1.0/Dawn.Guard.xml",
+        "lib/netstandard2.0/Dawn.Guard.dll",
+        "lib/netstandard2.0/Dawn.Guard.xml"
+      ]
+    },
+    "HtmlAgilityPack/1.11.48": {
+      "sha512": "BTYfqMoTtnlUz5hqJZ3qxh/SDWMtJAulcz2vIr2TRj5BhfdJZD1E1HSpNI9rvIQiYJzl2xoVtCNzCcANjzbScQ==",
+      "type": "package",
+      "path": "htmlagilitypack/1.11.48",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "htmlagilitypack.1.11.48.nupkg.sha512",
+        "htmlagilitypack.nuspec",
+        "lib/Net35/HtmlAgilityPack.dll",
+        "lib/Net35/HtmlAgilityPack.pdb",
+        "lib/Net35/HtmlAgilityPack.xml",
+        "lib/Net40-client/HtmlAgilityPack.dll",
+        "lib/Net40-client/HtmlAgilityPack.pdb",
+        "lib/Net40-client/HtmlAgilityPack.xml",
+        "lib/Net40/HtmlAgilityPack.XML",
+        "lib/Net40/HtmlAgilityPack.dll",
+        "lib/Net40/HtmlAgilityPack.pdb",
+        "lib/Net45/HtmlAgilityPack.XML",
+        "lib/Net45/HtmlAgilityPack.dll",
+        "lib/Net45/HtmlAgilityPack.pdb",
+        "lib/NetCore45/HtmlAgilityPack.XML",
+        "lib/NetCore45/HtmlAgilityPack.dll",
+        "lib/NetCore45/HtmlAgilityPack.pdb",
+        "lib/netstandard1.3/HtmlAgilityPack.deps.json",
+        "lib/netstandard1.3/HtmlAgilityPack.dll",
+        "lib/netstandard1.3/HtmlAgilityPack.pdb",
+        "lib/netstandard1.3/HtmlAgilityPack.xml",
+        "lib/netstandard1.6/HtmlAgilityPack.deps.json",
+        "lib/netstandard1.6/HtmlAgilityPack.dll",
+        "lib/netstandard1.6/HtmlAgilityPack.pdb",
+        "lib/netstandard1.6/HtmlAgilityPack.xml",
+        "lib/netstandard2.0/HtmlAgilityPack.deps.json",
+        "lib/netstandard2.0/HtmlAgilityPack.dll",
+        "lib/netstandard2.0/HtmlAgilityPack.pdb",
+        "lib/netstandard2.0/HtmlAgilityPack.xml",
+        "lib/portable-net45+netcore45+wp8+MonoAndroid+MonoTouch/HtmlAgilityPack.XML",
+        "lib/portable-net45+netcore45+wp8+MonoAndroid+MonoTouch/HtmlAgilityPack.dll",
+        "lib/portable-net45+netcore45+wp8+MonoAndroid+MonoTouch/HtmlAgilityPack.pdb",
+        "lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid+MonoTouch/HtmlAgilityPack.XML",
+        "lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid+MonoTouch/HtmlAgilityPack.dll",
+        "lib/portable-net45+netcore45+wpa81+wp8+MonoAndroid+MonoTouch/HtmlAgilityPack.pdb",
+        "lib/uap10.0/HtmlAgilityPack.XML",
+        "lib/uap10.0/HtmlAgilityPack.dll",
+        "lib/uap10.0/HtmlAgilityPack.pdb",
+        "lib/uap10.0/HtmlAgilityPack.pri"
       ]
     },
     "Humanizer.Core/2.8.26": {
@@ -2039,6 +2171,31 @@
         "packageIcon.png"
       ]
     },
+    "Polly/7.2.4": {
+      "sha512": "bw00Ck5sh6ekduDE3mnCo1ohzuad946uslCDEENu3091+6UKnBuKLo4e+yaNcCzXxOZCXWY2gV4a35+K1d4LDA==",
+      "type": "package",
+      "path": "polly/7.2.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "lib/net461/Polly.dll",
+        "lib/net461/Polly.pdb",
+        "lib/net461/Polly.xml",
+        "lib/net472/Polly.dll",
+        "lib/net472/Polly.pdb",
+        "lib/net472/Polly.xml",
+        "lib/netstandard1.1/Polly.dll",
+        "lib/netstandard1.1/Polly.pdb",
+        "lib/netstandard1.1/Polly.xml",
+        "lib/netstandard2.0/Polly.dll",
+        "lib/netstandard2.0/Polly.pdb",
+        "lib/netstandard2.0/Polly.xml",
+        "package-icon.png",
+        "polly.7.2.4.nupkg.sha512",
+        "polly.nuspec"
+      ]
+    },
     "Swashbuckle.AspNetCore/6.4.0": {
       "sha512": "eUBr4TW0up6oKDA5Xwkul289uqSMgY0xGN4pnbOIBqCcN9VKGGaPvHX3vWaG/hvocfGDP+MGzMA0bBBKz2fkmQ==",
       "type": "package",
@@ -2613,6 +2770,16 @@
       "type": "project",
       "path": "../WebCrawler.DataAccessLayer/WebCrawler.DataAccessLayer.csproj",
       "msbuildProject": "../WebCrawler.DataAccessLayer/WebCrawler.DataAccessLayer.csproj"
+    },
+    "WebsiteCrawler.Infrastructure/1.0.0": {
+      "type": "project",
+      "path": "../WebsiteCrawler.Infrastructure/WebsiteCrawler.Infrastructure.csproj",
+      "msbuildProject": "../WebsiteCrawler.Infrastructure/WebsiteCrawler.Infrastructure.csproj"
+    },
+    "WebsiteCrawler.Services/1.0.0": {
+      "type": "project",
+      "path": "../WebsiteCrawler.Services/WebsiteCrawler.Services.csproj",
+      "msbuildProject": "../WebsiteCrawler.Services/WebsiteCrawler.Services.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -2621,38 +2788,46 @@
       "Microsoft.EntityFrameworkCore.Design >= 6.0.18",
       "Microsoft.VisualStudio.Azure.Containers.Tools.Targets >= 1.17.2",
       "Swashbuckle.AspNetCore >= 6.4.0",
-      "WebCrawler.BusinessLayer >= 1.0.0"
+      "WebCrawler.BusinessLayer >= 1.0.0",
+      "WebsiteCrawler.Services >= 1.0.0"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\asus\\.nuget\\packages\\": {}
+    "C:\\Users\\student\\.nuget\\packages\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.Api\\WebCrawler.Api.csproj",
+      "projectUniqueName": "C:\\Users\\student\\Documents\\WebCrawler\\WebCrawler\\WebCrawler.Api\\WebCrawler.Api.csproj",
       "projectName": "WebCrawler.Api",
-      "projectPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.Api\\WebCrawler.Api.csproj",
-      "packagesPath": "C:\\Users\\asus\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.Api\\obj\\",
+      "projectPath": "C:\\Users\\student\\Documents\\WebCrawler\\WebCrawler\\WebCrawler.Api\\WebCrawler.Api.csproj",
+      "packagesPath": "C:\\Users\\student\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\student\\Documents\\WebCrawler\\WebCrawler\\WebCrawler.Api\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
       "configFilePaths": [
-        "C:\\Users\\asus\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\student\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
       ],
       "sources": {
-        "https://api.nuget.org/v3/index.json": {},
-        "https://pkgs.dev.azure.com/rigantitfs/_packaging/RIGANTI/nuget/v3/index.json": {}
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.BusinessLayer\\WebCrawler.BusinessLayer.csproj": {
-              "projectPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.BusinessLayer\\WebCrawler.BusinessLayer.csproj"
+            "C:\\Users\\student\\Documents\\WebCrawler\\WebCrawler\\WebCrawler.BusinessLayer\\WebCrawler.BusinessLayer.csproj": {
+              "projectPath": "C:\\Users\\student\\Documents\\WebCrawler\\WebCrawler\\WebCrawler.BusinessLayer\\WebCrawler.BusinessLayer.csproj"
+            },
+            "C:\\Users\\student\\Documents\\WebCrawler\\WebCrawler\\WebsiteCrawler.Services\\WebsiteCrawler.Services.csproj": {
+              "projectPath": "C:\\Users\\student\\Documents\\WebCrawler\\WebCrawler\\WebsiteCrawler.Services\\WebsiteCrawler.Services.csproj"
             }
           }
         }
