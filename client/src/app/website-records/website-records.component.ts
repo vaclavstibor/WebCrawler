@@ -3,6 +3,7 @@ import { WebsiteRecord } from '../models/WebsiteRecord';
 import { SharedService } from '../shared.service';
 import { ActivatedRoute } from '@angular/router';
 import { Tag } from '../models/Tag';
+import { UpdateRecordState } from '../models/UpdateRecordState';
 import { Router } from '@angular/router';
 
 @Component({
@@ -15,10 +16,14 @@ export class WebsiteRecordsComponent implements OnInit {
   webRecords: WebsiteRecord[] = [];
   tags: string[] = [];
 
+  updateRecordText: string = "Create New Record";
+
   sortByUrl: boolean = false;
   sortByLastCrawling: boolean = false;
 
-  newRecordBeingCreated: boolean = false;
+  recordUpdatingState: UpdateRecordState = UpdateRecordState.default;
+  defaultState: UpdateRecordState = UpdateRecordState.default;
+
   newRecord: WebsiteRecord = <WebsiteRecord>{};
   newTag: Tag = <Tag>{};  
 
@@ -52,8 +57,18 @@ export class WebsiteRecordsComponent implements OnInit {
       this._chosenLabels = value;
     }
 
-  changeCreatingMode(): void {
-    this.newRecordBeingCreated = !this.newRecordBeingCreated;
+  createNewRecord() : void 
+  {
+    if (this.recordUpdatingState == UpdateRecordState.default || this.recordUpdatingState == UpdateRecordState.updating)
+    {
+      this.recordUpdatingState = UpdateRecordState.creating;
+    }
+    else 
+    {
+      this.recordUpdatingState = UpdateRecordState.default;
+    }
+    this.updateRecordText = "Add record";
+    this.newRecord = <WebsiteRecord>{};
   }
 
   addTag() : void {
@@ -61,7 +76,7 @@ export class WebsiteRecordsComponent implements OnInit {
     this.newTag = <Tag>{};
   }
 
-  createARecord() : void {
+  updateRecord() : void {
     this.sharedService.updateRecord(this.newRecord).subscribe(data => 
       {
         this.newRecord.id = data;
@@ -91,6 +106,9 @@ export class WebsiteRecordsComponent implements OnInit {
 
   ngOnInit(): void {
     this.newRecord.tagDTOs = [];
+    this.webRecords = [];
+    this.allWebRecords = [];
+
     this.sharedService.getWebRecords().subscribe(data => {
       this.webRecords = data;
       this.allWebRecords = data;
@@ -213,8 +231,18 @@ export class WebsiteRecordsComponent implements OnInit {
     this.router.navigate(["record/view" , id]);
   }
 
-  navigateToEdit(id: number) : void
+  editRecord(id: number) : void
   {
+    if (this.recordUpdatingState == UpdateRecordState.default || this.recordUpdatingState == UpdateRecordState.creating)
+    {
+      this.updateRecordText = "Update record";
+      this.recordUpdatingState = UpdateRecordState.updating;
+    }
+    else if (this.newRecord.id == id)
+    {
+      this.recordUpdatingState = UpdateRecordState.default;
+      this.updateRecordText = "Add record";
+    }
     this.webRecords.forEach(record => {
       if (record.id == id)
       {

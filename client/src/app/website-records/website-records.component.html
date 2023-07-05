@@ -97,7 +97,7 @@
                     <a class="btn btn-outline-primary btn-sm" [routerLink]="['/record/view',rowData.id]">View</a>
                 </td>
                 <td>
-                    <a class="btn btn-success btn-sm" [routerLink]="['/record/view/',rowData.id]">Edit</a>
+                    <button class="btn btn-success btn-sm" (click)="editRecord(rowData.id)">Edit</button>
                 </td>
                 <td>
                     <button (click)="deleteARecord(rowData)" class="btn btn-danger btn-sm">Delete</button>
@@ -105,8 +105,8 @@
             </tr>
         </ng-template>
     </p-table>
-    <button (click)="changeCreatingMode()" class="btn btn-primary"> Create new record </button>
-    <div *ngIf="newRecordBeingCreated">
+    <button (click)="createNewRecord()" class="btn btn-primary"> Create new record </button>
+    <div *ngIf="recordUpdatingState != defaultState">
         <input class="form-control form-control-sm" [(ngModel)]="newRecord.url" type="text" placeholder="Url" aria-label=".form-control-sm example">
         <input class="form-control form-control-sm" [(ngModel)]="newRecord.label" type="text" placeholder="Label" aria-label=".form-control-sm example">
         <input class="form-control form-control-sm" [(ngModel)]="newRecord.regExp" type="text" placeholder="Regular Expression" aria-label=".form-control-sm example">
@@ -127,7 +127,7 @@
         <input class="form-control form-control-sm" [(ngModel)]="newTag.content" type="text" placeholder="Tag" aria-label=".form-control-sm example">
         <div>
             <button (click)="addTag()" class="btn btn-primary">Add a tag</button>
-            <button (click)="createARecord()" class="btn btn-primary">Add a record</button>
+            <button (click)="updateRecord()" class="btn btn-primary" [textContent]="updateRecordText"></button>
         </div>
     </div>
 </div>
