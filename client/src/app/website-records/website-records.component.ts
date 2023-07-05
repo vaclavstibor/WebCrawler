@@ -66,7 +66,18 @@ export class WebsiteRecordsComponent implements OnInit {
       {
         this.newRecord.id = data;
       });
-    this.allWebRecords.push(this.newRecord);
+
+    var record: number = this.allWebRecords.findIndex(x => x.id == this.newRecord.id);  
+    
+    if (record === -1)
+    {
+      this.allWebRecords.push(this.newRecord);
+    }
+    else 
+    {
+      this.allWebRecords[record] = this.newRecord;
+    }
+    
     this.newRecord = <WebsiteRecord>{};
     this.newRecord.tagDTOs = [];
   }
@@ -204,6 +215,11 @@ export class WebsiteRecordsComponent implements OnInit {
 
   navigateToEdit(id: number) : void
   {
-    this.router.navigate(["record/edit" , id]);
+    this.webRecords.forEach(record => {
+      if (record.id == id)
+      {
+        this.newRecord = record;
+      }
+    });
   }
 }

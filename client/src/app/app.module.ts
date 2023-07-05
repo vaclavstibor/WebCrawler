@@ -11,7 +11,6 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { WebsiteRecordsComponent } from './website-records/website-records.component';
 import { WebsiteRecordComponent } from './website-record/website-record.component';
-import { EditRecordComponent } from './edit-record/edit-record.component';
 import { RouterModule } from '@angular/router';
 
 @NgModule({
@@ -19,7 +18,6 @@ import { RouterModule } from '@angular/router';
     AppComponent,
     WebsiteRecordsComponent,
     WebsiteRecordComponent,
-    EditRecordComponent,
   ],
   imports: [
     BrowserModule,
@@ -32,7 +30,6 @@ import { RouterModule } from '@angular/router';
     TableModule,
     RouterModule.forRoot([
       { path: 'records', component: WebsiteRecordsComponent },
-      { path: "record/edit/:id", component: EditRecordComponent },
       { path: "record/view/:id", component: WebsiteRecordComponent  },
       { path: '', redirectTo: 'records', pathMatch: 'full' },
       { path: '**', redirectTo: 'records', pathMatch: 'full' }
