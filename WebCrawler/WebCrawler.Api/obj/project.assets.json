@@ -2793,37 +2793,41 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\asus\\.nuget\\packages\\": {}
+    "C:\\Users\\student\\.nuget\\packages\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.Api\\WebCrawler.Api.csproj",
+      "projectUniqueName": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.Api\\WebCrawler.Api.csproj",
       "projectName": "WebCrawler.Api",
-      "projectPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.Api\\WebCrawler.Api.csproj",
-      "packagesPath": "C:\\Users\\asus\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.Api\\obj\\",
+      "projectPath": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.Api\\WebCrawler.Api.csproj",
+      "packagesPath": "C:\\Users\\student\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.Api\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
       "configFilePaths": [
-        "C:\\Users\\asus\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\student\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
       ],
       "sources": {
-        "https://api.nuget.org/v3/index.json": {},
-        "https://pkgs.dev.azure.com/rigantitfs/_packaging/RIGANTI/nuget/v3/index.json": {}
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.BusinessLayer\\WebCrawler.BusinessLayer.csproj": {
-              "projectPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.BusinessLayer\\WebCrawler.BusinessLayer.csproj"
+            "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.BusinessLayer\\WebCrawler.BusinessLayer.csproj": {
+              "projectPath": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.BusinessLayer\\WebCrawler.BusinessLayer.csproj"
             },
-            "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Services\\WebsiteCrawler.Services.csproj": {
-              "projectPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Services\\WebsiteCrawler.Services.csproj"
+            "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Services\\WebsiteCrawler.Services.csproj": {
+              "projectPath": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Services\\WebsiteCrawler.Services.csproj"
             }
           }
         }

@@ -43,10 +43,9 @@ namespace WebsiteCrawler.Service
             httpClient.DefaultRequestHeaders.Add("User-Agent", "Other");
 
             var node = new Node()
-            { 
+            {
                 Children = new List<Node>(),
                 Url = record.URL,
-                RegExpMatch = IsRegExpMatched(record.URL,null),
                 Domain = GetDomainFromUrl(record.URL)
             };
 
@@ -64,7 +63,8 @@ namespace WebsiteCrawler.Service
                 {
                     break;
                 }
-                await DiscoverLinks(record.URL);
+
+                await DiscoverLinks(record.URL, DateTime.Now);
             }
 
             return StartingNode;
@@ -80,7 +80,7 @@ namespace WebsiteCrawler.Service
                 attempt => TimeSpan.FromSeconds(Math.Pow(2, attempt)));
         }
 
-        private async Task DiscoverLinks(string startingSite)
+        private async Task DiscoverLinks(string startingSite, DateTime startCrawlTime)
         {
             var searchJob = jobQueue.Dequeue();
             string pageContents = await DownloadPage(searchJob);
@@ -123,6 +123,7 @@ namespace WebsiteCrawler.Service
                 {
                     return;
                 }
+                searchResult.CrawlTime = GetCrawlTime(startCrawlTime);
                 searchResults.Add(absoluteLink.ToString());
                 jobQueue.Enqueue(new SearchJob(absoluteLink.ToString(), searchResult));
                 searchJob.Node.Children.Add(searchResult);
@@ -217,17 +218,17 @@ namespace WebsiteCrawler.Service
             {
                 return null;
             }
-           
+
             if (Regex.IsMatch(url, regExp, RegexOptions.IgnoreCase))
-            { 
-                return true; 
+            {
+                return true;
             }
 
             return false;
         }
 
         private TimeSpan GetCrawlTime(DateTime startTime)
-        {   
+        {
             TimeSpan duration = DateTime.Now.Subtract(startTime);
 
             return duration;
