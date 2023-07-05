@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using WebCrawler.BusinessLayer.Services;
 using WebCrawler.DataAccessLayer.Context;
 
@@ -6,33 +7,30 @@ namespace WebCrawler.Api
 {
     public class Startup
     {
-        public void Run()
+
+        public void ConfigureServices(IServiceCollection services)
         {
-            var builder = WebApplication.CreateBuilder();
+            services.AddControllers();
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
+            services.AddHttpClient();
+            services.AddDbContext<AppDbContext>(options =>
+             options.UseSqlServer("Data Source=localhost;Initial Catalog=CrawlerDB;Integrated Security=True"));
+            services.AddHttpClient();
+            services.AddScoped<RecordsService>();
+            services.AddScoped<CrawlerService>();
 
-            builder.Services.AddControllers();
-            builder.Services.AddEndpointsApiExplorer();
-
-            builder.Services.AddSwaggerGen();
-            builder.Services.AddHttpClient();
-
-            builder.Services.AddScoped<RecordsService>();
-            builder.Services.AddScoped<CrawlerService>();
-
-            builder.Services.AddDbContext<AppDbContext>(options =>
-               options.UseSqlServer(builder.Configuration.GetConnectionString("MyConn")));
-
-            builder.Services.AddCors(c =>
+            services.AddCors(c =>
             {
                 c.AddPolicy("AllowOrigin", options =>
                 {
                     options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
                 });
             });
-
-            var app = builder.Build();
-
-            if (app.Environment.IsDevelopment())
+        }
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
@@ -45,10 +43,11 @@ namespace WebCrawler.Api
             app.UseCors("AllowOrigin");
 
             app.UseAuthorization();
-
-            app.MapControllers();
-
-            app.Run();
+            
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }

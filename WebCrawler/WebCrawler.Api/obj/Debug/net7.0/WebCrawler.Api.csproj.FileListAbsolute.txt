@@ -243,3 +243,10 @@ C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\obj\Debug\net7.0\WebC
 C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\obj\Debug\net7.0\ref\WebCrawler.Api.dll
 C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\bin\Debug\net7.0\Humanizer.dll
 C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\bin\Debug\net7.0\Microsoft.EntityFrameworkCore.Design.dll
+C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\bin\Debug\net7.0\Dawn.Guard.dll
+C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\bin\Debug\net7.0\HtmlAgilityPack.dll
+C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\bin\Debug\net7.0\Polly.dll
+C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\bin\Debug\net7.0\WebsiteCrawler.Infrastructure.dll
+C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\bin\Debug\net7.0\WebsiteCrawler.Services.dll
+C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\bin\Debug\net7.0\WebsiteCrawler.Services.pdb
+C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\bin\Debug\net7.0\WebsiteCrawler.Infrastructure.pdb
