@@ -225,7 +225,6 @@ C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\obj\Debug\net7.0\WebC
 C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\obj\Debug\net7.0\WebCrawler.Api.AssemblyInfoInputs.cache
 C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\obj\Debug\net7.0\WebCrawler.Api.AssemblyInfo.cs
 C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\obj\Debug\net7.0\WebCrawler.Api.csproj.CoreCompileInputs.cache
-C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\obj\Debug\net7.0\WebCrawler.Api.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\obj\Debug\net7.0\WebCrawler.Api.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\obj\Debug\net7.0\staticwebassets\msbuild.WebCrawler.Api.Microsoft.AspNetCore.StaticWebAssets.props
 C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\obj\Debug\net7.0\staticwebassets\msbuild.build.WebCrawler.Api.props
@@ -250,3 +249,4 @@ C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\bin\Debug\net7.0\Webs
 C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\bin\Debug\net7.0\WebsiteCrawler.Services.dll
 C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\bin\Debug\net7.0\WebsiteCrawler.Services.pdb
 C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\bin\Debug\net7.0\WebsiteCrawler.Infrastructure.pdb
+C:\Users\asus\Desktop\WebCrawler\WebCrawler\WebCrawler.Api\obj\Debug\net7.0\WebCrawler.Api.MvcApplicationPartsAssemblyInfo.cs

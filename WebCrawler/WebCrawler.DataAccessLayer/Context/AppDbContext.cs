@@ -25,6 +25,7 @@ namespace WebCrawler.DataAccessLayer.Context
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Node> Nodes { get; set; }
         public DbSet<StartingNode> StartingNodes { get; set; }
+        public DbSet<Execution> Executions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

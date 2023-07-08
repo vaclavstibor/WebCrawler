@@ -1,41 +1,39 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.Api\\WebCrawler.Api.csproj": {}
+    "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.Api\\WebCrawler.Api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.Api\\WebCrawler.Api.csproj": {
+    "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.Api\\WebCrawler.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.Api\\WebCrawler.Api.csproj",
+        "projectUniqueName": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.Api\\WebCrawler.Api.csproj",
         "projectName": "WebCrawler.Api",
-        "projectPath": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.Api\\WebCrawler.Api.csproj",
-        "packagesPath": "C:\\Users\\student\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.Api\\obj\\",
+        "projectPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.Api\\WebCrawler.Api.csproj",
+        "packagesPath": "C:\\Users\\asus\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.Api\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\student\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\asus\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {}
+          "C:\\Program Files\\dotnet\\sdk\\7.0.304\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {},
+          "https://pkgs.dev.azure.com/rigantitfs/_packaging/RIGANTI/nuget/v3/index.json": {}
         },
         "frameworks": {
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.BusinessLayer\\WebCrawler.BusinessLayer.csproj": {
-                "projectPath": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.BusinessLayer\\WebCrawler.BusinessLayer.csproj"
+              "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.BusinessLayer\\WebCrawler.BusinessLayer.csproj": {
+                "projectPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.BusinessLayer\\WebCrawler.BusinessLayer.csproj"
               },
-              "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Services\\WebsiteCrawler.Services.csproj": {
-                "projectPath": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Services\\WebsiteCrawler.Services.csproj"
+              "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Services\\WebsiteCrawler.Services.csproj": {
+                "projectPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Services\\WebsiteCrawler.Services.csproj"
               }
             }
           }
@@ -88,39 +86,36 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.BusinessLayer\\WebCrawler.BusinessLayer.csproj": {
+    "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.BusinessLayer\\WebCrawler.BusinessLayer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.BusinessLayer\\WebCrawler.BusinessLayer.csproj",
+        "projectUniqueName": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.BusinessLayer\\WebCrawler.BusinessLayer.csproj",
         "projectName": "WebCrawler.BusinessLayer",
-        "projectPath": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.BusinessLayer\\WebCrawler.BusinessLayer.csproj",
-        "packagesPath": "C:\\Users\\student\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.BusinessLayer\\obj\\",
+        "projectPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.BusinessLayer\\WebCrawler.BusinessLayer.csproj",
+        "packagesPath": "C:\\Users\\asus\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.BusinessLayer\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\student\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\asus\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {}
+          "https://api.nuget.org/v3/index.json": {},
+          "https://pkgs.dev.azure.com/rigantitfs/_packaging/RIGANTI/nuget/v3/index.json": {}
         },
         "frameworks": {
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj": {
-                "projectPath": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj"
+              "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj": {
+                "projectPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj"
               }
             }
           }
@@ -156,32 +151,29 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj": {
+    "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj",
+        "projectUniqueName": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj",
         "projectName": "WebCrawler.DataAccessLayer",
-        "projectPath": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj",
-        "packagesPath": "C:\\Users\\student\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\obj\\",
+        "projectPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj",
+        "packagesPath": "C:\\Users\\asus\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\student\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\asus\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {}
+          "https://api.nuget.org/v3/index.json": {},
+          "https://pkgs.dev.azure.com/rigantitfs/_packaging/RIGANTI/nuget/v3/index.json": {}
         },
         "frameworks": {
           "net6.0": {
@@ -238,39 +230,36 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Infrastructure\\WebsiteCrawler.Infrastructure.csproj": {
+    "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Infrastructure\\WebsiteCrawler.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Infrastructure\\WebsiteCrawler.Infrastructure.csproj",
+        "projectUniqueName": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Infrastructure\\WebsiteCrawler.Infrastructure.csproj",
         "projectName": "WebsiteCrawler.Infrastructure",
-        "projectPath": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Infrastructure\\WebsiteCrawler.Infrastructure.csproj",
-        "packagesPath": "C:\\Users\\student\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Infrastructure\\obj\\",
+        "projectPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Infrastructure\\WebsiteCrawler.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\asus\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\student\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\asus\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {}
+          "https://api.nuget.org/v3/index.json": {},
+          "https://pkgs.dev.azure.com/rigantitfs/_packaging/RIGANTI/nuget/v3/index.json": {}
         },
         "frameworks": {
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj": {
-                "projectPath": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj"
+              "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj": {
+                "projectPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj"
               }
             }
           }
@@ -300,42 +289,39 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Services\\WebsiteCrawler.Services.csproj": {
+    "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Services\\WebsiteCrawler.Services.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Services\\WebsiteCrawler.Services.csproj",
+        "projectUniqueName": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Services\\WebsiteCrawler.Services.csproj",
         "projectName": "WebsiteCrawler.Services",
-        "projectPath": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Services\\WebsiteCrawler.Services.csproj",
-        "packagesPath": "C:\\Users\\student\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Services\\obj\\",
+        "projectPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Services\\WebsiteCrawler.Services.csproj",
+        "packagesPath": "C:\\Users\\asus\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Services\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\student\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\asus\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {}
+          "https://api.nuget.org/v3/index.json": {},
+          "https://pkgs.dev.azure.com/rigantitfs/_packaging/RIGANTI/nuget/v3/index.json": {}
         },
         "frameworks": {
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj": {
-                "projectPath": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj"
+              "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj": {
+                "projectPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebCrawler.DataAccessLayer\\WebCrawler.DataAccessLayer.csproj"
               },
-              "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Infrastructure\\WebsiteCrawler.Infrastructure.csproj": {
-                "projectPath": "C:\\Users\\student\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Infrastructure\\WebsiteCrawler.Infrastructure.csproj"
+              "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Infrastructure\\WebsiteCrawler.Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\asus\\Desktop\\WebCrawler\\WebCrawler\\WebsiteCrawler.Infrastructure\\WebsiteCrawler.Infrastructure.csproj"
               }
             }
           }
@@ -379,7 +365,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
         }
       }
     }

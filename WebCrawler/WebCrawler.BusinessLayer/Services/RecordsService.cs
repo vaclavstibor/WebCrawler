@@ -84,7 +84,7 @@ namespace WebCrawler.BusinessLayer.Services
                     Content = x.Content
                 }).ToList(),
                 LastExecution = x.LastExecution,
-                ExecutionStatus = x.ExecutionStatus
+                ExecutionStatus = x.ExecutionStatus,
             }).ToListAsync();
         }
 
@@ -107,8 +107,13 @@ namespace WebCrawler.BusinessLayer.Services
             if (!await db.Records.AnyAsync(x => x.Id == recordId))
                 return false;
 
-            db.Tags.RemoveRange(db.Tags.Where(x => x.WebsiteRecordId == recordId).ToList());
+            db.Tags.RemoveRange(db.Tags.Where(x => x.WebsiteRecordId == recordId));
             db.Records.Remove(await db.Records.SingleAsync(x => x.Id == recordId));
+
+            var executions = db.Executions.Where(x => x.WebsiteRecordId == recordId);
+
+            db.Executions.RemoveRange(executions);
+
             await db.SaveChangesAsync();
             return true;
         }

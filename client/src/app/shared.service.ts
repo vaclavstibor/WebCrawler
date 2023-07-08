@@ -5,6 +5,7 @@ import { WebsiteRecord } from './models/WebsiteRecord';
 import { Tag } from './models/Tag';
 import { observableToBeFn } from 'rxjs/internal/testing/TestScheduler';
 import { HttpHeaders } from '@angular/common/http';
+import { Execution } from './models/Execution';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,10 @@ export class SharedService {
 
   getWebRecords(): Observable<WebsiteRecord[]> {
     return this.http.get<WebsiteRecord[]>(this.ApiUrl + "/Record/all");
+  }
+
+  getExecutions(): Observable<Execution[]> {
+    return this.http.get<Execution[]>(this.ApiUrl + "/Execution/all")
   }
 
   updateRecord(record: WebsiteRecord) : Observable<any> 

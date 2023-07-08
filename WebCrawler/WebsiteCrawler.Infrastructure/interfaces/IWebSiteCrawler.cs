@@ -15,6 +15,6 @@ namespace WebsiteCrawler.Infrastructure.interfaces
         /// <param name="url">The URL of the web page</param>
         /// <param name="maxPagesToSearch">An upper limit on the maximum number of discovered pages to crawl. This becomes a stopping criteria</param>
         /// <returns></returns>
-        public Task<StartingNode> Run(WebsiteRecord record, int maxPagesToSearch);
+        public Task<StartingNode> Run(WebsiteRecord record);
     }
 }

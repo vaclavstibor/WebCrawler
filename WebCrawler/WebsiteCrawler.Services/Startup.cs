@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebCrawler.DataAccessLayer.Context;
+using WebCrawler.DataAccessLayer.Migrations;
+using WebCrawler.DataAccessLayer.Models;
 using WebsiteCrawler.Infrastructure.interfaces;
 using WebsiteCrawler.Service;
 
@@ -36,6 +39,43 @@ namespace WebsiteCrawler.Services
             return serviceCollection.BuildServiceProvider();
         }
 
+        private async Task CreateNewExecution(WebsiteRecord record)
+        {
+            var db = provider.GetService<AppDbContext>();
+            var crawler = provider.GetService<IWebSiteCrawler>();
+
+            await Task.Run(async () => {
+                record.ExecutionStatus = ExecutionStatus.Executing;
+
+                var newExecution = new Execution()
+                {
+                    StartTime = DateTime.Now,
+                    ExecutionStatus = ExecutionStatus.Executing,
+                    WebsiteRecordId = record.Id
+                };
+
+                db.Update(record);
+                db.Add(newExecution);
+
+                await db.SaveChangesAsync();
+
+                var result = crawler.Run(record);
+                await result.ContinueWith(async x => 
+                {
+                    record.StartingNode = await result;
+                    record.ExecutionStatus = ExecutionStatus.Executed;
+
+                    newExecution.EndTime = DateTime.Now;
+                    newExecution.ExecutionStatus = ExecutionStatus.Executed;
+                    newExecution.NumberOfSites = record.StartingNode.NumberOfSites;
+
+                    db.Update(newExecution);
+                    db.Update(record);
+                    await db.SaveChangesAsync();
+                });
+            });
+        }
+
         public async Task Run()
         {
             while (true)
@@ -46,11 +86,19 @@ namespace WebsiteCrawler.Services
                     var crawler = provider.GetService<IWebSiteCrawler>();
                     var db = provider.GetService<AppDbContext>();
 
-                    var unscheduledRecords = await db.Records.Where(x => x.ExecutionStatus != WebCrawler.DataAccessLayer.Models.ExecutionStatus.Executing)
+                    var unscheduledRecords = await db.Records.Where(x => x.ExecutionStatus != ExecutionStatus.Executing)
                         .Include(x => x.StartingNode)
                         .ToListAsync();
 
-                    foreach (var record in unscheduledRecords)
+                    var manualExecutions = await db.Executions.Where(x => x.ExecutionStatus == ExecutionStatus.Created)
+                        .Include(x => x.WebsiteRecord)
+                        .ToListAsync();
+
+                    var manuallyExecutedRecords = manualExecutions
+                        .Select(x => x.WebsiteRecord)
+                        .ToList();
+
+                    foreach (var record in unscheduledRecords.Union(manuallyExecutedRecords))
                     {
                         record.Days ??= 0;
                         record.Hours ??= 0;
@@ -58,20 +106,16 @@ namespace WebsiteCrawler.Services
                         var frequency = new TimeSpan(record.Days.Value, record.Hours.Value, record.Minutes.Value, 0);
                         var timeDifference = DateTime.Now - record.LastExecution;
 
-
-                        if (record.ExecutionStatus == WebCrawler.DataAccessLayer.Models.ExecutionStatus.Created
+                        if (record.ExecutionStatus == ExecutionStatus.Created
                             || (timeDifference >= frequency && frequency != new TimeSpan(0,0,0,0))
                         )
                         {
-                            await Task.Run(async () => {
-                                var result = await crawler.Run(record, 1000);
-                                record.StartingNode = result;
-                                db.Update(record);
-                                await db.SaveChangesAsync();
-                            });
-                            
+                            await CreateNewExecution(record);
                         }
                     }
+
+                    db.Executions.RemoveRange(manualExecutions);
+                    await db.SaveChangesAsync();
                 }
                 catch (Exception ex)
                 {

@@ -1,43 +1,35 @@
 ﻿using Dawn;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
 using System.Net;
 using System.Text.RegularExpressions;
 using WebCrawler.DataAccessLayer.Context;
 using WebCrawler.DataAccessLayer.Models;
-using WebsiteCrawler.Infrastructure.entity;
-using WebsiteCrawler.Infrastructure.extensions;
 using WebsiteCrawler.Infrastructure.interfaces;
-using WebsiteCrawler.Service.entity;
 
 namespace WebsiteCrawler.Service
 {
     public class SingleThreadedWebSiteCrawler : IWebSiteCrawler
     {
         public const int RetryAttempts = 2;
-        private readonly List<HttpError> errors = new List<HttpError>();
         private readonly IHtmlParser htmlParser;
         private readonly HttpClient httpClient;
-        private readonly Queue<SearchJob> jobQueue;
-        private readonly HashSet<string> searchResults;
+        private readonly Queue<Node> jobQueue;
+        private readonly HashSet<Node> nodes;
 
         public StartingNode StartingNode { get; set; }
 
-        public SingleThreadedWebSiteCrawler(
-            IHtmlParser htmlParser,
-            HttpClient httpClient,
-            AppDbContext db)
+        public SingleThreadedWebSiteCrawler(IHtmlParser htmlParser, HttpClient httpClient)
         {
             this.htmlParser = htmlParser;
             this.httpClient = httpClient;
 
-            searchResults = new HashSet<string>();
-            jobQueue = new Queue<SearchJob>();
+            jobQueue = new Queue<Node>();
+            nodes = new HashSet<Node>();
         }
 
-        public async Task<StartingNode> Run(WebsiteRecord record, int maxPagesToSearch)
+        public async Task<StartingNode> Run(WebsiteRecord record)
         {
             httpClient.DefaultRequestHeaders.Clear();
             httpClient.DefaultRequestHeaders.Add("User-Agent", "Other");
@@ -48,11 +40,8 @@ namespace WebsiteCrawler.Service
                 Domain = GetDomainFromUrl(record.URL),
                 Children = new List<Node>()
             };
-            
-            // Starting node start crawl time
-            DateTime startCrawlTime = DateTime.Now;
 
-            jobQueue.Enqueue(new SearchJob(record.URL, node));
+            nodes.Add(node);
 
             StartingNode = new StartingNode()
             {
@@ -60,18 +49,14 @@ namespace WebsiteCrawler.Service
                 Node = node
             };
 
-            for (int pageCount = 0; pageCount < maxPagesToSearch; pageCount++)
-            {
-                if (jobQueue.Count == 0)
-                {
-                    break;
-                }
+            jobQueue.Enqueue(node);
 
-                await DiscoverLinks(record.URL, DateTime.Now);
+            while (jobQueue.Count > 0)
+            {
+                await DiscoverLinks(DateTime.Now, new Regex(record.RegExp ?? ""));
             }
 
-            StartingNode.Node.CrawlTime = GetCrawlTime(startCrawlTime);
-
+            StartingNode.NumberOfSites = nodes.Count;
             return StartingNode;
         }
 
@@ -85,66 +70,96 @@ namespace WebsiteCrawler.Service
                 attempt => TimeSpan.FromSeconds(Math.Pow(2, attempt)));
         }
 
-        private async Task DiscoverLinks(string startingSite, DateTime startCrawlTime)
+        private async Task DiscoverLinks(DateTime startCrawlTime, Regex? regex)
         {
-            var searchJob = jobQueue.Dequeue();
-            string pageContents = await DownloadPage(searchJob);
+            var parentNode = jobQueue.Dequeue();
+            var parentUri = new Uri(parentNode.Url, UriKind.RelativeOrAbsolute);
+
+            string pageContents = await DownloadPage(parentUri);
+
             if (pageContents == null)
             {
                 return;
             }
             var links = FindLinksWithinHtml(pageContents);
-            links.ForEach(rawLink =>
+
+            foreach (var rawLink in links)
             {
-                var link = rawLink.Trim().Trim('\n');
+                try
+                {
+                    var link = rawLink.Trim().Trim('\n');
+                    Uri uri;
+                    if (link.StartsWith('/') || link.StartsWith('\\'))
+                    {
+                        uri = new Uri(parentUri, link);
+                    }
+                    else
+                    {
+                        uri = new Uri(link, UriKind.RelativeOrAbsolute);
+                    }
+                    link = uri.ToString();
 
-                var searchResult = new Node
-                {
-                    Url = startingSite,
-                    Domain = GetDomainFromUrl(startingSite),
-                    RegExpMatch = IsRegExpMatched(startingSite,""),
-                    Children = new List<Node>()
-                };
-                bool isLinkAcceptable = IsLinkAcceptable(searchJob, link);
-                Uri absoluteLink;
-                if (!isLinkAcceptable)
-                {
-                    return;
-                }
-                else
-                {
-                    var parentLink = searchJob.Uri.GetParentUriString();
-                    var absoluteUri = UrlExtensions.Combine(parentLink, link);
-                    absoluteLink = absoluteUri;
-                }
+                    Node? node = nodes.SingleOrDefault(x => x.Url == link);
 
-                if (
-                (absoluteLink.Host.ToLower() == searchJob.Uri.Host.ToLower()) &&
-                (absoluteLink.PathAndQuery.ToLower() == searchJob.Uri.PathAndQuery.ToLower())
-                )
-                {
-                    return;
-                }
-                if (searchResults.Contains(absoluteLink.ToString()))
-                {
-                    return;
-                }
-                searchResult.CrawlTime = GetCrawlTime(startCrawlTime);
+                    if (node is null)
+                    {
+                        node = new Node
+                        {
+                            Url = link,
+                            Domain = uri.Host,
+                            Children = new List<Node>()
+                        };
 
-                searchResults.Add(absoluteLink.ToString());
+                        nodes.Add(node);
+                    }
 
-                if (searchResult.RegExpMatch != false)
-                {
-                    jobQueue.Enqueue(new SearchJob(absoluteLink.ToString(), searchResult));
+                    if (regex is not null)
+                    {
+                        node.RegExpMatch = regex.IsMatch(link);
+                    }
+
+                    bool isLinkAcceptable = IsLinkAcceptable(link);
+
+                    if (!isLinkAcceptable)
+                    {
+                        return;
+                    }
+
+                    if (
+                    (uri.Host.ToLower() == parentUri.Host.ToLower()) &&
+                    (uri.PathAndQuery.ToLower() == parentUri.PathAndQuery.ToLower())
+                    )
+                    {
+                        return;
+                    }
+
+                    pageContents = await DownloadPage(uri);
+
+                    if (pageContents is not null)
+                    {
+                        if (!parentNode.Children.Any(x => x == node))
+                        { 
+                            parentNode.Children.Add(node);
+
+                            if (node.RegExpMatch != false)
+                            {
+                                jobQueue.Enqueue(node);
+                            }
+                        }
+                    }
                 }
+                catch
+                {
 
-                searchJob.Node.Children.Add(searchResult);
-            });
+                }
+            }
+
+            parentNode.CrawlTime = GetCrawlTime(startCrawlTime);
         }
 
-        private async Task<string> DownloadPage(SearchJob searchJob)
+        private async Task<string> DownloadPage(Uri uri)
         {
-            if ((searchJob.Uri.Scheme.ToLower() != "http") && (searchJob.Uri.Scheme.ToLower() != "https"))
+            if ((uri.Scheme.ToLower() != "http") && (uri.Scheme.ToLower() != "https"))
             {
                 return null;
             }
@@ -152,12 +167,11 @@ namespace WebsiteCrawler.Service
             var retryPolicy = CreateExponentialBackoffPolicy();
 
             var htmlResponse = await retryPolicy
-                .ExecuteAsync(() => httpClient.GetAsync(searchJob.Url));
+                .ExecuteAsync(() => httpClient.GetAsync(uri));
 
             if (!htmlResponse.IsSuccessStatusCode)
             {
                 //throw new NotImplementedException("How do we handle errors? Think"); //TODO handle non-sucess response, Polly retry
-                errors.Add(new HttpError { Url = searchJob.Url, HttpStatusCode = htmlResponse.StatusCode });
                 return null;
             }
 
@@ -176,59 +190,43 @@ namespace WebsiteCrawler.Service
             return htmlParser.GetLinks(htmlContent);
         }
 
-        private bool IsLinkAcceptable(SearchJob searchJob, string link)
+        private bool IsLinkAcceptable(string link)
         {
-            var childLink = link;
-            if (string.IsNullOrEmpty(childLink))
+            if (string.IsNullOrEmpty((string)link))
             {
                 return false;
             }
-            var frags = childLink.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            var frags = link.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
             if (!frags.Any())
             {
                 return false;
             }
 
-            if (childLink.StartsWith("#"))
+            if (link.StartsWith("#"))
             {
                 //Book marks are not wanted
                 return false;
             }
 
-            if (childLink.StartsWith("mailto:"))
+            if (link.StartsWith("mailto:"))
             {
                 //Email links are not wanted
                 return false;
             }
 
-            if (childLink.StartsWith("tel:"))
+            if (link.StartsWith("tel:"))
             {
                 //Phone links are not wanted
                 return false;
             }
 
-            if (childLink.StartsWith("sms:"))
+            if (link.StartsWith("sms:"))
             {
                 //sms links are not wanted
                 return false;
             }
 
             return true;
-        }
-
-        private bool? IsRegExpMatched(string url, string regExp)
-        {
-            if (string.IsNullOrEmpty(regExp))
-            {
-                return null;
-            }
-
-            if (Regex.IsMatch(url, regExp, RegexOptions.IgnoreCase))
-            {
-                return true;
-            }
-
-            return false;
         }
 
         private TimeSpan GetCrawlTime(DateTime startTime)
@@ -238,7 +236,7 @@ namespace WebsiteCrawler.Service
             return duration;
         }
 
-        private string GetDomainFromUrl(string url)
+        public static string GetDomainFromUrl(string url)
         {
             if (url.ToLower().StartsWith("http:") || url.ToLower().StartsWith("https:"))
             {
@@ -248,7 +246,7 @@ namespace WebsiteCrawler.Service
                 return domain;
             }
 
-            return ""; 
+            return "";
         }
     }
 }

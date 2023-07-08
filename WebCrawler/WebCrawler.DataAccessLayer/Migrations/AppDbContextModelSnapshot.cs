@@ -22,6 +22,36 @@ namespace WebCrawler.DataAccessLayer.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("WebCrawler.DataAccessLayer.Models.Execution", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ExecutionStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("NumberOfSites")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("WebsiteRecordId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WebsiteRecordId");
+
+                    b.ToTable("Executions");
+                });
+
             modelBuilder.Entity("WebCrawler.DataAccessLayer.Models.Node", b =>
                 {
                     b.Property<int>("Id")
@@ -47,9 +77,6 @@ namespace WebCrawler.DataAccessLayer.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("WebsiteRecordId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("NodeId");
@@ -66,6 +93,9 @@ namespace WebCrawler.DataAccessLayer.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int>("NodeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfSites")
                         .HasColumnType("int");
 
                     b.Property<int>("WebsiteRecordId")
@@ -142,6 +172,17 @@ namespace WebCrawler.DataAccessLayer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Records");
+                });
+
+            modelBuilder.Entity("WebCrawler.DataAccessLayer.Models.Execution", b =>
+                {
+                    b.HasOne("WebCrawler.DataAccessLayer.Models.WebsiteRecord", "WebsiteRecord")
+                        .WithMany()
+                        .HasForeignKey("WebsiteRecordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WebsiteRecord");
                 });
 
             modelBuilder.Entity("WebCrawler.DataAccessLayer.Models.Node", b =>
