@@ -1,4 +1,0 @@
-var reactDom = {exports: {}};
-
-export { reactDom as r };
-//# sourceMappingURL=index2.js_commonjs-module.map
