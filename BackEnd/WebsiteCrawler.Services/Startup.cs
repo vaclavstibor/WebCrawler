@@ -53,7 +53,7 @@ namespace WebsiteCrawler.Services
 
                 await db.SaveChangesAsync();
 
-                var result = crawler!.Run(record, 1000);
+                var result = crawler!.Run(record, 100);
                 await result.ContinueWith(async x => 
                 {
                     record.StartingNode = await result;

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebCrawler.BusinessLayer.Services;
+using System.Threading.Tasks;
 
 namespace WebCrawler.Api.Controllers
 {
@@ -16,7 +17,7 @@ namespace WebCrawler.Api.Controllers
 
         [HttpGet("all")]
         public async Task<JsonResult> GetAll()
-        { 
+        {
             var result = new JsonResult(await crawlerService.GetAllExecutions());
             return result;
         }
@@ -25,6 +26,14 @@ namespace WebCrawler.Api.Controllers
         public async Task Execute([FromBody] int websiteRecordId)
         {
             await crawlerService.StartExecution(websiteRecordId);
+        }
+
+        [HttpGet("getGraph")]
+        public async Task<JsonResult> GetGraph(int websiteRecordId)
+        {
+            var result = await crawlerService.GetAllNodes(websiteRecordId);
+            var json = new JsonResult(result);
+            return json;
         }
     }
 }

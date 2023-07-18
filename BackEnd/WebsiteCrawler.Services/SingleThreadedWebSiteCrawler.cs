@@ -58,7 +58,7 @@ namespace WebsiteCrawler.Service
 
             while (jobQueue.Count > 0 && (maximumCountOfNodes != null ? (nodes.Count < maximumCountOfNodes) : true))
             {
-                await DiscoverLinks(DateTime.Now, new Regex(record.RegExp ?? ""));
+                await DiscoverLinks(DateTime.Now, new Regex(record.RegExp ?? ""), record.Id);
             }
 
             StartingNode.NumberOfSites = nodes.Count;
@@ -75,7 +75,7 @@ namespace WebsiteCrawler.Service
                 attempt => TimeSpan.FromSeconds(Math.Pow(2, attempt)));
         }
 
-        private async Task DiscoverLinks(DateTime startCrawlTime, Regex? regex)
+        private async Task DiscoverLinks(DateTime startCrawlTime, Regex? regex, int websiteRecordId)
         {
             var parentNode = jobQueue.Dequeue();
             var parentUri = new Uri(parentNode.Url, UriKind.RelativeOrAbsolute);
@@ -115,7 +115,8 @@ namespace WebsiteCrawler.Service
                         {
                             Url = link,
                             Domain = uri.Host,
-                            Children = new List<Node>()
+                            Children = new List<Node>(),
+                            WebsiteRecordId = websiteRecordId
                         };
 
                         nodes.Add(node);

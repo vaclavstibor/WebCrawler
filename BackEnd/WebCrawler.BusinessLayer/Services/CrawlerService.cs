@@ -3,51 +3,21 @@ using Newtonsoft.Json;
 using WebCrawler.DataAccessLayer.Models;
 using WebCrawler.BusinessLayer.DataTransferObjects;
 using Microsoft.EntityFrameworkCore;
+using WebCrawler.DataAccessLayer.Migrations;
 
 namespace WebCrawler.BusinessLayer.Services
 {
     public class CrawlerService
     {
         private readonly AppDbContext db;
-        private readonly HttpClient httpClient;
-        public CrawlerService(AppDbContext db, HttpClient httpclient)
+        public CrawlerService(AppDbContext db)
         { 
             this.db = db;
-            this.httpClient = httpclient;
         }
 
-        public async Task PostNewCrawling(WebsiteRecordDTO record)
+        public async Task<List<Node>> GetAllNodes(int websiteRecordId)
         {
-            using (var client = new HttpClient())
-            {
-                var url = "";
-                var content = new CrawlerPostDTO
-                {
-                    Id = record.Id.Value,
-                    URL = url,
-                    RegExp = record.RegExp
-                };
-                string contentInJson = JsonConvert.SerializeObject(content);
-                var httpContent = new StringContent(contentInJson);
-                HttpResponseMessage response = await client.PostAsync(url,httpContent);
-                response.EnsureSuccessStatusCode();
-            }
-        }
-
-        public async Task PostCrawledData(WebsiteRecordDTO record)
-        {
-            if (db.StartingNodes.Any(x => x.WebsiteRecordId == record.Id))
-            {
-                using (var client = new HttpClient())
-                {
-                    var url = "";
-                    var content = await db.StartingNodes.Where(x => x.WebsiteRecordId == record.Id).ToListAsync();
-                    string contentInJson = JsonConvert.SerializeObject(content);
-                    var httpContent = new StringContent(contentInJson);
-                    HttpResponseMessage response = await client.PostAsync(url, httpContent);
-                    response.EnsureSuccessStatusCode();
-                }
-            }
+            return await db.Nodes.Where(x => x.WebsiteRecordId == websiteRecordId).Include(x => x.Children).ToListAsync();
         }
 
         public async Task<List<ExecutionDto>> GetAllExecutions()
