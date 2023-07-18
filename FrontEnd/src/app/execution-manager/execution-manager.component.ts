@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { SharedService } from '../shared.service';
-import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { Execution } from '../models/Execution';
 
@@ -16,7 +15,6 @@ export class ExecutionManagerComponent implements OnInit {
   sortByLastCrawling: boolean = false;
 
   constructor(private sharedService: SharedService,
-  private route: ActivatedRoute,
   private router: Router) { }
 
   private _chosenLabels: string[] = [];
@@ -48,6 +46,11 @@ export class ExecutionManagerComponent implements OnInit {
     {
       this.executions = this.executions.filter(x => this.chosenLabels.includes(x.websiteRecordLabel));
     }
+  }
+
+  execute(execution: Execution) : void
+  {
+    this.sharedService.executeRecord(execution.websiteRecordId).subscribe();
   }
 
   executeSortByLastCrawling(fromNewest: boolean) : void

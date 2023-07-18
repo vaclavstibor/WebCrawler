@@ -76,7 +76,9 @@
                 <th *ngFor="let column of columns">
                     {{column.name}}
                 </th>
+                <th>Periodicity</th>
                 <th>Tags</th>
+                <th></th>
                 <th></th>
                 <th></th>
                 <th></th>
@@ -88,6 +90,9 @@
             <tr>
                 <td *ngFor="let column of columns">
                     {{rowData[column.field]}}
+                </td>
+                <td>
+                    {{rowData.days < 10 ? 0 : ''}}{{rowData.days}}:{{rowData.hours < 10 ? 0 : ''}}{{rowData.hours}}:{{rowData.minutes < 10 ? 0 : ''}}{{rowData.minutes}}:00
                 </td>
                 <td>
                     <span *ngFor="let tag of rowData.tagDTOs"> 
@@ -102,6 +107,9 @@
                 </td>
                 <td>
                     <button (click)="deleteARecord(rowData)" class="btn btn-danger btn-sm">Delete</button>
+                </td>
+                <td>
+                    <button class="btn btn-outline-warning" (click)="execute(rowData)">Crawl</button>
                 </td>
             </tr>
         </ng-template>

@@ -1,5 +1,4 @@
 import { Tag } from "./Tag";
-import { CrawlingState } from "./CrawlingState";
 
 export interface WebsiteRecord
 {
@@ -13,6 +12,6 @@ export interface WebsiteRecord
     active: boolean;
     lastExecution: Date;
     tagDTOs: Tag[];
-    executionStatus: CrawlingState;
+    executionStatus: string;
     periodicity: string;
 }

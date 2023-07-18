@@ -4,6 +4,7 @@ using WebCrawler.DataAccessLayer.Models;
 using WebCrawler.BusinessLayer.DataTransferObjects;
 using Microsoft.EntityFrameworkCore;
 using WebCrawler.DataAccessLayer.Migrations;
+using System.Security.Cryptography.X509Certificates;
 
 namespace WebCrawler.BusinessLayer.Services
 {
@@ -28,10 +29,10 @@ namespace WebCrawler.BusinessLayer.Services
                 .OrderByDescending(x => x.StartTime)
                 .Select(x => new ExecutionDto()
                 {
-                    WebsiteRecordId = x.Id,
+                    WebsiteRecordId = x.WebsiteRecordId,
                     StartTime = x.StartTime,
                     EndTime = x.EndTime,
-                    ExecutionStatus = x.ExecutionStatus,
+                    ExecutionStatus = x.ExecutionStatus.EnumToString(),
                     NumberOfSitesCrawled = x.NumberOfSites,
                     WebsiteRecordLabel = x.WebsiteRecord.Label
                 })
@@ -46,7 +47,10 @@ namespace WebCrawler.BusinessLayer.Services
                 ExecutionStatus = ExecutionStatus.Created,
             };
 
+            var record = db.Records.SingleOrDefault(x => x.Id == websiteRecordId);
+
             db.Executions.Add(newExecution);
+            db.Records.Update(record);
 
             await db.SaveChangesAsync();
         }

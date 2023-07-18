@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Security.Cryptography.X509Certificates;
 using WebCrawler.DataAccessLayer.Context;
 using WebCrawler.DataAccessLayer.Models;
 using WebsiteCrawler.Infrastructure.interfaces;
@@ -48,6 +49,9 @@ namespace WebsiteCrawler.Services
                     WebsiteRecordId = record.Id
                 };
 
+                var nodes = db.Nodes.Where(x => x.WebsiteRecordId == record.Id);
+                db.RemoveRange(nodes);
+
                 db!.Update(record);
                 db.Add(newExecution);
 
@@ -84,15 +88,7 @@ namespace WebsiteCrawler.Services
                         .Include(x => x.StartingNode)
                         .ToListAsync();
 
-                    var manualExecutions = await db.Executions.Where(x => x.ExecutionStatus == ExecutionStatus.Created)
-                        .Include(x => x.WebsiteRecord)
-                        .ToListAsync();
-
-                    var manuallyExecutedRecords = manualExecutions
-                        .Select(x => x.WebsiteRecord)
-                        .ToList();
-
-                    foreach (var record in unscheduledRecords.Union(manuallyExecutedRecords))
+                    foreach (var record in unscheduledRecords)
                     {
                         record.Days ??= 0;
                         record.Hours ??= 0;
@@ -108,7 +104,17 @@ namespace WebsiteCrawler.Services
                         }
                     }
 
-                    db.Executions.RemoveRange(manualExecutions);
+                    var manualExecutions = await db.Executions.Where(x => x.ExecutionStatus == ExecutionStatus.Created)
+                        .Include(x => x.WebsiteRecord)
+                        .ToListAsync();
+
+                    foreach (var manualExecution in manualExecutions)
+                    {
+                        await CreateNewExecution(manualExecution.WebsiteRecord);
+                    }
+
+                    db.RemoveRange(manualExecutions);
+
                     await db.SaveChangesAsync();
                 }
                 catch (Exception ex)

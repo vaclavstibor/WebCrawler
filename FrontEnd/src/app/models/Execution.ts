@@ -1,10 +1,8 @@
-import { CrawlingState } from "./CrawlingState";
-
 export interface Execution
 {
     websiteRecordId: number;
     websiteRecordLabel: string;
-    executionStatus: CrawlingState;
+    executionStatus: string;
     numberOfSitesCrawled: number;
     startTime: Date;
     endTime: Date;

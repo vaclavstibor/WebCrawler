@@ -71,4 +71,14 @@ export class SharedService {
   {
     return this.http.delete(this.ApiUrl + "/Record/deleteSingle/" + record.id);
   }
+
+  executeRecord(recordId: number) : Observable<any>
+  {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post<number>(this.ApiUrl + "/Crawler/execute", recordId, httpOptions);
+  }
 }

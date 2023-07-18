@@ -43,7 +43,9 @@ namespace WebCrawler.BusinessLayer.Services
         {
             var record = await db.Records
                 .SingleAsync(x => x.Id == recordId);
+            
             var tags = await db.Tags.Where(x => x.WebsiteRecordId == recordId).ToListAsync();
+            
             var recordDtO = new WebsiteRecordDTO()
             {
                 Id = recordId,
@@ -55,13 +57,15 @@ namespace WebCrawler.BusinessLayer.Services
                 Label = record.Label,
                 Active = record.Active,
                 LastExecution = record.LastExecution,
-                ExecutionStatus = record.ExecutionStatus,
+                ExecutionStatus = record.ExecutionStatus.EnumToString(),
             };
+
             recordDtO.tagDTOs = tags.Select(x => new TagDTO()
             {
                 Id = x.Id,
                 Content = x.Content
             }).ToList();
+
             return recordDtO;
         }
 
@@ -84,7 +88,7 @@ namespace WebCrawler.BusinessLayer.Services
                     Content = x.Content
                 }).ToList(),
                 LastExecution = x.LastExecution,
-                ExecutionStatus = x.ExecutionStatus,
+                ExecutionStatus = x.ExecutionStatus.EnumToString(),
             }).ToListAsync();
         }
 
@@ -111,8 +115,10 @@ namespace WebCrawler.BusinessLayer.Services
             db.Records.Remove(await db.Records.SingleAsync(x => x.Id == recordId));
 
             var executions = db.Executions.Where(x => x.WebsiteRecordId == recordId);
+            var nodes = db.Nodes.Where(x => x.WebsiteRecordId == recordId);
 
             db.Executions.RemoveRange(executions);
+            db.Nodes.RemoveRange(nodes);    
 
             await db.SaveChangesAsync();
             return true;
@@ -127,11 +133,11 @@ namespace WebCrawler.BusinessLayer.Services
                 recordInDb.Minutes = record.Minutes ?? 0;
                 recordInDb.Hours = record.Hours ?? 0;
                 recordInDb.Days = record.Days ?? 0;
-                recordInDb.Active = record.Active.Value;
+                recordInDb.Active = record.Active ?? false;
                 recordInDb.URL = record.URL;
                 recordInDb.Label = record.Label;
                 recordInDb.RegExp = record.RegExp;
-                recordInDb.ExecutionStatus = record.ExecutionStatus;
+                recordInDb.ExecutionStatus = record.ExecutionStatus.StringToEnum();
 
                 var tags = await db.Tags.Where(x => x.WebsiteRecordId == record.Id).ToListAsync();
                 db.Tags.RemoveRange(tags);

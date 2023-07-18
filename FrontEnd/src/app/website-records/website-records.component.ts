@@ -181,7 +181,7 @@ export class WebsiteRecordsComponent implements OnInit {
     {
       if (fromNewest)
       {
-        this.webRecords.sort((a,b) => { 
+        this.webRecords.sort((b,a) => { 
           if (a.lastExecution == null || b.lastExecution == null)
           {
             return 0;
@@ -191,7 +191,7 @@ export class WebsiteRecordsComponent implements OnInit {
       }
       else 
       {
-        this.webRecords.sort((b,a) => { 
+        this.webRecords.sort((a,b) => { 
           if (a.lastExecution == null || b.lastExecution == null)
           {
             return 0;
@@ -207,10 +207,6 @@ export class WebsiteRecordsComponent implements OnInit {
     {
       name: "URL",
       field: "url"
-    },
-    {
-      name: "Periodicity",
-      field: "periodicity"
     },
     {
       name: "Label",
@@ -231,6 +227,11 @@ export class WebsiteRecordsComponent implements OnInit {
     this.router.navigate(["record/view" , id]);
   }
 
+  execute(record: WebsiteRecord) : void
+  {
+    this.sharedService.executeRecord(record.id).subscribe();
+  }
+
   editRecord(id: number) : void
   {
     if (this.recordUpdatingState == UpdateRecordState.default || this.recordUpdatingState == UpdateRecordState.creating)
@@ -246,7 +247,7 @@ export class WebsiteRecordsComponent implements OnInit {
     this.webRecords.forEach(record => {
       if (record.id == id)
       {
-        this.newRecord = record;
+        this.newRecord = JSON.parse(JSON.stringify(record));
       }
     });
   }

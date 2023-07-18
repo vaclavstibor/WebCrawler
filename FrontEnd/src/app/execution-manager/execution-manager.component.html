@@ -41,6 +41,7 @@
                 <th *ngFor="let column of columns">
                     {{column.name}}
                 </th>
+                <th></th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" 
@@ -49,6 +50,9 @@
             <tr>
                 <td *ngFor="let column of columns">
                     {{rowData[column.field]}}
+                </td>
+                <td>
+                    <button class="btn btn-outline-warning" (click)="execute(rowData)">Start New Crawling</button>
                 </td>
             </tr>
         </ng-template>

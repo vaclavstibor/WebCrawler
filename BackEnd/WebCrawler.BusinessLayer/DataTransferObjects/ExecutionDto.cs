@@ -12,7 +12,7 @@ namespace WebCrawler.BusinessLayer.DataTransferObjects
         public int WebsiteRecordId { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-        public ExecutionStatus ExecutionStatus { get; set; }
+        public string ExecutionStatus { get; set; }
         public string WebsiteRecordLabel { get; set; }
         public int? NumberOfSitesCrawled { get; set; }
     }

@@ -15,7 +15,7 @@ export class AppComponent{
   message: WebsiteRecord[] = []; 
   items: MenuItem[] = [
     { label: "Website Records", routerLink:["records"] },
-    { label: "Eceution Manager", routerLink:["executionManager"] }
+    { label: "Execution Manager", routerLink:["executionManager"] }
   ];
 
   constructor(private sharedService: SharedService,
