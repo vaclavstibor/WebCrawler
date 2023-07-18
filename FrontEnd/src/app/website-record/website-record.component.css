@@ -1,0 +1,78 @@
+h1 {
+    padding: 5px;
+    margin: 5px;
+}
+
+ul {
+    padding: 0px 10px 10px 40px;
+    margin: 0px;
+}
+
+#detail {
+    position: absolute;
+    display: table;
+    top: 10px;
+    left: 30px;
+    font-size: 20px;
+
+    color: rgba(255, 255, 255, 0.844);
+    background-color: rgba(0, 0, 0, 0.63); 
+}
+
+details>summary {
+ 
+  list-style: none;
+}
+summary::-webkit-details-marker {
+  display: none
+}
+
+summary::after {
+  content: 'records';
+}
+details[open] summary:after {
+  content: "records";
+}
+
+h4 {
+  position: absolute;
+  display: table;
+  top: 90%;
+  left: 37px;
+  
+  color: rgba(255, 255, 255, 0.844);
+}
+
+button {
+  position: absolute;
+  display: table;
+  top: 88%;
+  left: 30px;
+}
+
+#btn-switch-to-domain, 
+#btn-switch-to-website {
+  background-color: #008f30a4;
+  border-radius: 8px;
+  border-style: none;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  cursor: pointer;
+  font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  height: 30px;
+  line-height: 20px;
+  list-style: none;
+  outline: none;
+  text-align: center;
+  text-decoration: none;
+  transition: color 100ms;
+}
+
+#btn-switch-to-domain:hover,
+#btn-switch-to-domain:focus,
+#btn-switch-to-website:hover,
+#btn-switch-to-website:focus {
+  background-color: #04ff57a4;
+}
