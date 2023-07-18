@@ -1,1 +1,26 @@
-<p>website-record works!</p>
+<head>
+    <style> body { margin: 0; } </style>
+    <script src="../../../../Graph/src/3d-force-graph.js"></script>
+</head>
+  
+<body>
+    <div id="3d-graph"></div>
+    <div id="detail">
+    <h1>Detail</h1>
+    <ul>
+        <li id="url-a">Url</li>
+        <li id="crawl-time-a">Crawl time</li>
+        <li>
+            <details>
+                <summary></summary>
+                <div id="record-a"></div>
+            </details>
+        </li>
+    </ul>
+    </div>
+    <div id="mode">
+        <h4>current mode: Website</h4>
+        <button id="btn-switch-to-domain">Domain Mode</button>
+    </div>
+    <script src="../../../../Graph/src/website-index.js"></script>
+</body>
