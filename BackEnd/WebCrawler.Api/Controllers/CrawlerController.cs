@@ -28,10 +28,18 @@ namespace WebCrawler.Api.Controllers
             await crawlerService.StartExecution(websiteRecordId);
         }
 
-        [HttpGet("getGraph")]
-        public async Task<JsonResult> GetGraph(int websiteRecordId)
+        [HttpGet("getGraph/{id:int}")]
+        public async Task<JsonResult> GetGraph(int id)
         {
-            var result = await crawlerService.GetAllNodes(websiteRecordId);
+            var result = await crawlerService.GetAllNodes(id);
+            var json = new JsonResult(result);
+            return json;
+        }
+
+        [HttpGet("getGraph2/{id:int}")]
+        public async Task<JsonResult> GetGraph2(int id)
+        {
+            var result = await crawlerService.GetAllNodesMinimal(id);
             var json = new JsonResult(result);
             return json;
         }

@@ -1,22 +1,14 @@
 // https://github.com/vasturiano/3d-force-graph
 
 // Import required modules and dependencies
-import { Component, Renderer2, OnInit, HostListener, ElementRef,ViewChild } from '@angular/core';
+import { Component, Renderer2, OnInit, HostListener, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { SharedService } from '../shared.service';
+import { Node } from '../models/Node'; 
 
 // Declare an external function 'ForceGraph3D' with 'any' return type (assumed to be provided by the '3d-force-graph' library)
 declare function ForceGraph3D(): any;
-
-// Define an interface 'Node' to represent a node in the graph
-interface Node {
-  id: number;
-  url: string;
-  crawlTime: string;
-  domain: string;
-  regExpMatch: any;
-  children: Node[] | null;
-}
 
 @Component({
   selector: 'app-website-record',
@@ -24,70 +16,72 @@ interface Node {
   styleUrls: ['./website-record.component.css']
 })
 export class WebsiteRecordComponent implements OnInit {
+  id: number = 0;
   // Define the data structure to store the graph nodes and links
   data: {
     nodes: Node[]; 
     links: any[];
   } = {
-    nodes:[
-      {
-          'id': 0,             
-          'url': 'https://www.google.com/bla', 
-          'domain': 'www.google.com',
-          'crawlTime': '00:30',
-          'regExpMatch': null, 
-          'children': [ 
-              {
-                  'id': 1,                    
-                  'url':'https://www.google.com/bla/bla', 
-                  'domain': 'www.google.com',
-                  'crawlTime':'01:30', 
-                  'regExpMatch': null,                    
-                  'children': null                    
-              }, 
-              {
-                  'id': 2,                    
-                  'url':'https://www.google.com/bla/bla/bla', 
-                  'domain': 'www.google.com',
-                  'crawlTime':'01:40', 
-                  'regExpMatch': null,                    
-                  'children': null                    
-              },                 
-              {
-                  'id': 3,  
-                  'url': 'http://www.twitter.com/bla',
-                  'domain': 'www.twitter.com',  
-                  'crawlTime':'01:30', 
-                  'regExpMatch': null,
-                  'children': null
-              } 
-          ]
-      },
-      {
-          'id': 1,                    
-          'url':'https://www.google.com/bla/bla', 
-          'domain': 'www.google.com',
-          'crawlTime':'01:30', 
-          'regExpMatch': null,                    
-          'children': null 
-      },
-      {
-          'id': 2,                    
-          'url':'https://www.google.com/bla/bla/bla', 
-          'domain': 'www.google.com',
-          'crawlTime':'01:40', 
-          'regExpMatch': null,                    
-          'children': null 
-      },
-      {
-          'id': 3,  
-          'url': 'http://www.twitter.com/bla',
-          'domain': 'www.twitter.com',  
-          'crawlTime':'01:30', 
-          'regExpMatch': null,
-          'children': null
-      }
-  ],
+    // nodes:[
+    //   {
+    //       'id': 0,             
+    //       'url': 'https://www.google.com/bla', 
+    //       'domain': 'www.google.com',
+    //       'crawlTime': '00:30',
+    //       'regExpMatch': null, 
+    //       'children': [ 
+    //           {
+    //               'id': 1,                    
+    //               'url':'https://www.google.com/bla/bla', 
+    //               'domain': 'www.google.com',
+    //               'crawlTime':'01:30', 
+    //               'regExpMatch': null,                    
+    //               'children': null                    
+    //           }, 
+    //           {
+    //               'id': 2,                    
+    //               'url':'https://www.google.com/bla/bla/bla', 
+    //               'domain': 'www.google.com',
+    //               'crawlTime':'01:40', 
+    //               'regExpMatch': null,                    
+    //               'children': null                    
+    //           },                 
+    //           {
+    //               'id': 3,  
+    //               'url': 'http://www.twitter.com/bla',
+    //               'domain': 'www.twitter.com',  
+    //               'crawlTime':'01:30', 
+    //               'regExpMatch': null,
+    //               'children': null
+    //           } 
+    //       ]
+    //   },
+    //   {
+    //       'id': 1,                    
+    //       'url':'https://www.google.com/bla/bla', 
+    //       'domain': 'www.google.com',
+    //       'crawlTime':'01:30', 
+    //       'regExpMatch': null,                    
+    //       'children': null 
+    //   },
+    //   {
+    //       'id': 2,                    
+    //       'url':'https://www.google.com/bla/bla/bla', 
+    //       'domain': 'www.google.com',
+    //       'crawlTime':'01:40', 
+    //       'regExpMatch': null,                    
+    //       'children': null 
+    //   },
+    //   {
+    //       'id': 3,  
+    //       'url': 'http://www.twitter.com/bla',
+    //       'domain': 'www.twitter.com',  
+    //       'crawlTime':'01:30', 
+    //       'regExpMatch': null,
+    //       'children': null
+    //   }
+  //]
+    nodes: [],
     links: []
   };
   
@@ -98,11 +92,19 @@ export class WebsiteRecordComponent implements OnInit {
     private route: ActivatedRoute,
     private renderer: Renderer2,
     private elementRef: ElementRef,
-    private http: HttpClient
+    private http: HttpClient,
+    private sharedService: SharedService
   ) {}
 
   ngOnInit() {
     // Load the '3d-force-graph' script when the component initializes    
+    
+    this.route.params.subscribe(x => this.id = x['id']);
+
+    this.sharedService.getGrapg(this.id).subscribe(x => 
+      {
+        this.data.nodes = x;
+      });
     this.load3DForceGraphScript();
   }
 

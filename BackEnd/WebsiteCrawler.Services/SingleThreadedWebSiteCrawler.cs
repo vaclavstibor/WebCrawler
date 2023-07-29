@@ -40,7 +40,8 @@ namespace WebsiteCrawler.Service
             {
                 Url = record.URL,
                 Domain = GetDomainFromUrl(record.URL),
-                Children = new List<Node>()
+                Children = new List<Node>(),
+                WebsiteRecordId = record.Id
             };
 
             await db.Nodes.AddAsync(node);
