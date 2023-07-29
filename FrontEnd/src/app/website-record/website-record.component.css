@@ -1,28 +1,35 @@
-h1 {
-    padding: 5px;
-    margin: 5px;
+/* Set body and html to take up the full height of the viewport */
+html, body {
+  margin: 0;
+  height: 100%;
 }
 
-ul {
-    padding: 0px 10px 10px 40px;
-    margin: 0px;
+/* Set body's display to flex to enable vertical layout */
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Position the detail and mode divs absolutely on top of the 3d-graph div */
+#detail, #mode {
+  position: absolute;
+  padding: 10px;
+  margin: 10px;
+  font-size: 20px;
+  left: 5px; /* Adjust the left positioning as per your requirement */
+  z-index: 1; /* Ensure detail and mode are stacked on top */
 }
 
 #detail {
-    position: absolute;
-    display: table;
-    top: 10px;
-    left: 30px;
-    font-size: 20px;
-
-    color: rgba(255, 255, 255, 0.844);
-    background-color: rgba(0, 0, 0, 0.63); 
+  border-radius: 6px;
+  background-color: rgba(196, 196, 196, 0.192);
 }
 
-details>summary {
- 
-  list-style: none;
+#mode {
+  bottom: 1%; /* Adjust the bottom positioning as per your requirement */
+  color: rgba(0, 0, 0, 0.844);
 }
+
 summary::-webkit-details-marker {
   display: none
 }
@@ -30,29 +37,14 @@ summary::-webkit-details-marker {
 summary::after {
   content: 'records';
 }
+
 details[open] summary:after {
   content: "records";
 }
 
-h4 {
-  position: absolute;
-  display: table;
-  top: 90%;
-  left: 37px;
-  
-  color: rgba(255, 255, 255, 0.844);
-}
-
-button {
-  position: absolute;
-  display: table;
-  top: 88%;
-  left: 30px;
-}
-
 #btn-switch-to-domain, 
 #btn-switch-to-website {
-  background-color: #008f30a4;
+  background-color: #00a421d1;
   border-radius: 8px;
   border-style: none;
   box-sizing: border-box;
@@ -74,5 +66,5 @@ button {
 #btn-switch-to-domain:focus,
 #btn-switch-to-website:hover,
 #btn-switch-to-website:focus {
-  background-color: #04ff57a4;
+  background-color: #00bd16cf;
 }
