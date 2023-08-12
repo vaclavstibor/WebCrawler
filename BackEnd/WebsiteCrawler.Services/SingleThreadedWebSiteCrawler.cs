@@ -31,7 +31,7 @@ namespace WebsiteCrawler.Service
             nodes = new HashSet<Node>();
         }
 
-        public async Task<StartingNode> Run(WebsiteRecord record, int? maximumCountOfNodes = null)
+        public async Task<StartingNode> Run(WebsiteRecord record, int executionId, int? maximumCountOfNodes = null)
         {
             httpClient.DefaultRequestHeaders.Clear();
             httpClient.DefaultRequestHeaders.Add("User-Agent", "Other");
@@ -41,7 +41,8 @@ namespace WebsiteCrawler.Service
                 Url = record.URL,
                 Domain = GetDomainFromUrl(record.URL),
                 Children = new List<Node>(),
-                WebsiteRecordId = record.Id
+                WebsiteRecordId = record.Id,
+                ExecutionId = executionId
             };
 
             await db.Nodes.AddAsync(node);
@@ -51,7 +52,6 @@ namespace WebsiteCrawler.Service
 
             StartingNode = new StartingNode()
             {
-                WebsiteRecord = record,
                 Node = node
             };
 
@@ -59,7 +59,7 @@ namespace WebsiteCrawler.Service
 
             while (jobQueue.Count > 0 && (maximumCountOfNodes != null ? (nodes.Count < maximumCountOfNodes) : true))
             {
-                await DiscoverLinks(DateTime.Now, new Regex(record.RegExp ?? ""), record.Id);
+                await DiscoverLinks(DateTime.Now, new Regex(record.RegExp ?? ""), record.Id, executionId);
             }
 
             StartingNode.NumberOfSites = nodes.Count;
@@ -76,12 +76,12 @@ namespace WebsiteCrawler.Service
                 attempt => TimeSpan.FromSeconds(Math.Pow(2, attempt)));
         }
 
-        private async Task DiscoverLinks(DateTime startCrawlTime, Regex? regex, int websiteRecordId)
+        private async Task DiscoverLinks(DateTime startCrawlTime, Regex? regex, int websiteRecordId, int executionId)
         {
             var parentNode = jobQueue.Dequeue();
             var parentUri = new Uri(parentNode.Url, UriKind.RelativeOrAbsolute);
 
-            string pageContents = await DownloadPage(parentUri);
+            string? pageContents = await DownloadPage(parentUri);
 
             if (pageContents == null)
             {
@@ -110,14 +110,18 @@ namespace WebsiteCrawler.Service
 
                     node = nodes.SingleOrDefault(x => x.Url == link);
 
+                    bool nodeAlreadyVisited = true;
+
                     if (node is null)
                     {
+                        nodeAlreadyVisited = false;
                         node = new Node
                         {
                             Url = link,
                             Domain = uri.Host,
                             Children = new List<Node>(),
-                            WebsiteRecordId = websiteRecordId
+                            WebsiteRecordId = websiteRecordId,
+                            ExecutionId = executionId
                         };
 
                         nodes.Add(node);
@@ -144,24 +148,32 @@ namespace WebsiteCrawler.Service
                         return;
                     }
 
-                    pageContents = await DownloadPage(uri);
-
-                    if (pageContents is not null)
+                    try
                     {
-                        if (!parentNode.Children.Any(x => x == node))
-                        { 
-                            parentNode.Children.Add(node);
+                        if (!nodeAlreadyVisited)
+                        {
+                            pageContents = await DownloadPage(uri);
+                        }
+                    }
+                    catch
+                    {
+                        pageContents = null;
+                    }
 
-                            if (node.RegExpMatch != false)
-                            {
-                                jobQueue.Enqueue(node);
-                            }
+                    if (!parentNode.Children.Any(x => x == node))
+                    {
+                        parentNode.Children.Add(node);
+
+                        if (node.RegExpMatch != false && pageContents != null && !nodeAlreadyVisited)
+                        {
+                            jobQueue.Enqueue(node);
                         }
                     }
                 }
                 catch
                 {
                     currentNewNodes.Remove(node);
+                    nodes.Remove(node);
                 }
             }
 

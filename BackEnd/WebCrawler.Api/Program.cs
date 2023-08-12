@@ -10,8 +10,8 @@ namespace WebCrawler.Api
     {
         public static void Main(string[] args)
         {
-            WebsiteCrawler.Services.Startup crawlerStartup = new WebsiteCrawler.Services.Startup();
-            
+            WebsiteCrawler.Services.Executor crawlerStartup = new WebsiteCrawler.Services.Executor();
+
             Task.Run(() => crawlerStartup.Run());
 
             CreateWebHostBuilder(args).Build().Run();

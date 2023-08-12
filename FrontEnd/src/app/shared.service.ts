@@ -16,29 +16,12 @@ export class SharedService {
 
   constructor(private http: HttpClient) { }
 
-  getGrapg(id: number): Observable<Node[]> {
-    const somethigfng = this.http.get<Node[]>(this.ApiUrl + "/Crawler/getGraph/" + id).pipe(
-      map((nodes: Node[]) => 
-        nodes.map(node => 
-          {    
-            node.crawlTime = new Date(node.crawlTime);
-            return node;
-          }
-        ))
-      );
-    somethigfng.subscribe(x => console.log(x));
-    return somethigfng;
+  getGraph(id: number): Observable<Node[]> {
+    return this.http.get<Node[]>(this.ApiUrl + "/Crawler/getGraph/" + id)
   }
 
   getWebRecord(id: number): Observable<WebsiteRecord> {
-    return this.http.get<WebsiteRecord>(this.ApiUrl + "/Record/" + id).pipe(
-      map((record => {
-            record.lastExecution = new Date(record.lastExecution);
-            return record;
-          }
-        )
-      )
-    );
+    return this.http.get<WebsiteRecord>(this.ApiUrl + "/Record/" + id);
   }
 
   getTag(id: number): Observable<Tag> {

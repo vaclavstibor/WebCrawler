@@ -22,6 +22,5 @@ namespace WebCrawler.DataAccessLayer.Models
         public DateTime? LastExecution { get; set; }
         public ExecutionStatus? ExecutionStatus { get; set; } 
         public virtual List<Tag> Tags { get; set; }
-        public virtual StartingNode StartingNode { get; set; }
     }
 }

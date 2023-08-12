@@ -29,17 +29,17 @@ namespace WebCrawler.Api.Controllers
         }
 
         [HttpGet("getGraph/{id:int}")]
-        public async Task<JsonResult> GetGraph(int id)
+        public async Task<JsonResult> GetGraphStatic(int id)
         {
-            var result = await crawlerService.GetAllNodes(id);
+            var result = await crawlerService.GetAllNodes(id, DataAccessLayer.Models.ExecutionStatus.Executed);
             var json = new JsonResult(result);
             return json;
         }
 
-        [HttpGet("getGraph2/{id:int}")]
-        public async Task<JsonResult> GetGraph2(int id)
+        [HttpGet("getGraphLive/{id:int}")]
+        public async Task<JsonResult> GetGraphLive(int id)
         {
-            var result = await crawlerService.GetAllNodesMinimal(id);
+            var result = await crawlerService.GetAllNodes(id, DataAccessLayer.Models.ExecutionStatus.Executing);
             var json = new JsonResult(result);
             return json;
         }

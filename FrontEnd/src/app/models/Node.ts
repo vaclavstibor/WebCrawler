@@ -1,7 +1,7 @@
 export interface Node {
     id: number;
     url: string;
-    crawlTime: Date;
+    crawlTime: string;
     domain: string;
     regExpMatch: boolean | null;
     children: Node[] | null;

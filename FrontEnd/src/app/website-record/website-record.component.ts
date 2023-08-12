@@ -101,7 +101,7 @@ export class WebsiteRecordComponent implements OnInit {
     
     this.route.params.subscribe(x => this.id = x['id']);
 
-    this.sharedService.getGrapg(this.id).subscribe(x => 
+    this.sharedService.getGraph(this.id).subscribe(x => 
       {
         this.data.nodes = x;
       });
@@ -192,7 +192,6 @@ export class WebsiteRecordComponent implements OnInit {
     for (const child of children) {
       const item = document.createElement('li');
       item.appendChild(document.createTextNode(child.url));
-      console.log(child.url);
       list.appendChild(item);
     }
 

@@ -9,5 +9,6 @@
         public bool? RegExpMatch { get; set; } // none RegExp filled -> null
         public virtual ICollection<Node>? Children { get; set; }
         public int WebsiteRecordId { get; set; }
+        public int ExecutionId { get; set; }
     }
 }

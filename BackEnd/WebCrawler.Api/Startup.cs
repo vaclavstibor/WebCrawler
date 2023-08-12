@@ -14,8 +14,11 @@ namespace WebCrawler.Api
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
             services.AddHttpClient();
+            
             services.AddDbContext<AppDbContext>(options =>
-             options.UseSqlServer("Data Source=localhost;Initial Catalog=CrawlerDB;Integrated Security=True"));
+                options.UseSqlServer("Data Source=localhost;Initial Catalog=CrawlerDB;Integrated Security=True")
+            );
+            
             services.AddHttpClient();
             services.AddScoped<RecordsService>();
             services.AddScoped<CrawlerService>();

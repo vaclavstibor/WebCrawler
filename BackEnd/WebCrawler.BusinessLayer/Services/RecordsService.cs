@@ -10,10 +10,12 @@ namespace WebCrawler.BusinessLayer.Services
     public class RecordsService
     {
         private readonly AppDbContext db;
+        private readonly CrawlerService crawlerService;
 
-        public RecordsService(AppDbContext db)
+        public RecordsService(AppDbContext db, CrawlerService crawlerService)
         {
             this.db = db;
+            this.crawlerService = crawlerService;
         }
 
         public string ComputePeriodicity(int minutes, int hours, int days)
@@ -118,7 +120,7 @@ namespace WebCrawler.BusinessLayer.Services
             var nodes = db.Nodes.Where(x => x.WebsiteRecordId == recordId);
 
             db.Executions.RemoveRange(executions);
-            db.Nodes.RemoveRange(nodes);    
+            db.Nodes.RemoveRange(nodes);
 
             await db.SaveChangesAsync();
             return true;
@@ -145,13 +147,13 @@ namespace WebCrawler.BusinessLayer.Services
                 await db.SaveChangesAsync();
 
                 recordInDb.Tags = TagDtoesToTags(record.tagDTOs);
-                
+
                 await db.SaveChangesAsync();
             }
             else
             {
                 recordInDb = new WebsiteRecord
-                { 
+                {
                     Minutes = record.Minutes,
                     Hours = record.Hours,
                     Days = record.Days,
@@ -160,7 +162,7 @@ namespace WebCrawler.BusinessLayer.Services
                     Label = record.Label,
                     RegExp = record.RegExp,
                     Tags = record.tagDTOs.Select(x => new Tag
-                    { 
+                    {
                         Content = x.Content,
                     }).ToList(),
                     ExecutionStatus = ExecutionStatus.Created
@@ -168,6 +170,7 @@ namespace WebCrawler.BusinessLayer.Services
 
                 await db.AddAsync(recordInDb);
                 await db.SaveChangesAsync();
+                await crawlerService.StartExecution(recordInDb.Id);
             }
             return recordInDb.Id;
         }
