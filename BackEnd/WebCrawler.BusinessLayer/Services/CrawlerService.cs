@@ -16,9 +16,31 @@ namespace WebCrawler.BusinessLayer.Services
             this.db = db;
         }
 
-        public async Task<List<Node>> GetAllNodes(int websiteRecordId)
+        public async Task<List<NodeDto>> GetAllNodes(int websiteRecordId)
         {
-            return await db.Nodes.Where(x => x.WebsiteRecordId == websiteRecordId).Include(x => x.Children).ToListAsync();
+            return await db.Nodes.Where(x => x.WebsiteRecordId == websiteRecordId)
+                .Include(x => x.Children)
+                .Select(x => new NodeDto
+                { 
+                    Id = x.Id,
+                    Url = x.Url,
+                    Domain = x.Domain,
+                    CrawlTime = x.CrawlTime,
+                    RegExpMatch = x.RegExpMatch,
+                    Children = x.Children.Select(y => new NodeDto()
+                    { 
+                        Id = y.Id,
+                        Url = y.Url,
+                        Domain = y.Domain,
+                        CrawlTime = y.CrawlTime,
+                        RegExpMatch = y.RegExpMatch,
+                        WebsiteRecordId = websiteRecordId,
+                        ExecutionId = y.ExecutionId,
+                        Children = new List<NodeDto>()
+                    }).ToList(),
+                    WebsiteRecordId = x.WebsiteRecordId,
+                    ExecutionId = x.ExecutionId
+                }).ToListAsync();
         }
 
         public async Task<List<ExecutionDto>> GetAllExecutions()

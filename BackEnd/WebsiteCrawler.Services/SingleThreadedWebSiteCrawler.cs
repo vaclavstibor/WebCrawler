@@ -129,9 +129,7 @@ namespace WebsiteCrawler.Service
                             WebsiteRecordId = websiteRecordId,
                             ExecutionId = executionId
                         };
-
                         nodes.Add(node);
-                        currentNewNodes.Add(node);
                     }
 
                     if (regex is not null)
@@ -170,6 +168,11 @@ namespace WebsiteCrawler.Service
                     {
                         parentNode.Children.Add(node);
 
+                        if (!nodeAlreadyVisited)
+                        {
+                            currentNewNodes.Add(node);
+                        }
+
                         if (node.RegExpMatch != false && pageContents != null && !nodeAlreadyVisited)
                         {
                             jobQueue.Enqueue(node);
@@ -179,7 +182,6 @@ namespace WebsiteCrawler.Service
                 catch
                 {
                     currentNewNodes.Remove(node);
-                    nodes.Remove(node);
                 }
             }
 
@@ -202,7 +204,6 @@ namespace WebsiteCrawler.Service
 
             if (!htmlResponse.IsSuccessStatusCode)
             {
-                //throw new NotImplementedException("How do we handle errors? Think"); //TODO handle non-sucess response, Polly retry
                 return null;
             }
 

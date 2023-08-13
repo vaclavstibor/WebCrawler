@@ -58,7 +58,9 @@ namespace WebsiteCrawler.Services
                 var oldNodes = await db.Nodes.Where(x => x.WebsiteRecordId == record.Id).ToListAsync();
 
                 var crawler = provider.GetRequiredService<IWebSiteCrawler>();
-                await crawler!.Run(record, 100).ContinueWith(async x => 
+                
+                await crawler!.Run(record, 1000)
+                .ContinueWith(async x => 
                 {
                     record.ExecutionStatus = ExecutionStatus.Executed;
 
@@ -71,6 +73,10 @@ namespace WebsiteCrawler.Services
                     db.Executions.Update(newExecution);
                     db.Records.Update(record);
 
+                    foreach (var node in oldNodes)
+                    {
+                        node.Children = null;
+                    }
                     db.Nodes.RemoveRange(oldNodes);
 
                     await db.SaveChangesAsync();
@@ -97,7 +103,8 @@ namespace WebsiteCrawler.Services
 
                 var crawler = provider.GetService<IWebSiteCrawler>();
 
-                await crawler!.Run(execution.WebsiteRecord, execution.Id, 100).ContinueWith(async x =>
+                await crawler!.Run(execution.WebsiteRecord, execution.Id, 1000)
+                .ContinueWith(async x =>
                 {
                     execution.WebsiteRecord.ExecutionStatus = ExecutionStatus.Executed;
 
@@ -109,6 +116,15 @@ namespace WebsiteCrawler.Services
                     db = provider.GetRequiredService<AppDbContext>();
 
                     db.Executions.Update(execution);
+
+                    foreach (var node in oldNodes)
+                    {
+                        node.Children = null;
+                        node.Parents = null;
+                    }
+                    db.Nodes.UpdateRange(oldNodes);
+
+                    await db.SaveChangesAsync();
 
                     db.Nodes.RemoveRange(oldNodes);
 
@@ -144,34 +160,34 @@ namespace WebsiteCrawler.Services
             while (true)
             {
                 Thread.Sleep(1000);
-                    var crawler = provider.GetService<IWebSiteCrawler>();
-                    var db = provider.GetRequiredService<AppDbContext>();
+                var crawler = provider.GetService<IWebSiteCrawler>();
+                var db = provider.GetRequiredService<AppDbContext>();
 
-                    var executed = await db.Records.Where(x => x.ExecutionStatus == ExecutionStatus.Executed && x.Active == true)
-                        .ToListAsync();
+                var executed = await db.Records.Where(x => x.ExecutionStatus == ExecutionStatus.Executed && x.Active == true)
+                    .ToListAsync();
 
-                    foreach (var record in executed)
+                foreach (var record in executed)
+                {
+                    record.Days ??= 0;
+                    record.Hours ??= 0;
+                    record.Minutes ??= 0;
+                    var frequency = new TimeSpan(record.Days.Value, record.Hours.Value, record.Minutes.Value, 0);
+                    var timeDifference = DateTime.Now - record.LastExecution;
+
+                    if (timeDifference >= frequency && frequency != new TimeSpan(0,0,0,0))
                     {
-                        record.Days ??= 0;
-                        record.Hours ??= 0;
-                        record.Minutes ??= 0;
-                        var frequency = new TimeSpan(record.Days.Value, record.Hours.Value, record.Minutes.Value, 0);
-                        var timeDifference = DateTime.Now - record.LastExecution;
-
-                        if (timeDifference >= frequency && frequency != new TimeSpan(0,0,0,0))
-                        {
-                            CreateNewExecution(record);
-                        }
+                        CreateNewExecution(record);
                     }
+                }
 
-                    var manualExecutions = await db.Executions.Where(x => x.ExecutionStatus == ExecutionStatus.Created)
-                        .Include(x => x.WebsiteRecord)
-                        .ToListAsync();
+                var manualExecutions = await db.Executions.Where(x => x.ExecutionStatus == ExecutionStatus.Created)
+                    .Include(x => x.WebsiteRecord)
+                    .ToListAsync();
 
-                    foreach (var manualExecution in manualExecutions)
-                    {
-                        Execute(manualExecution);
-                    }
+                foreach (var manualExecution in manualExecutions)
+                {
+                    Execute(manualExecution);
+                }
             }
         }
     }

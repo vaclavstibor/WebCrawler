@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebCrawler.DataAccessLayer.Context;
 
@@ -11,9 +12,10 @@ using WebCrawler.DataAccessLayer.Context;
 namespace WebCrawler.DataAccessLayer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230813135653_Parent on Node")]
+    partial class ParentonNode
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,21 +23,6 @@ namespace WebCrawler.DataAccessLayer.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
-
-            modelBuilder.Entity("NodeNode", b =>
-                {
-                    b.Property<int>("ChildrenId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ParentsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ChildrenId", "ParentsId");
-
-                    b.HasIndex("ParentsId");
-
-                    b.ToTable("NodeNode");
-                });
 
             modelBuilder.Entity("WebCrawler.DataAccessLayer.Models.Execution", b =>
                 {
@@ -85,6 +72,9 @@ namespace WebCrawler.DataAccessLayer.Migrations
                     b.Property<int>("ExecutionId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("int");
+
                     b.Property<bool?>("RegExpMatch")
                         .HasColumnType("bit");
 
@@ -96,6 +86,8 @@ namespace WebCrawler.DataAccessLayer.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
 
                     b.ToTable("Nodes");
                 });
@@ -184,21 +176,6 @@ namespace WebCrawler.DataAccessLayer.Migrations
                     b.ToTable("Records");
                 });
 
-            modelBuilder.Entity("NodeNode", b =>
-                {
-                    b.HasOne("WebCrawler.DataAccessLayer.Models.Node", null)
-                        .WithMany()
-                        .HasForeignKey("ChildrenId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebCrawler.DataAccessLayer.Models.Node", null)
-                        .WithMany()
-                        .HasForeignKey("ParentsId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("WebCrawler.DataAccessLayer.Models.Execution", b =>
                 {
                     b.HasOne("WebCrawler.DataAccessLayer.Models.WebsiteRecord", "WebsiteRecord")
@@ -208,6 +185,15 @@ namespace WebCrawler.DataAccessLayer.Migrations
                         .IsRequired();
 
                     b.Navigation("WebsiteRecord");
+                });
+
+            modelBuilder.Entity("WebCrawler.DataAccessLayer.Models.Node", b =>
+                {
+                    b.HasOne("WebCrawler.DataAccessLayer.Models.Node", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId");
+
+                    b.Navigation("Parent");
                 });
 
             modelBuilder.Entity("WebCrawler.DataAccessLayer.Models.StartingNode", b =>
@@ -230,6 +216,11 @@ namespace WebCrawler.DataAccessLayer.Migrations
                         .IsRequired();
 
                     b.Navigation("WebsiteRecord");
+                });
+
+            modelBuilder.Entity("WebCrawler.DataAccessLayer.Models.Node", b =>
+                {
+                    b.Navigation("Children");
                 });
 
             modelBuilder.Entity("WebCrawler.DataAccessLayer.Models.WebsiteRecord", b =>

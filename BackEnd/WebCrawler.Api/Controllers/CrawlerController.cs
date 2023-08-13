@@ -31,9 +31,7 @@ namespace WebCrawler.Api.Controllers
         [HttpGet("getGraph/{id:int}")]
         public async Task<JsonResult> GetGraphStatic(int id)
         {
-            var result = await crawlerService.GetAllNodes(id);
-            var json = new JsonResult(result);
-            return json;
+            return new JsonResult(await crawlerService.GetAllNodes(id));
         }
     }
 }
