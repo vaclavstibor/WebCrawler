@@ -16,7 +16,7 @@ namespace WebCrawler.BusinessLayer.Services
             this.db = db;
         }
 
-        public async Task<List<Node>> GetAllNodes(int websiteRecordId, ExecutionStatus status)
+        public async Task<List<Node>> GetAllNodes(int websiteRecordId)
         {
             return await db.Nodes.Where(x => x.WebsiteRecordId == websiteRecordId).Include(x => x.Children).ToListAsync();
         }
@@ -41,6 +41,11 @@ namespace WebCrawler.BusinessLayer.Services
 
         public async Task StartExecution(int websiteRecordId)
         {
+            if (await db.Executions.AnyAsync(x => x.WebsiteRecordId == websiteRecordId))
+            {
+                return;
+            }
+
             var newExecution = new Execution()
             { 
                 WebsiteRecordId = websiteRecordId,

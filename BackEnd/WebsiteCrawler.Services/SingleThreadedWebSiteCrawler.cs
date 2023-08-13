@@ -115,6 +115,12 @@ namespace WebsiteCrawler.Service
                     if (node is null)
                     {
                         nodeAlreadyVisited = false;
+
+                        if (!uri.IsAbsoluteUri)
+                        {
+                            continue;
+                        }
+
                         node = new Node
                         {
                             Url = link,
@@ -137,7 +143,7 @@ namespace WebsiteCrawler.Service
 
                     if (!isLinkAcceptable)
                     {
-                        return;
+                        continue;
                     }
 
                     if (
@@ -145,7 +151,7 @@ namespace WebsiteCrawler.Service
                     (uri.PathAndQuery.ToLower() == parentUri.PathAndQuery.ToLower())
                     )
                     {
-                        return;
+                        continue;
                     }
 
                     try

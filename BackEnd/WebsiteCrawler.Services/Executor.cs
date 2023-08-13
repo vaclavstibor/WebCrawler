@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System.Security.Cryptography.X509Certificates;
 using WebCrawler.BusinessLayer.Services;
 using WebCrawler.DataAccessLayer.Context;
 using WebCrawler.DataAccessLayer.Models;
@@ -29,50 +28,50 @@ namespace WebsiteCrawler.Services
             serviceCollection.AddTransient<HttpClient>();
 
             serviceCollection.AddDbContext<AppDbContext>(options =>
-               options.UseSqlServer("Data Source=localhost;Initial Catalog=CrawlerDB;Integrated Security=True"));
+               options.UseSqlServer("Data Source=localhost;Initial Catalog=CrawlerDB;Integrated Security=True"),
+               contextLifetime: ServiceLifetime.Transient
+            );
 
             return serviceCollection.BuildServiceProvider();
         }
 
         private void CreateNewExecution(WebsiteRecord record)
         {
+            var db = provider.GetRequiredService<AppDbContext>();
+
+            record.ExecutionStatus = ExecutionStatus.Executing;
+            record.LastExecution = DateTime.Now;
+
+            var newExecution = new Execution()
+            {
+                StartTime = DateTime.Now,
+                ExecutionStatus = ExecutionStatus.Executing,
+                WebsiteRecordId = record.Id
+            };
+
+            db.Add(newExecution);
+            db.SaveChanges();
+
             Task.Run(async () => {
                 var db = provider.GetRequiredService<AppDbContext>();
+
+                var oldNodes = await db.Nodes.Where(x => x.WebsiteRecordId == record.Id).ToListAsync();
+
                 var crawler = provider.GetRequiredService<IWebSiteCrawler>();
-
-
-                record.ExecutionStatus = ExecutionStatus.Executing;
-                record.LastExecution = DateTime.Now;
-
-                var oldExecutions = await db.Executions.Where(x => x.WebsiteRecordId == record.Id).ToListAsync();
-
-                var newExecution = new Execution()
-                {
-                    StartTime = DateTime.Now,
-                    ExecutionStatus = ExecutionStatus.Executing,
-                    WebsiteRecordId = record.Id
-                };
-
-                db.Add(newExecution);
-                await db.SaveChangesAsync();
-
-                var result = crawler!.Run(record, 100);
-
-                await result.ContinueWith(async x => 
+                await crawler!.Run(record, 100).ContinueWith(async x => 
                 {
                     record.ExecutionStatus = ExecutionStatus.Executed;
 
                     newExecution.EndTime = DateTime.Now;
                     newExecution.ExecutionStatus = ExecutionStatus.Executed;
-                    newExecution.NumberOfSites = (await result).NumberOfSites;
+                    newExecution.NumberOfSites = (await x).NumberOfSites;
 
-                    db = provider.GetRequiredService<AppDbContext>();
+                    var db = provider.GetRequiredService<AppDbContext>();
 
-                    db.Update(newExecution);
-                    db.Update(record);
+                    db.Executions.Update(newExecution);
+                    db.Records.Update(record);
 
-                    var oldNodes = db.Nodes.Where(x => oldExecutions.Any(y => y.Id == x.ExecutionId));
-                    db.RemoveRange(oldNodes);
+                    db.Nodes.RemoveRange(oldNodes);
 
                     await db.SaveChangesAsync();
                 });
@@ -81,37 +80,37 @@ namespace WebsiteCrawler.Services
 
         private void Execute(Execution execution)
         {
+            var db = provider.GetRequiredService<AppDbContext>();
+
+            execution.WebsiteRecord.ExecutionStatus = ExecutionStatus.Executing;
+            execution.WebsiteRecord.LastExecution = DateTime.Now;
+            execution.ExecutionStatus = ExecutionStatus.Executing;
+            execution.StartTime = DateTime.Now;
+
+            db.Executions.Update(execution);
+            db.SaveChanges();
+
             Task.Run(async () => {
                 var db = provider.GetRequiredService<AppDbContext>();
+
+                var oldNodes = await db.Nodes.Where(x => x.WebsiteRecordId == execution.WebsiteRecordId).ToListAsync();
+
                 var crawler = provider.GetService<IWebSiteCrawler>();
 
-
-                execution.WebsiteRecord.ExecutionStatus = ExecutionStatus.Executing;
-                execution.WebsiteRecord.LastExecution = DateTime.Now;
-                execution.ExecutionStatus = ExecutionStatus.Executing;
-                execution.StartTime = DateTime.Now;
-
-                db.Executions.Update(execution);
-                await db.SaveChangesAsync();
-
-                var oldExecutions = await db.Executions.Where(x => x.WebsiteRecordId == execution.WebsiteRecordId).ToListAsync();
-
-                var result = crawler!.Run(execution.WebsiteRecord, execution.Id, 100);
-                await result.ContinueWith(async x =>
+                await crawler!.Run(execution.WebsiteRecord, execution.Id, 100).ContinueWith(async x =>
                 {
                     execution.WebsiteRecord.ExecutionStatus = ExecutionStatus.Executed;
 
                     execution.EndTime = DateTime.Now;
                     execution.ExecutionStatus = ExecutionStatus.Executed;
-                    execution.NumberOfSites = (await result).NumberOfSites;
+                    execution.NumberOfSites = (await x).NumberOfSites;
 
+                    var db = provider.GetRequiredService<AppDbContext>();
                     db = provider.GetRequiredService<AppDbContext>();
 
-                    db.Update(execution);
-                    db.Update(execution.WebsiteRecord);
+                    db.Executions.Update(execution);
 
-                    var oldNodes = db.Nodes.Where(x => oldExecutions.Any(y => y.Id == x.ExecutionId));
-                    db.RemoveRange(oldNodes);
+                    db.Nodes.RemoveRange(oldNodes);
 
                     await db.SaveChangesAsync();
                 });
@@ -137,6 +136,7 @@ namespace WebsiteCrawler.Services
 
             await db.SaveChangesAsync();
         }
+
         public async Task Run()
         {
             await ReexecuteRecords();
@@ -144,8 +144,6 @@ namespace WebsiteCrawler.Services
             while (true)
             {
                 Thread.Sleep(1000);
-                try
-                {
                     var crawler = provider.GetService<IWebSiteCrawler>();
                     var db = provider.GetRequiredService<AppDbContext>();
 
@@ -174,11 +172,6 @@ namespace WebsiteCrawler.Services
                     {
                         Execute(manualExecution);
                     }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
             }
         }
     }

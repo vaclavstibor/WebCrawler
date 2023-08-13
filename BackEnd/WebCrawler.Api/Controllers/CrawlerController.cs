@@ -31,15 +31,7 @@ namespace WebCrawler.Api.Controllers
         [HttpGet("getGraph/{id:int}")]
         public async Task<JsonResult> GetGraphStatic(int id)
         {
-            var result = await crawlerService.GetAllNodes(id, DataAccessLayer.Models.ExecutionStatus.Executed);
-            var json = new JsonResult(result);
-            return json;
-        }
-
-        [HttpGet("getGraphLive/{id:int}")]
-        public async Task<JsonResult> GetGraphLive(int id)
-        {
-            var result = await crawlerService.GetAllNodes(id, DataAccessLayer.Models.ExecutionStatus.Executing);
+            var result = await crawlerService.GetAllNodes(id);
             var json = new JsonResult(result);
             return json;
         }
