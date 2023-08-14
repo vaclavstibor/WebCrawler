@@ -1,11 +1,9 @@
 {
   "ExpandedNodes": [
-    "",
     "\\BackEnd",
     "\\BackEnd\\WebCrawler.DataAccessLayer",
     "\\BackEnd\\WebCrawler.DataAccessLayer\\Migrations",
     "\\BackEnd\\WebsiteCrawler.Services"
   ],
-  "SelectedNode": "\\BackEnd\\WebCrawler.DataAccessLayer\\Migrations\\20230708175555_Delete ExecutionStart from WebsiteRecord.Designer.cs",
   "PreviewInSolutionExplorer": false
 }

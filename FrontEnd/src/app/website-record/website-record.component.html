@@ -20,7 +20,8 @@
     <div id="3d-graph"></div>
 
     <div id="mode">
-        <h4>current mode: Website</h4>
-        <button id="btn-switch-to-domain">Domain Mode</button>
+        <h4></h4>
+        <input class="tgl tgl-flip" id="toggle" type="checkbox" [(ngModel)]="mode" (click)="initializeGraph()"/>
+        <label class="tgl-btn" data-tg-off="Website" data-tg-on="Domain" for="toggle"></label>
     </div>
 </body>

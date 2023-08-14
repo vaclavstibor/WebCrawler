@@ -14,6 +14,7 @@ import { WebsiteRecordsComponent } from './website-records/website-records.compo
 import { WebsiteRecordComponent } from './website-record/website-record.component';
 import { ExecutionManagerComponent } from './execution-manager/execution-manager.component';
 import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,8 @@ import { RouterModule } from '@angular/router';
       { path: '', redirectTo: 'records', pathMatch: 'full' },
       { path: '**', redirectTo: 'records', pathMatch: 'full' }
     ]),
+    CommonModule,
+    FormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

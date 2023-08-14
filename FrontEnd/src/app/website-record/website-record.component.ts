@@ -5,10 +5,16 @@ import { Component, Renderer2, OnInit, HostListener, ElementRef } from '@angular
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { SharedService } from '../shared.service';
-import { Node } from '../models/Node'; 
+import { Node } from '../models/Node';
+import { FormsModule } from '@angular/forms';
 
 // Declare an external function 'ForceGraph3D' with 'any' return type (assumed to be provided by the '3d-force-graph' library)
 declare function ForceGraph3D(): any;
+
+enum Mode {
+  Website,
+  Domain
+}
 
 @Component({
   selector: 'app-website-record',
@@ -16,74 +22,85 @@ declare function ForceGraph3D(): any;
   styleUrls: ['./website-record.component.css']
 })
 export class WebsiteRecordComponent implements OnInit {
+  mode: Mode = Mode.Website;
   id: number = 0;
-  // Define the data structure to store the graph nodes and links
+  
+  // Data structure to store the graph nodes and links for Website mode
   data: {
     nodes: Node[]; 
     links: any[];
   } = {
-    // nodes:[
-    //   {
-    //       'id': 0,             
-    //       'url': 'https://www.google.com/bla', 
-    //       'domain': 'www.google.com',
-    //       'crawlTime': '00:30',
-    //       'regExpMatch': null, 
-    //       'children': [ 
-    //           {
-    //               'id': 1,                    
-    //               'url':'https://www.google.com/bla/bla', 
-    //               'domain': 'www.google.com',
-    //               'crawlTime':'01:30', 
-    //               'regExpMatch': null,                    
-    //               'children': null                    
-    //           }, 
-    //           {
-    //               'id': 2,                    
-    //               'url':'https://www.google.com/bla/bla/bla', 
-    //               'domain': 'www.google.com',
-    //               'crawlTime':'01:40', 
-    //               'regExpMatch': null,                    
-    //               'children': null                    
-    //           },                 
-    //           {
-    //               'id': 3,  
-    //               'url': 'http://www.twitter.com/bla',
-    //               'domain': 'www.twitter.com',  
-    //               'crawlTime':'01:30', 
-    //               'regExpMatch': null,
-    //               'children': null
-    //           } 
-    //       ]
-    //   },
-    //   {
-    //       'id': 1,                    
-    //       'url':'https://www.google.com/bla/bla', 
-    //       'domain': 'www.google.com',
-    //       'crawlTime':'01:30', 
-    //       'regExpMatch': null,                    
-    //       'children': null 
-    //   },
-    //   {
-    //       'id': 2,                    
-    //       'url':'https://www.google.com/bla/bla/bla', 
-    //       'domain': 'www.google.com',
-    //       'crawlTime':'01:40', 
-    //       'regExpMatch': null,                    
-    //       'children': null 
-    //   },
-    //   {
-    //       'id': 3,  
-    //       'url': 'http://www.twitter.com/bla',
-    //       'domain': 'www.twitter.com',  
-    //       'crawlTime':'01:30', 
-    //       'regExpMatch': null,
-    //       'children': null
-    //   }
-  //]
-    nodes: [],
+ nodes:[
+   {
+       'id': 0,             
+       'url': 'https://www.google.com/bla', 
+       'domain': 'www.google.com',
+       'crawlTime': '00:30',
+       'regExpMatch': null, 
+       'children': [ 
+           {
+               'id': 1,                    
+               'url':'https://www.google.com/bla/bla', 
+               'domain': 'www.google.com',
+               'crawlTime':'01:30', 
+               'regExpMatch': null,                    
+               'children': null                    
+           }, 
+           {
+               'id': 2,                    
+               'url':'https://www.google.com/bla/bla/bla', 
+               'domain': 'www.google.com',
+               'crawlTime':'01:40', 
+               'regExpMatch': null,                    
+               'children': null                    
+           },                 
+           {
+               'id': 3,  
+               'url': 'http://www.twitter.com/bla',
+               'domain': 'www.twitter.com',  
+               'crawlTime':'01:30', 
+               'regExpMatch': null,
+               'children': null
+           } 
+       ]
+   },
+   {
+       'id': 1,                    
+       'url':'https://www.google.com/bla/bla', 
+       'domain': 'www.google.com',
+       'crawlTime':'01:30', 
+       'regExpMatch': null,                    
+       'children': null 
+   },
+   {
+       'id': 2,                    
+       'url':'https://www.google.com/bla/bla/bla', 
+       'domain': 'www.google.com',
+       'crawlTime':'01:40', 
+       'regExpMatch': null,                    
+       'children': null 
+   },
+   {
+       'id': 3,  
+       'url': 'http://www.twitter.com/bla',
+       'domain': 'www.twitter.com',  
+       'crawlTime':'01:30', 
+       'regExpMatch': null,
+       'children': null
+   }
+  ],
+    //nodes: [],
     links: []
   };
+
+  // Data structure to store the graph nodes and links for Domain mode
+  DomainData : {
+    nodes: Node[];
+    links: any[];
+  } = {
+    nodes: [],
+    links:[]
+  }
   
   // Define a set to store the currently selected nodes
   selectedNode = new Set<Node>();
@@ -94,11 +111,10 @@ export class WebsiteRecordComponent implements OnInit {
     private elementRef: ElementRef,
     private http: HttpClient,
     private sharedService: SharedService
-  ) {}
+  ) { 
+  }
 
-  ngOnInit() {
-    // Load the '3d-force-graph' script when the component initializes    
-    
+  ngOnInit() {  
     this.route.params.subscribe(x => this.id = x['id']);
 
     this.sharedService.getGraph(this.id).subscribe(x => 
@@ -108,10 +124,9 @@ export class WebsiteRecordComponent implements OnInit {
     this.load3DForceGraphScript();
   }
 
-  // Listen for window resize events and reinitialize the graph accordingly
+  // Listen for window resize events and reinitialize the graph on window resize
   @HostListener('window:resize', ['$event'])
   onWindowResize(event: Event) {
-    // Reinitialize the graph on window resize
     this.initializeGraph();
   }
 
@@ -127,25 +142,30 @@ export class WebsiteRecordComponent implements OnInit {
 
   // Function to initialize the 3D Force Graph with the data and settings  
   initializeGraph() {
-    this.createLinks();
+    if (this.mode == Mode.Domain) //Need fix, načítat data, nikoliv si je pamatovat při přechodu zpět do website modu 
+    {
+      this.DomainFilter();
+      console.log("Domain Filter");
+    } 
+    this.createLinks(this.data);
+    console.log(this.data);
 
     // Create the 3D Force Graph instance
     const graph = ForceGraph3D()
       (document.getElementById('3d-graph')) // Bind the graph to the specified DOM element
-      .width(window.innerWidth) // Set the graph width to match the window width
-      .height(window.innerHeight) // Set the graph height to match the window height
-      .backgroundColor('#FFFFFF') // Set the background color of the graph
-      .graphData(this.data) // Provide the graph data (nodes and links) to the graph instance
-      .nodeLabel('id') // Display the 'id' property as the node label
-      .linkOpacity(0.3) // Set the opacity of the links
-      .nodeOpacity(0.95) // Set the opacity of the nodes
-      .linkDirectionalArrowRelPos(1) // Set the relative position of the directional arrow on the links
-      .linkDirectionalArrowLength(3.5) // Set the length of the directional arrow on the links
-      .linkCurvature(0.15) // Set the curvature of the links
-      .nodeAutoColorBy('domain') // Automatically color the nodes based on the 'domain' property
+      .width(window.innerWidth)             // Set the graph width to match the window width
+      .height(window.innerHeight)           // Set the graph height to match the window height
+      .backgroundColor('#FFFFFF')           // Set the background color of the graph
+      .graphData(this.data)                 // Provide the graph data (nodes and links) to the graph instance
+      .nodeLabel('id')                      // Display the 'id' property as the node label
+      .linkOpacity(0.3)                     // Set the opacity of the links
+      .nodeOpacity(0.95)                    // Set the opacity of the nodes
+      .linkDirectionalArrowRelPos(1)        // Set the relative position of the directional arrow on the links
+      .linkDirectionalArrowLength(3.5)      // Set the length of the directional arrow on the links
+      .linkCurvature(0.15)                  // Set the curvature of the links
+      .nodeAutoColorBy('domain')            // Automatically color the nodes based on the 'domain' property
       .onNodeClick((node: any, event: Event) => {
-        // Event handler for node click
-        // Toggle node selection
+        // Event handler for node click     
         const untoggle = this.selectedNode.has(node);
         this.selectedNode.clear();
         if (!untoggle) {
@@ -176,12 +196,13 @@ export class WebsiteRecordComponent implements OnInit {
         sessionStorage.setItem('first', node.id);
       })
       .onNodeDragEnd((node: any) => {
-        // Event handler for node drag end
-        // Set the node's fixed position after dragging        
+        // Event handler for node drag end - set the node's fixed position after dragging     
         node.fx = node.x;
         node.fy = node.y;
         node.fz = node.z;
       });
+
+      this.DomainData = {nodes: [], links:[]};
   }
 
   // Function to create a nested list of child nodes
@@ -207,15 +228,36 @@ export class WebsiteRecordComponent implements OnInit {
   }
 
   // Function to create links between nodes based on the 'children' property of nodes
-  createLinks() {
-    for (const parent of this.data.nodes) {
+  createLinks(data: any) {
+    for (const parent of data.nodes) {
       if (parent.hasOwnProperty('children') && parent.children !== null) {
         for (const child of parent.children) {
-          // Create link objects for each child node and add them to the 'links' array          
+        // Create link objects for each child node and add them to the 'links' array          
           const link = { 'source': parent.id, 'target': child.id, color: '#000000'};
-          this.data.links.push(link);
+          data.links.push(link);
         }
       }
     }
+  }
+
+  DomainFilter() {
+    if (this.selectedNode.size === 0) {
+      return;
+    }
+
+    const selectedDomain = new Set<string>();
+    this.selectedNode.forEach(node => {
+      selectedDomain.add(node.domain);
+    });
+
+    this.DomainData.nodes = this.data.nodes.filter(node => {
+      return selectedDomain.has(node.domain);
+    });
+
+    //this.DomainIDs = this.data.nodes.map(node => node.id);
+    
+    //for (var node of this.data['nodes']) {
+    //  this.DomainIDs.push(node.id);
+    //}
   }
 }
