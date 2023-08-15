@@ -2,11 +2,12 @@
 
 // Import required modules and dependencies
 import { Component, Renderer2, OnInit, HostListener, ElementRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, ChildrenOutletContexts } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { SharedService } from '../shared.service';
 import { Node } from '../models/Node';
 import { FormsModule } from '@angular/forms';
+import { getSafePropertyAccessString } from '@angular/compiler';
 
 // Declare an external function 'ForceGraph3D' with 'any' return type (assumed to be provided by the '3d-force-graph' library)
 declare function ForceGraph3D(): any;
@@ -23,10 +24,9 @@ enum Mode {
 })
 export class WebsiteRecordComponent implements OnInit {
   mode: Mode = Mode.Website;
-  id: number = 0;
   
   // Data structure to store the graph nodes and links for Website mode
-  data: {
+  Data: {
     nodes: Node[]; 
     links: any[];
   } = {
@@ -113,50 +113,83 @@ export class WebsiteRecordComponent implements OnInit {
     private sharedService: SharedService
   ) { 
   }
-
-  ngOnInit() {  
-    this.route.params.subscribe(x => this.id = x['id']);
-
-    this.sharedService.getGraph(this.id).subscribe(x => 
-      {
-        this.data.nodes = x;
-      });
-    this.load3DForceGraphScript();
+  
+  ngOnInit() { 
+    this.load3DForceGraph();
   }
+
+  switchToWebsiteMode() {
+    this.DomainData = { nodes: [], links: [] };
+    this.initializeMode();
+  }  
+
+  switchToDomainMode() {
+    if (this.selectedNode.size === 0) {
+      return;
+    }
+    this.DomainFilter();
+    this.initializeMode();
+  }
+
+  toggleMode() {
+    this.mode = this.mode === Mode.Website ? Mode.Domain : Mode.Website;
+  
+    if (this.mode === Mode.Website) {
+      this.switchToWebsiteMode();
+    } else if (this.mode === Mode.Domain) {
+      this.switchToDomainMode();
+    }
+  }
+  
 
   // Listen for window resize events and reinitialize the graph on window resize
   @HostListener('window:resize', ['$event'])
   onWindowResize(event: Event) {
-    this.initializeGraph();
+    //this.initializeMode();
   }
 
   // Function to load the '3d-force-graph' script dynamically and initialize the graph  
-  load3DForceGraphScript() {
+  load3DForceGraph() {
     const scriptElement = this.renderer.createElement('script');
     scriptElement.src = '//unpkg.com/3d-force-graph';
     scriptElement.onload = () => {
-      this.initializeGraph();
+      this.initializeMode();
     };
     this.renderer.appendChild(document.body, scriptElement);
   }
 
-  // Function to initialize the 3D Force Graph with the data and settings  
-  initializeGraph() {
-    if (this.mode == Mode.Domain) //Need fix, načítat data, nikoliv si je pamatovat při přechodu zpět do website modu 
-    {
-      this.DomainFilter();
-      console.log("Domain Filter");
-    } 
-    this.createLinks(this.data);
-    console.log(this.data);
+  initializeMode() {
+    let graphData;
 
+    switch (this.mode) {
+      case Mode.Website:
+        graphData = this.Data;
+        this.CreateWebsiteLinks(graphData);
+        break;
+      case Mode.Domain:
+        graphData = this.DomainData;
+        this.CreateDomainLinks(graphData)
+        break;
+      default:
+        graphData = this.Data;
+        this.CreateWebsiteLinks(graphData);        
+        break;
+    }
+
+    console.log("Mode: ", this.mode);
+    console.log("Data: ", graphData);
+    this.initializeGraph(graphData);
+  }
+
+  // Function to initialize the 3D Force Graph with the data and settings  
+  initializeGraph(data: any) {
     // Create the 3D Force Graph instance
-    const graph = ForceGraph3D()
+    let graph = ForceGraph3D()
       (document.getElementById('3d-graph')) // Bind the graph to the specified DOM element
       .width(window.innerWidth)             // Set the graph width to match the window width
       .height(window.innerHeight)           // Set the graph height to match the window height
       .backgroundColor('#FFFFFF')           // Set the background color of the graph
-      .graphData(this.data)                 // Provide the graph data (nodes and links) to the graph instance
+      .graphData(data)                      // Provide the graph data (nodes and links) to the graph instance
       .nodeLabel('id')                      // Display the 'id' property as the node label
       .linkOpacity(0.3)                     // Set the opacity of the links
       .nodeOpacity(0.95)                    // Set the opacity of the nodes
@@ -201,8 +234,6 @@ export class WebsiteRecordComponent implements OnInit {
         node.fy = node.y;
         node.fz = node.z;
       });
-
-      this.DomainData = {nodes: [], links:[]};
   }
 
   // Function to create a nested list of child nodes
@@ -228,36 +259,47 @@ export class WebsiteRecordComponent implements OnInit {
   }
 
   // Function to create links between nodes based on the 'children' property of nodes
-  createLinks(data: any) {
-    for (const parent of data.nodes) {
-      if (parent.hasOwnProperty('children') && parent.children !== null) {
-        for (const child of parent.children) {
-        // Create link objects for each child node and add them to the 'links' array          
+  CreateWebsiteLinks(data: any) {
+    console.log("Create Website Links");
+
+    for (const parent of data.nodes){
+      if (parent.hasOwnProperty('children') && parent.children !== null){
+        for (const child of parent.children) {  
           const link = { 'source': parent.id, 'target': child.id, color: '#000000'};
           data.links.push(link);
         }
       }
     }
+
+    console.log(data.links);
   }
 
-  DomainFilter() {
-    if (this.selectedNode.size === 0) {
-      return;
+  CreateDomainLinks(data: any) {
+    console.log("Create Domain Links:");
+
+    for (const parent of data.nodes){
+      if (parent.hasOwnProperty('children') && parent.children !== null){
+        for (const child of parent.children) {  
+          if (parent.domain == child.domain) {
+            const link = { 'source': parent.id, 'target': child.id, color: '#000000'};
+            data.links.push(link);
+          }
+        }
+      }
     }
 
+    console.log(data.links);
+  }
+  
+  DomainFilter() {
     const selectedDomain = new Set<string>();
     this.selectedNode.forEach(node => {
       selectedDomain.add(node.domain);
+      console.log(node.domain);
     });
 
-    this.DomainData.nodes = this.data.nodes.filter(node => {
+    this.DomainData.nodes = this.Data.nodes.filter(node => {
       return selectedDomain.has(node.domain);
     });
-
-    //this.DomainIDs = this.data.nodes.map(node => node.id);
-    
-    //for (var node of this.data['nodes']) {
-    //  this.DomainIDs.push(node.id);
-    //}
   }
 }
