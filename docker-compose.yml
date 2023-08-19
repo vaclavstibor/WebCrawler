@@ -1,13 +1,26 @@
 version: "3.9"
 
 services:
+
   api:
     build: 
-        context: ./WebCrawler
+        context: ./BackEnd
     ports: 
         - "4200:80"
+    depends_on:
+      - sql
+
   client:
     build: 
-        context: ./client
+        context: ./FrontEnd
     ports:
-        - "80:80"
+        - "8080:80"
+
+  sql:
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    container_name: sql_server2022
+    ports:
+      - "1433:1433" 
+    environment:
+      - ACCEPT_EULA=y
+      - SA_PASSWORD=A&VeryComplex123Password

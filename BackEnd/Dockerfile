@@ -12,6 +12,8 @@ WORKDIR /src
 COPY ["./WebCrawler.BusinessLayer/WebCrawler.BusinessLayer.csproj", "WebCrawler.BusinessLayer/"]
 COPY ["./WebCrawler.DataAccessLayer/WebCrawler.DataAccessLayer.csproj", "WebCrawler.DataAccessLayer/"]
 COPY ["./WebCrawler.Api/WebCrawler.Api.csproj", "WebCrawler.Api/"]
+COPY ["./WebsiteCrawler.Infrastructure/WebsiteCrawler.Infrastructure.csproj", "WebsiteCrawler.Infrastructure/"]
+COPY ["./WebsiteCrawler.Services/WebsiteCrawler.Services.csproj", "WebsiteCrawler.Services/"]
 
 RUN dotnet restore "WebCrawler.Api/WebCrawler.Api.csproj"
 

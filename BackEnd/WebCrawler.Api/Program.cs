@@ -1,8 +1,6 @@
-using WebCrawler.BusinessLayer.Services;
 using WebsiteCrawler.Services;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore;
+using WebCrawler.DataAccessLayer.Context;
 
 namespace WebCrawler.Api
 {
@@ -10,11 +8,11 @@ namespace WebCrawler.Api
     {
         public static void Main(string[] args)
         {
-            WebsiteCrawler.Services.Executor crawlerStartup = new WebsiteCrawler.Services.Executor();
+            Executor crawlerStartup = new Executor();
 
             Task.Run(() => crawlerStartup.Run());
 
-            CreateWebHostBuilder(args).Build().Run();
+            CreateWebHostBuilder(args).Build().MigrateDatabase<AppDbContext>().Run();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
