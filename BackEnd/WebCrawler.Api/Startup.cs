@@ -16,7 +16,7 @@ namespace WebCrawler.Api
             services.AddHttpClient();
             
             services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer("Data Source=localhost;Initial Catalog=CrawlerDB;Integrated Security=True")
+                options.UseSqlServer("Data Source=localhost;Initial Catalog=CrawlerDB;Integrated Security=True; TrustServerCertificate=true")
             );
             
             services.AddHttpClient();
