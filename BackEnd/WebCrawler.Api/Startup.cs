@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using WebCrawler.BusinessLayer.Services;
 using WebCrawler.DataAccessLayer.Context;
 
@@ -17,15 +18,16 @@ public class Startup
 
         //Uncomment this for local connection
 
-        services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer("Data Source=localhost;Initial Catalog=CrawlerDB;Integrated Security=True; TrustServerCertificate=true")
-        );
+        //services.AddDbContext<AppDbContext>(options =>
+            //options.UseSqlServer("Data Source=localhost;Initial Catalog=CrawlerDB;Integrated Security=True; TrustServerCertificate=true")
+            //options.UseSqlServer("Data Source=localhost,1433;User Id=sa;Initial Catalog=CrawlerDB;Password=YourStrong!Passw0rd;MultipleActiveResultSets=true;TrustServerCertificate=True")
+        //); 
 
         //Uncomment this for docker connection
 
-        //services.AddDbContext<AppDbContext>(options =>
-        //    options.UseSqlServer("Server=sql_server2022;Database=SalesDb;User Id=SA;Password=A&VeryComplex123Password;MultipleActiveResultSets=true;TrustServerCertificate=True")
-        //);
+        services.AddDbContext<AppDbContext>(options =>
+            options.UseSqlServer("Server=sql_server2022;Database=SalesDb;User Id=SA;Password=A&VeryComplex123Password;MultipleActiveResultSets=true;TrustServerCertificate=True")
+        );
 
         services.AddHttpClient();
         services.AddScoped<RecordsService>();
