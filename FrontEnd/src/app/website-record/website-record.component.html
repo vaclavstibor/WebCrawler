@@ -1,8 +1,4 @@
-<head>
-
-</head>
-  
-<body>
+<div>
     <div id="detail">
     <h1>Detail</h1>
     <ul>
@@ -17,11 +13,13 @@
     </ul>
     </div>
     
-    <div id="3d-graph"></div>
+    <div [ngSwitch]="mode">
+        <div *ngSwitchCase="Mode.Website"><app-website-mode></app-website-mode></div>
+        <div *ngSwitchCase="Mode.Domain"><app-domain-mode ></app-domain-mode></div>
+    </div>
 
-    <div id="mode">
-        <h4></h4>
-        <input class="tgl tgl-flip" id="toggle" type="checkbox" [(ngModel)]="mode" (click)="toggleMode()">
+    <div id="switch-mode">
+        <input class="tgl tgl-flip" id="toggle" type="checkbox" [(ngModel)]="mode">
         <label class="tgl-btn" data-tg-off="Website" data-tg-on="Domain" for="toggle"></label>
     </div>
-</body>
+</div>

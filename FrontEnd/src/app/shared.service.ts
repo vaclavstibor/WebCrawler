@@ -1,3 +1,5 @@
+// TODO Add static/live
+
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -12,7 +14,7 @@ import { Node } from './models/Node';
   providedIn: 'root'
 })
 export class SharedService {
-  ApiUrl = "https://localhost:44352/api";
+  ApiUrl = "http://localhost:4200/api";
 
   constructor(private http: HttpClient) { }
 
@@ -78,5 +80,16 @@ export class SharedService {
       })
     };
     return this.http.post<number>(this.ApiUrl + "/Crawler/execute", recordId, httpOptions);
+  }
+
+  // Graph selected node
+  private data:any = undefined;
+
+  setSelectedNode(data:any) {
+    this.data = data;
+  }
+
+  getSelectedNode():any {
+    return this.data;
   }
 }

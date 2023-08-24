@@ -15,13 +15,17 @@ import { WebsiteRecordComponent } from './website-record/website-record.componen
 import { ExecutionManagerComponent } from './execution-manager/execution-manager.component';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { WebsiteModeComponent } from './website-record/graph-mode/website-mode/website-mode.component';
+import { DomainModeComponent } from './website-record/graph-mode/domain-mode/domain-mode.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     WebsiteRecordsComponent,
     WebsiteRecordComponent,
-    ExecutionManagerComponent
+    ExecutionManagerComponent,
+    WebsiteModeComponent,
+    DomainModeComponent
   ],
   imports: [
     BrowserModule,

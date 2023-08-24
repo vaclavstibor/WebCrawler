@@ -11,7 +11,7 @@ body {
 }
 
 /* Position the detail and mode divs absolutely on top of the 3d-graph div */
-#detail, #mode {
+#detail, #switch-mode {
   position: absolute;
   padding: 10px;
   margin: 10px;
@@ -25,7 +25,7 @@ body {
   background-color: rgba(196, 196, 196, 0.192);
 }
 
-#mode {
+#switch-mode {
   bottom: 1%; /* Adjust the bottom positioning as per your requirement */
   color: rgba(0, 0, 0, 0.844);
 }
