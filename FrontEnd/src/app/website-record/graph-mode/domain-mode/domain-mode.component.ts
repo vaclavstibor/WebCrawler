@@ -1,6 +1,7 @@
 // https://github.com/vasturiano/3d-force-graph
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { SharedService } from '../../../shared.service';
 import { Node } from '../../../models/Node';
 
@@ -18,12 +19,23 @@ export class DomainModeComponent implements OnInit, OnDestroy {
   private graph!: ForceGraph3DInstance;
   selectedNode: any;
   
+  id: number = 0;
   // Data structure to store the graph nodes and links for Website mode
-  Data: {
+  
+  data: {
     nodes: Node[]; 
     links: any[];
   } = {
- nodes:[
+    nodes: [],
+    links: []
+  };
+  
+  /*
+  data: {
+    nodes: Node[]; 
+    links: any[];
+  } = {
+  nodes:[
    {
        'id': 0,             
        'url': 'https://www.google.com/bla', 
@@ -85,11 +97,20 @@ export class DomainModeComponent implements OnInit, OnDestroy {
     //nodes: [],
     links: []
   };
+  */
 
-  constructor(private sharedService: SharedService) {}
+
+  constructor(private sharedService: SharedService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.selectedNode = this.sharedService.getSelectedNode();
+    this.route.params.subscribe(x => this.id = x['id']);
+
+    this.sharedService.getGraph(this.id).subscribe(x => 
+    {
+      this.data.nodes = x;
+    });    
+    
     this.replaceGraphElement();
   }
 
@@ -106,7 +127,7 @@ export class DomainModeComponent implements OnInit, OnDestroy {
       currentGraphElement.replaceWith(newGraphElement);
 
       // Call the initializeGraph function again with the new element
-      this.initializeGraph(this.Data);
+      this.initializeGraph(this.data);
     }
   }
 
@@ -209,7 +230,7 @@ export class DomainModeComponent implements OnInit, OnDestroy {
       selectedDomain.add(node.domain);
     });
 
-    this.Data.nodes = this.Data.nodes.filter(node => {
+    this.data.nodes = this.data.nodes.filter(node => {
       return selectedDomain.has(node.domain);
     });
   }

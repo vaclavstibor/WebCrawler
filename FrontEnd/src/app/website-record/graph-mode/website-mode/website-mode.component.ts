@@ -21,7 +21,7 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
   
   id: number = 0;
   // Data structure to store the graph nodes and links for Website mode
-  /*
+  
   data: {
     nodes: Node[]; 
     links: any[];
@@ -29,13 +29,13 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
     nodes: [],
     links: []
   };
-  */
   
+  /*
   data: {
     nodes: Node[]; 
     links: any[];
   } = {
- nodes:[
+  nodes:[
    {
        'id': 0,             
        'url': 'https://www.google.com/bla', 
@@ -97,20 +97,20 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
     //nodes: [],
     links: []
   };
-  
+  */
 
   constructor(private sharedService:SharedService, private route: ActivatedRoute, private renderer: Renderer2, private elementRef: ElementRef) {}
   
   ngOnInit(): void {
-    /*
     this.route.params.subscribe(x => this.id = x['id']);
 
     this.sharedService.getGraph(this.id).subscribe(x => 
-     {
-       this.data.nodes = x;
-     });
-     */
+    {
+      this.data.nodes = x;
+    });
 
+    console.log(this.data);
+     
     this.replaceGraphElement();
   }
 
