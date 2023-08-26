@@ -30,21 +30,33 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
     links: []
   };
 
-  constructor(private sharedService:SharedService, private route: ActivatedRoute, private renderer: Renderer2, private elementRef: ElementRef) {}
+  constructor(private sharedService:SharedService, private route: ActivatedRoute, private route2: ActivatedRoute,private sharedService2:SharedService, private elementRef: ElementRef) {
+
+  }
   
   ngOnInit(): void {
     this.replaceGraphElement();
   }
 
-  getData(): void {
+  getLiveInitialData(): void {
+    console.log("Trying to get initial data.");
     this.route.params.subscribe(x => this.id = x['id']);
 
-    this.sharedService.getGraph(this.id).subscribe(x => 
+    this.sharedService.getGraphLiveInitial(this.id).subscribe(x => 
     {
       this.data.nodes = x;
       console.log(x);
       this.initializeGraph();
+      setInterval(() => this.getLiveData(), 10000);
     });
+  }
+
+  getLiveData(): void {
+    console.log("Trying to get new data after initial.");
+
+    this.sharedService.getGraphLive(this.id)
+      .subscribe(
+        result => this.AddNodes(result))
   }
 
   // Function to replace the graph element with a new one
@@ -61,14 +73,14 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
 
       // Call the initializeGraph function again with the new element
       //this.initializeGraph();
-      this.getData();
+      this.getLiveInitialData();
     }
   }
 
   // Function to initialize the 3D Force Graph with the data and settings  
   initializeGraph() {
     // Create the 3D Force Graph instance
-    console.log(this.data.nodes);
+    //console.log(this.data.nodes);
     this.CreateWebsiteLinks(this.data);
     this.graph = ForceGraph3D()
       (document.getElementById('3d-graph-website')!) // Bind the graph to the specified DOM element
@@ -161,10 +173,18 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
     for (const parent of data.nodes) {
       if (parent.hasOwnProperty('children') && parent.children !== null){
         for (const child of parent.children) {  
-          const link = { 'source': parent.id, 'target': child.id, color: '#000000'};
-          data.links.push(link);
+          if (this.data.nodes.find(node => node.id !== child.id)) {
+            this.data.nodes.push(child);
+          }
+          else {
+            //data.nodes.
+            return;
+          }
         }
-      }      
+      }
+      if (this.data.nodes.find(node => node.id === parent.id)) {
+        this.data.nodes.push(parent);
+      } 
     }
   }
 

@@ -14,8 +14,9 @@ import { Node } from './models/Node';
   providedIn: 'root'
 })
 export class SharedService {
-  ApiUrl = "https://localhost:44352/api";
+  //ApiUrl = "https://localhost:44352/api";
   //ApiUrl = "http://localhost:4200/api";
+  ApiUrl = "https://localhost:7170/api";
 
   constructor(private http: HttpClient) { }
 
@@ -24,11 +25,11 @@ export class SharedService {
   }
 
   getGraphLive(id: number): Observable<Node[]> {
-    return this.http.get<Node[]>(this.ApiUrl + "Crawler/getGraphLive" + id);
+    return this.http.get<Node[]>(this.ApiUrl + "/Crawler/getGraphLive/" + id);
   }
 
   getGraphLiveInitial(id: number): Observable<Node[]> {
-    return this.http.get<Node[]>(this.ApiUrl + "Crawler/getGraph/live/all" + id);
+    return this.http.get<Node[]>(this.ApiUrl + "/Crawler/getGraph/live/all/" + id);
   }
 
   getWebRecord(id: number): Observable<WebsiteRecord> {
