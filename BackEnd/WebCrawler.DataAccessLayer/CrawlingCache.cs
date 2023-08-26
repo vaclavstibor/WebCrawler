@@ -17,18 +17,18 @@ namespace WebCrawler.DataAccessLayer.Cache
 
         public static void AddOrUpdateNode(Node node, int websiteRecordId)
         {
-            if (!cache.ContainsKey(websiteRecordId))
+            if (!recentCache.ContainsKey(websiteRecordId))
             {
-                cache.TryAdd(websiteRecordId, new ConcurrentDictionary<int, Node>());
+                recentCache.TryAdd(websiteRecordId, new ConcurrentDictionary<int, Node>());
             }
 
-            if (cache[websiteRecordId].Any(x => x.Key == node.Id))
+            if (recentCache[websiteRecordId].Any(x => x.Key == node.Id))
             {
-                cache[websiteRecordId][node.Id] = node;
+                recentCache[websiteRecordId][node.Id] = node;
             }
             else
             {
-                cache[websiteRecordId].TryAdd(node.Id, node);
+                recentCache[websiteRecordId].TryAdd(node.Id, node);
             }
         }
 

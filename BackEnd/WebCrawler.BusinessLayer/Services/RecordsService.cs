@@ -2,8 +2,7 @@
 using WebCrawler.BusinessLayer.DataTransferObjects;
 using Microsoft.EntityFrameworkCore;
 using WebCrawler.DataAccessLayer.Models;
-using WebCrawler.BusinessLayer.Options;
-using System.Security.Cryptography.X509Certificates;
+using WebCrawler.BusinessLayer.GraphQLModels;
 
 namespace WebCrawler.BusinessLayer.Services
 {
@@ -69,6 +68,37 @@ namespace WebCrawler.BusinessLayer.Services
             }).ToList();
 
             return recordDtO;
+        }
+
+        public async Task<List<WebPage>> GetWebPages()
+        {
+            return await db.Records
+                .Include(x => x.Tags)
+                .Select(x => new WebPage()
+                {
+                    Identifier = x.Id.ToString(),
+                    Label = x.Label,
+                    Url = x.URL,
+                    Regexp = x.RegExp,
+                    Tags = x.Tags.Select(y => y.Content).ToList(),
+                    Active = x.Active
+                })
+                .ToListAsync();
+        }
+
+        public WebPage GetWebPage(int id)
+        {
+            var record = db.Records.SingleOrDefault(x => x.Id == id);
+
+            return new WebPage()
+            {
+                Identifier = record.Id.ToString(),
+                Label = record.Label,
+                Url = record.URL,
+                Regexp = record.RegExp,
+                Tags = record.Tags.Select(y => y.Content).ToList(),
+                Active = record.Active
+            };
         }
 
         public async Task<List<WebsiteRecordDTO>> GetAllRecords()

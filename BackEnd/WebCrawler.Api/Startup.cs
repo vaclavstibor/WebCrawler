@@ -5,6 +5,7 @@ using WebCrawler.BusinessLayer.Services;
 using WebCrawler.DataAccessLayer.Context;
 using Microsoft.EntityFrameworkCore.SqlServer;
 using WebsiteCrawler.Services;
+using GraphQL.AspNet.Configuration;
 
 namespace WebCrawler.Api;
 
@@ -17,6 +18,7 @@ public class Startup
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
         services.AddHttpClient();
+        services.AddGraphQL();
 
         //Uncomment this for local connection
 
@@ -48,6 +50,7 @@ public class Startup
     {
         app.UseSwagger();
         app.UseSwaggerUI();
+        app.UseGraphQL();
 
         app.UseHttpsRedirection();
 
