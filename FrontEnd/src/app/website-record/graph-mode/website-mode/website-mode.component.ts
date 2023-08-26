@@ -29,89 +29,22 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
     nodes: [],
     links: []
   };
-  
-  /*
-  data: {
-    nodes: Node[]; 
-    links: any[];
-  } = {
-  nodes:[
-   {
-       'id': 0,             
-       'url': 'https://www.google.com/bla', 
-       'domain': 'www.google.com',
-       'crawlTime': '00:30',
-       'regExpMatch': null, 
-       'children': [ 
-           {
-               'id': 1,                    
-               'url':'https://www.google.com/bla/bla', 
-               'domain': 'www.google.com',
-               'crawlTime':'01:30', 
-               'regExpMatch': null,                    
-               'children': null                    
-           }, 
-           {
-               'id': 2,                    
-               'url':'https://www.google.com/bla/bla/bla', 
-               'domain': 'www.google.com',
-               'crawlTime':'01:40', 
-               'regExpMatch': null,                    
-               'children': null                    
-           },                 
-           {
-               'id': 3,  
-               'url': 'http://www.twitter.com/bla',
-               'domain': 'www.twitter.com',  
-               'crawlTime':'01:30', 
-               'regExpMatch': null,
-               'children': null
-           } 
-       ]
-   },
-   {
-       'id': 1,                    
-       'url':'https://www.google.com/bla/bla', 
-       'domain': 'www.google.com',
-       'crawlTime':'01:30', 
-       'regExpMatch': null,                    
-       'children': null 
-   },
-   {
-       'id': 2,                    
-       'url':'https://www.google.com/bla/bla/bla', 
-       'domain': 'www.google.com',
-       'crawlTime':'01:40', 
-       'regExpMatch': null,                    
-       'children': null 
-   },
-   {
-       'id': 3,  
-       'url': 'http://www.twitter.com/bla',
-       'domain': 'www.twitter.com',  
-       'crawlTime':'01:30', 
-       'regExpMatch': null,
-       'children': null
-   }
-  ],
-    //nodes: [],
-    links: []
-  };
-  */
 
   constructor(private sharedService:SharedService, private route: ActivatedRoute, private renderer: Renderer2, private elementRef: ElementRef) {}
   
   ngOnInit(): void {
+    this.replaceGraphElement();
+  }
+
+  getData(): void {
     this.route.params.subscribe(x => this.id = x['id']);
 
     this.sharedService.getGraph(this.id).subscribe(x => 
     {
       this.data.nodes = x;
+      console.log(x);
+      this.initializeGraph();
     });
-
-    console.log(this.data);
-     
-    this.replaceGraphElement();
   }
 
   // Function to replace the graph element with a new one
@@ -127,20 +60,22 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
       currentGraphElement.replaceWith(newGraphElement);
 
       // Call the initializeGraph function again with the new element
-      this.initializeGraph(this.data);
+      //this.initializeGraph();
+      this.getData();
     }
   }
 
   // Function to initialize the 3D Force Graph with the data and settings  
-  initializeGraph(data: any) {
+  initializeGraph() {
     // Create the 3D Force Graph instance
-    this.CreateWebsiteLinks(data)
+    console.log(this.data.nodes);
+    this.CreateWebsiteLinks(this.data);
     this.graph = ForceGraph3D()
       (document.getElementById('3d-graph-website')!) // Bind the graph to the specified DOM element
       .width(window.innerWidth)             // Set the graph width to match the window width
       .height(window.innerHeight)           // Set the graph height to match the window height
       .backgroundColor('#FFFFFF')           // Set the background color of the graph
-      .graphData(data)                      // Provide the graph data (nodes and links) to the graph instance
+      .graphData(this.data)                 // Provide the graph data (nodes and links) to the graph instance
       .nodeLabel('id')                      // Display the 'id' property as the node label
       .linkOpacity(0.3)                     // Set the opacity of the links
       .nodeOpacity(0.95)                    // Set the opacity of the nodes
@@ -222,11 +157,24 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
     }
   }
 
+  AddNodes(data: any) {
+    for (const parent of data.nodes) {
+      if (parent.hasOwnProperty('children') && parent.children !== null){
+        for (const child of parent.children) {  
+          const link = { 'source': parent.id, 'target': child.id, color: '#000000'};
+          data.links.push(link);
+        }
+      }      
+    }
+  }
+
   ngOnDestroy()
   {
     console.log("Destorying website")
   }
 }
+
+// 
 
 // If crawling -> active/static || static
 // API - isCrawling, newNodes
@@ -242,3 +190,20 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
     this.graph?.controls().handleResize();
   }
   */
+/*
+  function addNode(node) {
+    let domain = (new URL(node.Url));
+    //console.log(domain);
+    node.Domain = domain.hostname;
+    data["nodes"].push(node)
+    if (node.hasOwnProperty("nodes")) {
+        for (const child of node.nodes) {
+            const link = { "source": node.id ,"target": child.id };
+            //console.log(link)
+            data["links"].push(link)
+        }
+    }
+    Graph.graphData(data)
+    Graph.nodeAutoColorBy('Domain')
+}
+*/
