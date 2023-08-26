@@ -14,7 +14,8 @@ import { Node } from './models/Node';
   providedIn: 'root'
 })
 export class SharedService {
-  ApiUrl = "http://localhost:4200/api";
+  ApiUrl = "https://localhost:44352/api";
+  //ApiUrl = "http://localhost:4200/api";
 
   constructor(private http: HttpClient) { }
 

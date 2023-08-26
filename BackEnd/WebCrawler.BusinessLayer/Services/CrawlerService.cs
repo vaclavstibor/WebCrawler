@@ -3,6 +3,7 @@ using WebCrawler.DataAccessLayer.Models;
 using WebCrawler.BusinessLayer.DataTransferObjects;
 using Microsoft.EntityFrameworkCore;
 using WebCrawler.DataAccessLayer.Cache;
+using WebCrawler.BusinessLayer.Mappings;
 
 namespace WebCrawler.BusinessLayer.Services
 {
@@ -18,53 +19,21 @@ namespace WebCrawler.BusinessLayer.Services
         {
             return await db.Nodes.Where(x => x.WebsiteRecordId == websiteRecordId)
                 .Include(x => x.Children)
-                .Select(x => new NodeDto
-                { 
-                    Id = x.Id,
-                    Url = x.Url,
-                    Domain = x.Domain,
-                    CrawlTime = x.CrawlTime,
-                    RegExpMatch = x.RegExpMatch,
-                    Children = x.Children.Select(y => new NodeDto()
-                    { 
-                        Id = y.Id,
-                        Url = y.Url,
-                        Domain = y.Domain,
-                        CrawlTime = y.CrawlTime,
-                        RegExpMatch = y.RegExpMatch,
-                        WebsiteRecordId = websiteRecordId,
-                        ExecutionId = y.ExecutionId,
-                        Children = new List<NodeDto>()
-                    }).ToList(),
-                    WebsiteRecordId = x.WebsiteRecordId,
-                    ExecutionId = x.ExecutionId
-                }).ToListAsync();
+                .Select(x => x.MapToDto())
+                .ToListAsync();
+        }
+
+        public List<NodeDto> GetNewNodesLive(int websiteRecordId)
+        {
+            return CrawlingCache.GetAndDeleteCachedNodes(websiteRecordId)
+                .Select(x => x.MapToDto())
+                .ToList();
         }
 
         public List<NodeDto> GetAllNodesLive(int websiteRecordId)
         {
-            return CrawlingCache.GetAndDeleteCachedNodes(websiteRecordId)
-                .Select(x => new NodeDto
-                { 
-                    Id = x.Id,
-                    Url = x.Url,
-                    Domain = x.Domain,
-                    CrawlTime = x.CrawlTime,
-                    RegExpMatch = x.RegExpMatch,
-                    Children = x.Children.Select(y => new NodeDto()
-                    { 
-                        Id = y.Id,
-                        Url = y.Url,
-                        Domain = y.Domain,
-                        CrawlTime = y.CrawlTime,
-                        RegExpMatch = y.RegExpMatch,
-                        WebsiteRecordId = websiteRecordId,
-                        ExecutionId = y.ExecutionId,
-                        Children = new List<NodeDto>()
-                    }).ToList(),
-                    WebsiteRecordId = x.WebsiteRecordId,
-                    ExecutionId = x.ExecutionId
-                })
+            return CrawlingCache.GetAllNodes(websiteRecordId)
+                .Select(x => x.MapToDto())
                 .ToList();
         }
 

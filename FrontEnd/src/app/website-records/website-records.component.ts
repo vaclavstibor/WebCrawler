@@ -206,19 +206,23 @@ export class WebsiteRecordsComponent implements OnInit {
   [
     {
       name: "URL",
-      field: "url"
+      field: "url",
+      style: "width: 15%; word-break: break-all;"
     },
     {
       name: "Label",
-      field: "label"
+      field: "label",
+      style: "width: 5%; word-break: break-all;"
     },
     {
       name: "Last Execution",
-      field: "lastExecution"
+      field: "lastExecution",
+      style: "width: 10%; word-break: break-all;"
     },
     {
       name: "Status of last Execution",
       field: "executionStatus",
+      style: "width: 5%; word-break: break-all;"
     }
   ];
 

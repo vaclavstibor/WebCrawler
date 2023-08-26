@@ -2,3 +2,10 @@
     display: flex;
     flex-direction: row;
 }
+
+:host {
+    ::ng-deep .p-table {
+        max-width: 25%;
+        word-break: break-all;
+    }    
+}

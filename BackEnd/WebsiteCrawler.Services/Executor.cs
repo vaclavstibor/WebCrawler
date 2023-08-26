@@ -161,6 +161,9 @@ namespace WebsiteCrawler.Services
             while (true)
             {
                 Thread.Sleep(1000);
+
+                await Console.Out.WriteLineAsync("First iteration");
+
                 var crawler = provider.GetService<IWebSiteCrawler>();
                 var db = provider.GetRequiredService<AppDbContext>();
 

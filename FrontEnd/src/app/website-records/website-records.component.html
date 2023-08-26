@@ -1,4 +1,4 @@
-<div class="containter p-3">
+<div class="containter p-3" style="margin-left: 5%; margin-right: 5%;">
     <div>
         <div (click)="filter()" class="containter">
             <p-multiSelect 
@@ -67,53 +67,56 @@
         </div>
     </div>
 
-    <p-table [value]="webRecords" 
-        [paginator]="true" 
-        [rows]="5" 
-        [columns]="columns">
-        <ng-template pTemplate="header" let-columns>
-            <tr>
-                <th *ngFor="let column of columns">
-                    {{column.name}}
-                </th>
-                <th>Periodicity</th>
-                <th>Tags</th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="body" 
-            let-rowData 
-            let-columns="columns">
-            <tr>
-                <td *ngFor="let column of columns">
-                    {{rowData[column.field]}}
-                </td>
-                <td>
-                    {{rowData.days < 10 ? 0 : ''}}{{rowData.days}}:{{rowData.hours < 10 ? 0 : ''}}{{rowData.hours}}:{{rowData.minutes < 10 ? 0 : ''}}{{rowData.minutes}}:00
-                </td>
-                <td>
-                    <span *ngFor="let tag of rowData.tagDTOs"> 
-                        {{tag.content}}
-                    </span> 
-                </td>
-                <td>
-                    <a class="btn btn-outline-primary btn-sm" [routerLink]="['/record/view',rowData.id]">View</a>
-                </td>
-                <td>
-                    <button class="btn btn-success btn-sm" (click)="editRecord(rowData.id)">Edit</button>
-                </td>
-                <td>
-                    <button (click)="deleteARecord(rowData)" class="btn btn-danger btn-sm">Delete</button>
-                </td>
-                <td>
-                    <button class="btn btn-outline-warning" (click)="execute(rowData)">Crawl</button>
-                </td>
-            </tr>
-        </ng-template>
-    </p-table>
+    <div style="margin-left: 5%; margin-right: 5%;">
+        <p-table 
+            [value]="webRecords" 
+            [paginator]="true" 
+            [rows]="10" 
+            [columns]="columns">
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th *ngFor="let column of columns" style="width: 15%; word-break: break-all;">
+                        {{column.name}}
+                    </th>
+                    <th style="width: 5%; word-break: break-all;">Periodicity</th>
+                    <th style="width: 10%; word-break: break-all;">Tags</th>
+                    <th style="width: 4%; word-break: break-all;"></th>
+                    <th style="width: 4%; word-break: break-all;"></th>
+                    <th style="width: 4%; word-break: break-all;"></th>
+                    <th style="width: 4%; word-break: break-all;"></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" 
+                let-rowData 
+                let-columns="columns">
+                <tr >
+                    <td *ngFor="let column of columns" style="width: 15%; word-break: break-all;">
+                        {{rowData[column.field]}}
+                    </td>
+                    <td style="width: 5%; word-break: break-all;">
+                        {{rowData.days < 10 ? 0 : ''}}{{rowData.days}}:{{rowData.hours < 10 ? 0 : ''}}{{rowData.hours}}:{{rowData.minutes < 10 ? 0 : ''}}{{rowData.minutes}}:00
+                    </td>
+                    <td style="width: 10%; word-break: break-all;">
+                        <span *ngFor="let tag of rowData.tagDTOs"> 
+                            {{tag.content}}
+                        </span> 
+                    </td>
+                    <td style="width: 4%;">
+                        <a class="btn btn-outline-primary btn-sm" [routerLink]="['/record/view',rowData.id]">View</a>
+                    </td>
+                    <td style="width: 4%;">
+                        <button class="btn btn-success btn-sm" (click)="editRecord(rowData.id)">Edit</button>
+                    </td>
+                    <td style="width: 4%;">
+                        <button (click)="deleteARecord(rowData)" class="btn btn-danger btn-sm">Delete</button>
+                    </td>
+                    <td style="width: 4%;">
+                        <button class="btn btn-outline-warning" (click)="execute(rowData)">Crawl</button>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
     <button (click)="createNewRecord()" class="btn btn-primary"> Create new record </button>
     <div *ngIf="recordUpdatingState != defaultState">
         <input class="form-control form-control-sm" [(ngModel)]="newRecord.url" type="text" placeholder="Url" aria-label=".form-control-sm example">

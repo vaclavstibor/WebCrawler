@@ -37,6 +37,12 @@ namespace WebCrawler.Api.Controllers
         [HttpGet("getGraph/live/{id:int}")]
         public JsonResult GetGraphLive(int id)
         {
+            return new JsonResult(crawlerService.GetNewNodesLive(id));
+        }
+
+        [HttpGet("getGraph/live/all/{id:int}")]
+        public JsonResult GetGraphLiveAll(int id)
+        {
             return new JsonResult(crawlerService.GetAllNodesLive(id));
         }
     }
