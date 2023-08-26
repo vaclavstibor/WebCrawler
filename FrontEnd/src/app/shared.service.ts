@@ -19,7 +19,11 @@ export class SharedService {
   constructor(private http: HttpClient) { }
 
   getGraph(id: number): Observable<Node[]> {
-    return this.http.get<Node[]>(this.ApiUrl + "/Crawler/getGraph/" + id)
+    return this.http.get<Node[]>(this.ApiUrl + "/Crawler/getGraph/" + id);
+  }
+
+  getGraphLive(id: number): Observable<Node[]> {
+    return this.http.get<Node[]>(this.ApiUrl + "Crawler/getGraphLive" + id);
   }
 
   getWebRecord(id: number): Observable<WebsiteRecord> {
