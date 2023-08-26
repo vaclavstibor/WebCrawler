@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebCrawler.DataAccessLayer.Models;
+using Microsoft.EntityFrameworkCore.SqlServer;
 
 namespace WebCrawler.DataAccessLayer.Context
 {
@@ -17,7 +18,8 @@ namespace WebCrawler.DataAccessLayer.Context
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer();
+                //optionsBuilder.UseSqlServer();
+                optionsBuilder.UseSqlServer("Server=127.0.0.1,1401;Initial Catalog=MyDB;User Id=SA;Password=&VeryComplex123Password;TrustServerCertificate=True");
             }
         }
 

@@ -5,6 +5,7 @@ using WebCrawler.DataAccessLayer.Context;
 using WebCrawler.DataAccessLayer.Models;
 using WebsiteCrawler.Infrastructure.interfaces;
 using WebsiteCrawler.Service;
+using Microsoft.EntityFrameworkCore.SqlServer;
 
 namespace WebsiteCrawler.Services
 {
@@ -28,8 +29,8 @@ namespace WebsiteCrawler.Services
             serviceCollection.AddTransient<HttpClient>();
 
             serviceCollection.AddDbContext<AppDbContext>(options =>
-                //options.UseSqlServer("Data Source=localhost;Initial Catalog=CrawlerDB;Integrated Security=True"),
-                options.UseSqlServer("Server=sql_server2022;Database=SalesDb;User Id=SA;Password=A&VeryComplex123Password;MultipleActiveResultSets=true;TrustServerCertificate=True"),
+                //options.UseSqlServer("Data Source=localhost;Initial Catalog=CrawlerDB;Integrated Security=True; TrustServerCertificate=true")
+                options.UseSqlServer("Server=127.0.0.1,1401;Initial Catalog=MyDB;User Id=SA;Password=&VeryComplex123Password;TrustServerCertificate=True"),    
                 contextLifetime: ServiceLifetime.Transient
             );
 
