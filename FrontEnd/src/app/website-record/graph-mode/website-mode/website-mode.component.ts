@@ -46,8 +46,14 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
     {
       this.data.nodes = x;
       console.log(x);
-      this.initializeGraph();
-      setInterval(() => this.getLiveData(), 10000);
+      if (this.data.nodes.length > 1)
+      {
+        this.initializeGraph();
+        setInterval(() => this.getLiveData(), 10000);
+      }
+      else {
+        console.log("Count of nodes: %d", this.data.nodes.length);
+      }
     });
   }
 
@@ -177,7 +183,7 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
             this.data.nodes.push(child);
           }
           else {
-            //data.nodes.
+            //data.nodes.deleteThisElement
             return;
           }
         }
