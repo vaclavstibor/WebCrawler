@@ -27,6 +27,10 @@ export class SharedService {
     return this.http.get<Node[]>(this.ApiUrl + "Crawler/getGraphLive" + id);
   }
 
+  getGraphLiveInitial(id: number): Observable<Node[]> {
+    return this.http.get<Node[]>(this.ApiUrl + "Crawler/getGraph/live/all" + id);
+  }
+
   getWebRecord(id: number): Observable<WebsiteRecord> {
     return this.http.get<WebsiteRecord>(this.ApiUrl + "/Record/" + id);
   }
