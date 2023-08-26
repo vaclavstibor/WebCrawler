@@ -32,11 +32,14 @@ namespace WebCrawler.DataAccessLayer.Cache
 
         public static List<Node> GetAndDeleteCachedNodes(int websiteRecordId)
         {
-            var nodes = cache[websiteRecordId].Select(x => x.Value).ToList();
+            if (cache.ContainsKey(websiteRecordId))
+            {
+                var nodes = cache[websiteRecordId].Select(x => x.Value).ToList();
+                cache[websiteRecordId] = new ConcurrentDictionary<int, Node>();
+                return nodes;
+            }
 
-            cache[websiteRecordId] = new ConcurrentDictionary<int, Node>();
-
-            return nodes;
+            return null;
         }
     }
 }

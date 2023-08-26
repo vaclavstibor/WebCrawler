@@ -18,18 +18,22 @@ namespace WebsiteCrawler.Service
         private readonly HttpClient httpClient;
         private readonly Queue<Node> jobQueue;
         private readonly HashSet<Node> nodes;
-        private readonly AppDbContext db;   
+        private readonly AppDbContext db;
+        private readonly DateTime startTime;
 
         public StartingNode StartingNode { get; set; }
 
         public SingleThreadedWebSiteCrawler(IHtmlParser htmlParser, HttpClient httpClient, AppDbContext db)
         {
+            this.startTime = DateTime.Now;
+
             this.htmlParser = htmlParser;
             this.httpClient = httpClient;
             this.db = db;
 
             jobQueue = new Queue<Node>();
             nodes = new HashSet<Node>();
+            this.db = db;
         }
 
         public async Task<StartingNode> Run(WebsiteRecord record, int executionId, int? maximumCountOfNodes = null)
@@ -43,11 +47,9 @@ namespace WebsiteCrawler.Service
                 Domain = GetDomainFromUrl(record.URL),
                 Children = new List<Node>(),
                 WebsiteRecordId = record.Id,
-                ExecutionId = executionId
+                ExecutionId = executionId,
+                Id = nodes.Count
             };
-
-            await db.Nodes.AddAsync(node);
-            await db.SaveChangesAsync();
 
             nodes.Add(node);
 
@@ -65,6 +67,15 @@ namespace WebsiteCrawler.Service
             }
 
             StartingNode.NumberOfSites = nodes.Count;
+
+            foreach (var newNode in nodes)
+            {
+                newNode.Id = 0;
+            }
+
+            await db.Nodes.AddRangeAsync(nodes);
+            await db.SaveChangesAsync();
+
             return StartingNode;
         }
 
@@ -129,7 +140,8 @@ namespace WebsiteCrawler.Service
                             Domain = uri.Host,
                             Children = new List<Node>(),
                             WebsiteRecordId = websiteRecordId,
-                            ExecutionId = executionId
+                            ExecutionId = executionId,
+                            Id = nodes.Count
                         };
                         nodes.Add(node);
                     }
@@ -175,6 +187,8 @@ namespace WebsiteCrawler.Service
                             currentNewNodes.Add(node);
                         }
 
+                        node.CrawlTime = GetCrawlTime();
+
                         CrawlingCache.AddOrUpdateNode(parentNode, websiteRecordId);
                         CrawlingCache.AddOrUpdateNode(node, websiteRecordId);
 
@@ -189,10 +203,6 @@ namespace WebsiteCrawler.Service
                     currentNewNodes.Remove(node);
                 }
             }
-
-            await db.Nodes.AddRangeAsync(currentNewNodes);
-            await db.SaveChangesAsync();
-            parentNode.CrawlTime = GetCrawlTime(startCrawlTime);
         }
 
         private async Task<string> DownloadPage(Uri uri)
@@ -266,7 +276,7 @@ namespace WebsiteCrawler.Service
             return true;
         }
 
-        private TimeSpan GetCrawlTime(DateTime startTime)
+        private TimeSpan GetCrawlTime()
         {
             TimeSpan duration = DateTime.Now.Subtract(startTime);
 
