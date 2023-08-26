@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using WebCrawler.DataAccessLayer.Context;
 using WebCrawler.DataAccessLayer.Models;
 using WebsiteCrawler.Infrastructure.interfaces;
+using WebCrawler.DataAccessLayer.Cache;
 
 namespace WebsiteCrawler.Service
 {
@@ -173,6 +174,9 @@ namespace WebsiteCrawler.Service
                         {
                             currentNewNodes.Add(node);
                         }
+
+                        CrawlingCache.AddOrUpdateNode(parentNode, websiteRecordId);
+                        CrawlingCache.AddOrUpdateNode(node, websiteRecordId);
 
                         if (node.RegExpMatch != false && pageContents != null && !nodeAlreadyVisited)
                         {

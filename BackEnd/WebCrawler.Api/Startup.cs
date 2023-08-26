@@ -58,6 +58,9 @@ public class Startup
         {
             endpoints.MapControllers();
         });
+
+        Executor crawlerStartup = new Executor();
+        Task.Run(() => crawlerStartup.Run());
     }
 }
 

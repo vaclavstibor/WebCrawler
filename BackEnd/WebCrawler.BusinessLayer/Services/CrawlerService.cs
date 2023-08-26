@@ -1,10 +1,8 @@
 ﻿using WebCrawler.DataAccessLayer.Context;
-using Newtonsoft.Json;
 using WebCrawler.DataAccessLayer.Models;
 using WebCrawler.BusinessLayer.DataTransferObjects;
 using Microsoft.EntityFrameworkCore;
-using WebCrawler.DataAccessLayer.Migrations;
-using System.Security.Cryptography.X509Certificates;
+using WebCrawler.DataAccessLayer.Cache;
 
 namespace WebCrawler.BusinessLayer.Services
 {
@@ -41,6 +39,33 @@ namespace WebCrawler.BusinessLayer.Services
                     WebsiteRecordId = x.WebsiteRecordId,
                     ExecutionId = x.ExecutionId
                 }).ToListAsync();
+        }
+
+        public List<NodeDto> GetAllNodesLive(int websiteRecordId)
+        {
+            return CrawlingCache.GetAndDeleteCachedNodes(websiteRecordId)
+                .Select(x => new NodeDto
+                { 
+                    Id = x.Id,
+                    Url = x.Url,
+                    Domain = x.Domain,
+                    CrawlTime = x.CrawlTime,
+                    RegExpMatch = x.RegExpMatch,
+                    Children = x.Children.Select(y => new NodeDto()
+                    { 
+                        Id = y.Id,
+                        Url = y.Url,
+                        Domain = y.Domain,
+                        CrawlTime = y.CrawlTime,
+                        RegExpMatch = y.RegExpMatch,
+                        WebsiteRecordId = websiteRecordId,
+                        ExecutionId = y.ExecutionId,
+                        Children = new List<NodeDto>()
+                    }).ToList(),
+                    WebsiteRecordId = x.WebsiteRecordId,
+                    ExecutionId = x.ExecutionId
+                })
+                .ToList();
         }
 
         public async Task<List<ExecutionDto>> GetAllExecutions()
