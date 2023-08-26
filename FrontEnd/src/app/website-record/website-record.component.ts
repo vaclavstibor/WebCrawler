@@ -6,6 +6,11 @@ export enum Mode {
   Domain
 }
 
+export enum State {
+  Live,
+  Static
+}
+
 @Component({
   selector: 'app-website-record',
   templateUrl: './website-record.component.html',
@@ -16,6 +21,9 @@ export enum Mode {
 export class WebsiteRecordComponent {
   public mode: Mode = Mode.Website;
   public Mode = Mode;
+
+  public state: State = State.Live;
+  public State = State;
 
   constructor() { }
 }

@@ -97,7 +97,7 @@ export class SharedService {
   }
 
   // Graph selected node
-  private data:any = undefined;
+  private data = undefined;
 
   setSelectedNode(data:any) {
     this.data = data;
