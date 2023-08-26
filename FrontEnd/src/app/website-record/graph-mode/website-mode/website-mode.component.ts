@@ -80,7 +80,7 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
   // Function to initialize the 3D Force Graph with the data and settings  
   initializeGraph() {
     // Create the 3D Force Graph instance
-    console.log(this.data.nodes);
+    //console.log(this.data.nodes);
     this.CreateWebsiteLinks(this.data);
     this.graph = ForceGraph3D()
       (document.getElementById('3d-graph-website')!) // Bind the graph to the specified DOM element
