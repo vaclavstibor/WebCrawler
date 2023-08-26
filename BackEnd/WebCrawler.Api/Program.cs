@@ -8,10 +8,6 @@ namespace WebCrawler.Api
     {
         public static void Main(string[] args)
         {
-            Executor crawlerStartup = new Executor();
-
-            Task.Run(() => crawlerStartup.Run());
-
             CreateWebHostBuilder(args).Build().MigrateDatabase<AppDbContext>().Run();
         }
 

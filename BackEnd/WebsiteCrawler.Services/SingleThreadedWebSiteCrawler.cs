@@ -60,6 +60,7 @@ namespace WebsiteCrawler.Service
             while (jobQueue.Count > 0 && (maximumCountOfNodes != null ? (nodes.Count < maximumCountOfNodes) : true))
             {
                 await DiscoverLinks(DateTime.Now, new Regex(record.RegExp ?? ""), record.Id, executionId);
+                await Console.Out.WriteLineAsync($"Current number of nodes is: {nodes.Count}");
             }
 
             StartingNode.NumberOfSites = nodes.Count;
