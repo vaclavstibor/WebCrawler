@@ -46,10 +46,10 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
     {
       this.data.nodes = x;
       console.log(x);
-      if (this.data.nodes.length > 1)
+      if (this.data.nodes.length > 0)
       {
         this.initializeGraph();
-        setInterval(() => this.getLiveData(), 10000);
+        setInterval(() => this.getLiveData(), 5000);
       }
       else {
         console.log("Count of nodes: %d", this.data.nodes.length);

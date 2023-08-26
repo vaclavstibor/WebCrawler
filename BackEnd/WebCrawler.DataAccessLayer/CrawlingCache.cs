@@ -21,6 +21,20 @@ namespace WebCrawler.DataAccessLayer.Cache
             {
                 recentCache.TryAdd(websiteRecordId, new ConcurrentDictionary<int, Node>());
             }
+            
+            if (!cache.ContainsKey(websiteRecordId))
+            {
+                cache.TryAdd(websiteRecordId, new ConcurrentDictionary<int, Node>());
+                if (cache[websiteRecordId].Any(x => x.Key == node.Id))
+                {
+                    cache[websiteRecordId][node.Id] = node;
+                }
+                else
+                {
+                    cache[websiteRecordId].TryAdd(node.Id, node);
+                }
+                return;
+            }
 
             if (recentCache[websiteRecordId].Any(x => x.Key == node.Id))
             {
@@ -57,10 +71,8 @@ namespace WebCrawler.DataAccessLayer.Cache
             if (cache.ContainsKey(websiteRecordId))
             {
                 var nodes = cache[websiteRecordId].Select(x => x.Value).ToList();
-                cache[websiteRecordId] = new ConcurrentDictionary<int, Node>();
                 return nodes;
             }
-
             return new List<Node>();
         }
 
