@@ -61,7 +61,7 @@ namespace WebsiteCrawler.Services
 
                 var crawler = provider.GetRequiredService<IWebSiteCrawler>();
                 
-                await crawler!.Run(record, 1000)
+                await crawler!.Run(record, 100)
                 .ContinueWith(async x => 
                 {
                     record.ExecutionStatus = ExecutionStatus.Executed;
@@ -105,7 +105,7 @@ namespace WebsiteCrawler.Services
 
                 var crawler = provider.GetService<IWebSiteCrawler>();
 
-                await crawler!.Run(execution.WebsiteRecord, execution.Id, 1000)
+                await crawler!.Run(execution.WebsiteRecord, execution.Id, 100)
                 .ContinueWith(async x =>
                 {
                     execution.WebsiteRecord.ExecutionStatus = ExecutionStatus.Executed;
