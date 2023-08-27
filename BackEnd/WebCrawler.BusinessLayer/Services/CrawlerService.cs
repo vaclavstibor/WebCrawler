@@ -76,14 +76,7 @@ namespace WebCrawler.BusinessLayer.Services
 
         public List<NodeDto> GetNewNodesLive(int websiteRecordId)
         {
-            return CrawlingCache.GetAndDeleteCachedNodes(websiteRecordId)
-                .Select(x => x.MapToDto())
-                .ToList();
-        }
-
-        public List<NodeDto> GetAllNodesLive(int websiteRecordId)
-        {
-            return CrawlingCache.GetAllNodes(websiteRecordId)
+            return CrawlingCache.GetNodes(websiteRecordId)
                 .Select(x => x.MapToDto())
                 .ToList();
         }
