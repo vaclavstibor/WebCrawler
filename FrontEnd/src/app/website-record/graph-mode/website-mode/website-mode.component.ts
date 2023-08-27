@@ -168,6 +168,9 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
     for (const parent of data.nodes){
       if (parent.hasOwnProperty('children') && parent.children !== null){
         for (const child of parent.children) {  
+          if (this.data.nodes.find(node => node.id !== child.id)){
+            this.data.nodes.push(child);
+          }
           const link = { 'source': parent.id, 'target': child.id, color: '#000000'};
           data.links.push(link);
         }
@@ -176,7 +179,7 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
   }
 
   AddNodes(data: any) {
-    for (const parent of data.nodes) {
+    for (const parent of data) {
       if (parent.hasOwnProperty('children') && parent.children !== null){
         for (const child of parent.children) {  
           if (this.data.nodes.find(node => node.id !== child.id)) {
@@ -188,10 +191,12 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
           }
         }
       }
-      if (this.data.nodes.find(node => node.id === parent.id)) {
+      if (this.data.nodes.find(node => node.id !== parent.id)) {
         this.data.nodes.push(parent);
       } 
     }
+
+    this.graph.graphData(this.data)
   }
 
   ngOnDestroy()

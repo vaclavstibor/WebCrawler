@@ -25,7 +25,7 @@ export class SharedService {
   }
 
   getGraphLive(id: number): Observable<Node[]> {
-    return this.http.get<Node[]>(this.ApiUrl + "/Crawler/getGraphLive/" + id);
+    return this.http.get<Node[]>(this.ApiUrl + "/Crawler/getGraph/live/" + id);
   }
 
   getGraphLiveInitial(id: number): Observable<Node[]> {
