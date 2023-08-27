@@ -15,6 +15,7 @@ public static class NodeToDtoMapping
             Url = x.Url,
             Domain = x.Domain,
             CrawlTime = x.CrawlTime,
+            Title = x.Title,
             RegExpMatch = x.RegExpMatch,
             Children = x.Children.Select(y => new NodeDto()
             {
@@ -24,6 +25,7 @@ public static class NodeToDtoMapping
                 CrawlTime = y.CrawlTime,
                 RegExpMatch = y.RegExpMatch,
                 ExecutionId = y.ExecutionId,
+                Title = y.Title,
                 Children = new List<NodeDto>()
             }).ToList(),
             WebsiteRecordId = x.WebsiteRecordId,

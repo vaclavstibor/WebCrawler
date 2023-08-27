@@ -8,6 +8,7 @@ using WebCrawler.DataAccessLayer.Context;
 using WebCrawler.DataAccessLayer.Models;
 using WebsiteCrawler.Infrastructure.interfaces;
 using WebCrawler.DataAccessLayer.Cache;
+using WebCrawler.DataAccessLayer.Migrations;
 
 namespace WebsiteCrawler.Service
 {
@@ -50,6 +51,10 @@ namespace WebsiteCrawler.Service
                 ExecutionId = executionId,
                 Id = nodes.Count
             };
+
+            var url = new Uri(record.URL, UriKind.RelativeOrAbsolute);
+            string? pageContents = await DownloadPage(url);
+            node.Title = Regex.Match(pageContents, @"\<title\b[^>]*\>\s*(?<Title>[\s\S]*?)\</title\>", RegexOptions.IgnoreCase).Groups["Title"].Value;
 
             nodes.Add(node);
 
@@ -172,6 +177,7 @@ namespace WebsiteCrawler.Service
                         if (!nodeAlreadyVisited)
                         {
                             pageContents = await DownloadPage(uri);
+                            node.Title = Regex.Match(pageContents, @"\<title\b[^>]*\>\s*(?<Title>[\s\S]*?)\</title\>", RegexOptions.IgnoreCase).Groups["Title"].Value;
                         }
                     }
                     catch

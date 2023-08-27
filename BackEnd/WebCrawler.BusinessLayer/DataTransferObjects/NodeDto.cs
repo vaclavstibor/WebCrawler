@@ -17,5 +17,6 @@ namespace WebCrawler.BusinessLayer.DataTransferObjects
         public virtual ICollection<NodeDto>? Children { get; set; }
         public int WebsiteRecordId { get; set; }
         public int ExecutionId { get; set; }
+        public string Title { get; set; }
     }
 }

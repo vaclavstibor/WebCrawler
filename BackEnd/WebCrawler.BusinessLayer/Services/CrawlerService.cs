@@ -49,12 +49,12 @@ namespace WebCrawler.BusinessLayer.Services
                 .Include(x => x.Children)
                 .Select(x => new GraphQLModels.Node
                 {
-                    Title = x.Domain,
+                    Title = x.Title,
                     Url = x.Url,
                     CrawlTime = x.CrawlTime.ToString(),
                     Links = x.Children.Select(y => new GraphQLModels.Node
                     {
-                        Title = y.Domain,
+                        Title = y.Title,
                         Url = y.Url,
                         CrawlTime = y.CrawlTime.ToString(),
                         Links = new List<GraphQLModels.Node>(),
