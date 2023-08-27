@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using WebCrawler.DataAccessLayer.Cache;
 using WebCrawler.BusinessLayer.Mappings;
 using WebCrawler.BusinessLayer.GraphQLModels;
+using System.Text.RegularExpressions;
+using System;
 
 namespace WebCrawler.BusinessLayer.Services
 {
@@ -22,12 +24,12 @@ namespace WebCrawler.BusinessLayer.Services
 
             return new WebPage()
             {
-                Identifier = record.Id.ToString(),
-                Label = record.Label,
-                Url = record.URL,
-                Regexp = record.RegExp,
-                Tags = record.Tags.Select(y => y.Content).ToList(),
-                Active = record.Active
+                Identifier = record?.Id.ToString() ?? "",
+                Label = record?.Label ?? "",
+                Url = record?.URL ?? "",
+                Regexp = record?.RegExp ?? "",
+                Tags = record?.Tags?.Select(y => y.Content).ToList() ?? new List<string>(),
+                Active = record?.Active ?? false
             };
         }
 
@@ -43,9 +45,8 @@ namespace WebCrawler.BusinessLayer.Services
                 }
             }
 
-            return (await db.Nodes.Where(x => iDS.Contains(x.WebsiteRecordId))
+            return await db.Nodes.Where(x => iDS.Contains(x.WebsiteRecordId))
                 .Include(x => x.Children)
-                .ToListAsync())
                 .Select(x => new GraphQLModels.Node
                 {
                     Title = x.Domain,
@@ -57,12 +58,12 @@ namespace WebCrawler.BusinessLayer.Services
                         Url = y.Url,
                         CrawlTime = y.CrawlTime.ToString(),
                         Links = new List<GraphQLModels.Node>(),
-                        Owner = GetWebPage(x.WebsiteRecordId)
+                        Owner = db.Records.SingleOrDefault(z => z.Id == x.WebsiteRecordId).ToWebPage()
 
                     }).ToList(),
-                    Owner = GetWebPage(x.WebsiteRecordId)
+                    Owner = db.Records.SingleOrDefault(z => z.Id == x.WebsiteRecordId).ToWebPage()
                 })
-                .ToList();
+                .ToListAsync();
         }
 
         public async Task<List<NodeDto>> GetAllNodes(int websiteRecordId)

@@ -78,12 +78,12 @@
                     <th *ngFor="let column of columns" style="width: 15%; word-break: break-all;">
                         {{column.name}}
                     </th>
-                    <th style="width: 5%; word-break: break-all;">Periodicity</th>
-                    <th style="width: 10%; word-break: break-all;">Tags</th>
-                    <th style="width: 4%; word-break: break-all;"></th>
-                    <th style="width: 4%; word-break: break-all;"></th>
-                    <th style="width: 4%; word-break: break-all;"></th>
-                    <th style="width: 4%; word-break: break-all;"></th>
+                    <th style="width: 5%;">Periodicity</th>
+                    <th style="width: 10%;">Tags</th>
+                    <th style="width: 4%;;"></th>
+                    <th style="width: 4%;"></th>
+                    <th style="width: 4%;"></th>
+                    <th style="width: 4%;"></th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" 
@@ -93,10 +93,10 @@
                     <td *ngFor="let column of columns" style="width: 15%; word-break: break-all;">
                         {{rowData[column.field]}}
                     </td>
-                    <td style="width: 5%; word-break: break-all;">
+                    <td style="width: 5%;">
                         {{rowData.days < 10 ? 0 : ''}}{{rowData.days}}:{{rowData.hours < 10 ? 0 : ''}}{{rowData.hours}}:{{rowData.minutes < 10 ? 0 : ''}}{{rowData.minutes}}:00
                     </td>
-                    <td style="width: 10%; word-break: break-all;">
+                    <td style="width: 10%;">
                         <span *ngFor="let tag of rowData.tagDTOs"> 
                             {{tag.content}}
                         </span> 
