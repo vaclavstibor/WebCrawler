@@ -1,6 +1,6 @@
-<div class="containter p-3" style="margin-left: 5%; margin-right: 5%;">
+<div class="container-5 p-3">
     <div>
-        <div (click)="filter()" class="containter">
+        <div (click)="filter()">
             <p-multiSelect 
             [options]="tags"
             [(ngModel)]="chosenTags"
@@ -17,6 +17,7 @@
                     <div>{{ webRecord.url }}</div>
                 </ng-template>
             </p-multiSelect>
+            
             <p-multiSelect 
             [options]="allWebRecords"
             [(ngModel)]="chosenLabels"

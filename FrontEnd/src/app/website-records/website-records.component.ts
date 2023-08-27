@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-website-records',
   templateUrl: './website-records.component.html',
-  styleUrls: ['./website-records.component.css']
+  styleUrls: ['./website-records.component.css', '../app.component.css']
 })
 export class WebsiteRecordsComponent implements OnInit {
   allWebRecords: WebsiteRecord[] = [];

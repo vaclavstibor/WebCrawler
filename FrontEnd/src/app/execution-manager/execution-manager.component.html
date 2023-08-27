@@ -1,25 +1,21 @@
-<div class="containter p-3">
+<div class="container-5 p-3">
     <div>
-        <div (click)="filter()" class="containter">
+        <div (click)="filter()">
             <p-multiSelect 
             [options]="allExecutions"
             [(ngModel)]="chosenLabels"
             optionLabel="label"
             optionValue="label"
-            defaultLabel="Choose Labels"
-            class="">
+            defaultLabel="Choose Labels">
                 <ng-template let-webRecord pTemplate="item">
                     <div>{{ webRecord.label }}</div>
                 </ng-template>
             </p-multiSelect>
-        </div>
-
-        <span class="single-row gx-5">
-            <span class="form-check form-switch col-2">
+            <span class="form-check form-switch form-check-inline" style="margin-left: 1%;">
                 <input class="form-check-input" type="checkbox" id="sor-tLastCrawling" [(ngModel)]="sortByLastCrawling">
                 <label class="form-check-label" for="sortUrl">Sort by last crawling</label>
             </span>  
-            <div *ngIf="sortByLastCrawling">
+            <span *ngIf="sortByLastCrawling">
                 <span class="form-check form-check-inline">
                     <input (click)="executeSortByLastCrawling(true)" class="form-check-input" type="radio" name="time" id="sort-newest" value="true">
                     <label class="form-check-label" for="sort-newest">Newest</label>
@@ -28,13 +24,13 @@
                     <input (click)="executeSortByLastCrawling(false)" class="form-check-input" type="radio" name="time" id="sort-oldest" value="false">
                     <label class="form-check-label" for="sort-oldest">Oldest</label>
                 </span>
-            </div>
-        </span>
+            </span>
+        </div>
     </div>
 
     <p-table [value]="executions" 
         [paginator]="true" 
-        [rows]="10" 
+        [rows]="15" 
         [columns]="columns">
         <ng-template pTemplate="header" let-columns>
             <tr>
