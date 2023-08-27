@@ -4,8 +4,7 @@
             <p-multiSelect 
             [options]="tags"
             [(ngModel)]="chosenTags"
-            defaultLabel="Choose tags"
-            class="">
+            defaultLabel="Choose tags">
             </p-multiSelect>
 
             <p-multiSelect 
@@ -18,56 +17,73 @@
                     <div>{{ webRecord.url }}</div>
                 </ng-template>
             </p-multiSelect>
-
             <p-multiSelect 
             [options]="allWebRecords"
             [(ngModel)]="chosenLabels"
             optionLabel="label"
             optionValue="label"
-            defaultLabel="Choose Labels"
-            class="">
+            defaultLabel="Choose Labels">
                 <ng-template let-webRecord pTemplate="item">
                     <div>{{ webRecord.label }}</div>
                 </ng-template>
             </p-multiSelect>
-        </div>
-        <div class="mt-2">
-            <span class="single-row gx-5">
-                <span class="form-check form-switch col-1">
-                    <input class="form-check-input" type="checkbox" id="sort-Url" [(ngModel)]="sortByUrl">
-                    <label class="form-check-label" for="sortUrl">Sort by URL</label>
+            
+            <span class="form-check form-switch form-check-inline" style="margin-left: 1%;">
+                <input class="form-check-input" type="checkbox" id="sort-Url" [(ngModel)]="sortByUrl">
+                <label class="form-check-label" for="sortUrl">Sort by URL</label>
+            </span>
+            <span *ngIf="sortByUrl">    
+                <span class="form-check form-check-inline">
+                    <input (click)="executeSortByUrl(true)" class="form-check-input" type="radio" name="alphabet" id="sort-AtoZ" value="true">
+                    <label class="form-check-label" for="sort-AtoZ">A-Z</label>
                 </span>
-                <div *ngIf="sortByUrl">    
-                    <span class="form-check form-check-inline">
-                        <input (click)="executeSortByUrl(true)" class="form-check-input" type="radio" name="alphabet" id="sort-AtoZ" value="true">
-                        <label class="form-check-label" for="sort-AtoZ">A-Z</label>
-                    </span>
-                    <span class="form-check form-check-inline">
-                        <input (click)="executeSortByUrl(false)" class="form-check-input" type="radio" name="alphabet" id="sort-ZtoA" value="false">
-                        <label class="form-check-label" for="sort-ZtoA">Z-A</label>
-                    </span>
-                </div>
+                <span class="form-check form-check-inline">
+                    <input (click)="executeSortByUrl(false)" class="form-check-input" type="radio" name="alphabet" id="sort-ZtoA" value="false">
+                    <label class="form-check-label" for="sort-ZtoA">Z-A</label>
+                </span>
             </span>
-            <span class="single-row gx-5">
-                <span class="form-check form-switch col-2">
-                    <input class="form-check-input" type="checkbox" id="sor-tLastCrawling" [(ngModel)]="sortByLastCrawling">
-                    <label class="form-check-label" for="sortUrl">Sort by last crawling</label>
-                </span>  
-                <div *ngIf="sortByLastCrawling">
-                    <span class="form-check form-check-inline">
-                        <input (click)="executeSortByLastCrawling(true)" class="form-check-input" type="radio" name="time" id="sort-newest" value="1">
-                        <label class="form-check-label" for="sort-newest">Newest</label>
-                    </span>
-                    <span class="form-check form-check-inline">
-                        <input (click)="executeSortByLastCrawling(false)" class="form-check-input" type="radio" name="time" id="sort-oldest" value="0">
-                        <label class="form-check-label" for="sort-oldest">Oldest</label>
-                    </span>
-                </div>
+            <span class="form-check form-switch form-check-inline">
+                <input class="form-check-input" type="checkbox" id="sor-tLastCrawling" [(ngModel)]="sortByLastCrawling">
+                <label class="form-check-label" for="sortUrl">Sort by last crawling</label>
+            </span>  
+            <span *ngIf="sortByLastCrawling">
+                <span class="form-check form-check-inline">
+                    <input (click)="executeSortByLastCrawling(true)" class="form-check-input" type="radio" name="time" id="sort-newest" value="1">
+                    <label class="form-check-label" for="sort-newest">Newest</label>
+                </span>
+                <span class="form-check form-check-inline">
+                    <input (click)="executeSortByLastCrawling(false)" class="form-check-input" type="radio" name="time" id="sort-oldest" value="0">
+                    <label class="form-check-label" for="sort-oldest">Oldest</label>
+                </span>
             </span>
+            <button (click)="createNewRecord()" class="btn btn-primary" style="margin-bottom: 0.4%;"> Create new record </button>
         </div>
     </div>
 
-    <div style="margin-left: 5%; margin-right: 5%;">
+            <div *ngIf="recordUpdatingState != defaultState">
+                <input class="form-control form-control-sm" [(ngModel)]="newRecord.url" type="text" placeholder="Url" aria-label=".form-control-sm example">
+                <input class="form-control form-control-sm" [(ngModel)]="newRecord.label" type="text" placeholder="Label" aria-label=".form-control-sm example">
+                <input class="form-control form-control-sm" [(ngModel)]="newRecord.regExp" type="text" placeholder="Regular Expression" aria-label=".form-control-sm example">
+                <input class="form-control form-control-sm" [(ngModel)]="newRecord.days" type="text" placeholder="Days" aria-label=".form-control-sm example">
+                <input class="form-control form-control-sm" [(ngModel)]="newRecord.hours" type="text" placeholder="Hours" aria-label=".form-control-sm example">
+                <input class="form-control form-control-sm" [(ngModel)]="newRecord.minutes" type="text" placeholder="Minutes" aria-label=".form-control-sm example">
+    
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="sort-Url" [(ngModel)]="newRecord.active">
+                    <label class="form-check-label" for="sortUrl">Is Active</label>
+                </div>  
+    
+                <h4>Tags</h4>
+                <div *ngFor="let tag of newRecord.tagDTOs">
+                    <span> {{tag.content}} </span>
+                    <span><button (click)="removeTagFromNewRecord(tag)" class="btn btn-danger">x</button></span>
+                </div>
+                <input class="form-control form-control-sm" [(ngModel)]="newTag.content" type="text" placeholder="Tag" aria-label=".form-control-sm example">
+                <div>
+                    <button (click)="addTag()" class="btn btn-primary">Add a tag</button>
+                    <button (click)="updateRecord()" class="btn btn-primary" [textContent]="updateRecordText"></button>
+                </div>
+            </div>
         <p-table 
             [value]="webRecords" 
             [paginator]="true" 
@@ -75,7 +91,7 @@
             [columns]="columns">
             <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th *ngFor="let column of columns" style="width: 15%; word-break: break-all;">
+                    <th *ngFor="let column of columns" style="width: 15%;">
                         {{column.name}}
                     </th>
                     <th style="width: 5%;">Periodicity</th>
@@ -117,29 +133,3 @@
             </ng-template>
         </p-table>
     </div>
-    <button (click)="createNewRecord()" class="btn btn-primary"> Create new record </button>
-    <div *ngIf="recordUpdatingState != defaultState">
-        <input class="form-control form-control-sm" [(ngModel)]="newRecord.url" type="text" placeholder="Url" aria-label=".form-control-sm example">
-        <input class="form-control form-control-sm" [(ngModel)]="newRecord.label" type="text" placeholder="Label" aria-label=".form-control-sm example">
-        <input class="form-control form-control-sm" [(ngModel)]="newRecord.regExp" type="text" placeholder="Regular Expression" aria-label=".form-control-sm example">
-        <input class="form-control form-control-sm" [(ngModel)]="newRecord.days" type="text" placeholder="Days" aria-label=".form-control-sm example">
-        <input class="form-control form-control-sm" [(ngModel)]="newRecord.hours" type="text" placeholder="Hours" aria-label=".form-control-sm example">
-        <input class="form-control form-control-sm" [(ngModel)]="newRecord.minutes" type="text" placeholder="Minutes" aria-label=".form-control-sm example">
-
-        <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="sort-Url" [(ngModel)]="newRecord.active">
-            <label class="form-check-label" for="sortUrl">Is Active</label>
-        </div>  
-
-        <h4>Tags</h4>
-        <div *ngFor="let tag of newRecord.tagDTOs">
-            <span> {{tag.content}} </span>
-            <span><button (click)="removeTagFromNewRecord(tag)" class="btn btn-danger">x</button></span>
-        </div>
-        <input class="form-control form-control-sm" [(ngModel)]="newTag.content" type="text" placeholder="Tag" aria-label=".form-control-sm example">
-        <div>
-            <button (click)="addTag()" class="btn btn-primary">Add a tag</button>
-            <button (click)="updateRecord()" class="btn btn-primary" [textContent]="updateRecordText"></button>
-        </div>
-    </div>
-</div>

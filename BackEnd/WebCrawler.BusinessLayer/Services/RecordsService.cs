@@ -156,7 +156,7 @@ namespace WebCrawler.BusinessLayer.Services
             return true;
         }
 
-        public async Task<int> UpdateWebsiteRecord(WebsiteRecordDTO record)
+        public async Task<WebsiteRecordDTO> UpdateWebsiteRecord(WebsiteRecordDTO record)
         {
             var recordInDb = await db.Records.SingleOrDefaultAsync(x => x.Id == record.Id);
 
@@ -202,7 +202,20 @@ namespace WebCrawler.BusinessLayer.Services
                 await db.SaveChangesAsync();
                 await crawlerService.StartExecution(recordInDb.Id);
             }
-            return recordInDb.Id;
+
+            return new WebsiteRecordDTO()
+            {
+                Id = recordInDb.Id,
+                URL = recordInDb.URL,
+                RegExp = recordInDb.RegExp,
+                Hours = recordInDb.Hours,
+                Minutes = recordInDb.Minutes,
+                Days = recordInDb.Days,
+                Label = recordInDb.Label,
+                Active = recordInDb.Active,
+                LastExecution = recordInDb.LastExecution,
+                ExecutionStatus = recordInDb.ExecutionStatus.EnumToString(),
+            };
         }
 
         public async Task AddNewTag(TagDTO tag)

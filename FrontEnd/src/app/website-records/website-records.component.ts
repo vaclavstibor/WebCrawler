@@ -75,26 +75,25 @@ export class WebsiteRecordsComponent implements OnInit {
     this.newRecord.tagDTOs.push(this.newTag);
     this.newTag = <Tag>{};
   }
-
-  updateRecord() : void {
-    this.sharedService.updateRecord(this.newRecord).subscribe(data => 
-      {
-        this.newRecord.id = data;
-      });
-
-    var record: number = this.allWebRecords.findIndex(x => x.id == this.newRecord.id);  
-    
-    if (record === -1)
+  
+  async updateRecord() {
+    this.sharedService.updateRecord(this.newRecord).subscribe(async data => 
     {
-      this.allWebRecords.push(this.newRecord);
-    }
-    else 
-    {
-      this.allWebRecords[record] = this.newRecord;
-    }
-    
-    this.newRecord = <WebsiteRecord>{};
-    this.newRecord.tagDTOs = [];
+        this.newRecord = await data;
+
+        var record: number = this.allWebRecords.findIndex(x => x.id == this.newRecord.id);  
+        if (record === -1)
+        {
+          this.allWebRecords.push(this.newRecord);
+        }
+        else 
+        {
+          this.allWebRecords[record] = this.newRecord;
+        }
+        
+        this.newRecord = <WebsiteRecord>{};
+        this.newRecord.tagDTOs = [];
+    });
   }
 
   deleteARecord(record: WebsiteRecord) : void
