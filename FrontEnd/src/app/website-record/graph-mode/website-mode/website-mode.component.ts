@@ -41,20 +41,6 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
   getLiveInitialData(): void {
     console.log("Trying to get initial data.");
     this.route.params.subscribe(x => this.id = x['id']);
-
-    this.sharedService.getGraphLiveInitial(this.id).subscribe(x => 
-    {
-      this.data.nodes = x;
-      console.log(x);
-      if (this.data.nodes.length > 0)
-      {
-        this.initializeGraph();
-        setInterval(() => this.getLiveData(), 5000);
-      }
-      else {
-        console.log("Count of nodes: %d", this.data.nodes.length);
-      }
-    });
   }
 
   getLiveData(): void {
