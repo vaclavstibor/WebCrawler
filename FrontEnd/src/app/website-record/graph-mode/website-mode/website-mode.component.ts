@@ -1,6 +1,6 @@
 // https://github.com/vasturiano/3d-force-graph
 
-import { Component, Renderer2, OnInit, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SharedService } from '../../../shared.service';
 import { Node } from '../../../models/Node';
@@ -18,37 +18,44 @@ import ForceGraph3D, {
 export class WebsiteModeComponent implements OnInit, OnDestroy {
   private graph!: ForceGraph3DInstance;
   public selectedNode = new Set<Node>();
-  
+  private intervalId: any;
+
   id: number = 0;
-  // Data structure to store the graph nodes and links for Website mode
   
   data: {
-    nodes: Node[]; 
+    nodes: Node[];
     links: any[];
   } = {
     nodes: [],
     links: []
   };
 
-  constructor(private sharedService:SharedService, private route: ActivatedRoute, private route2: ActivatedRoute,private sharedService2:SharedService, private elementRef: ElementRef) {
-
-  }
+  constructor(private sharedService:SharedService, private route: ActivatedRoute,private sharedService2:SharedService) {}
   
   ngOnInit(): void {
+    this.route.params.subscribe(x => this.id = x['id']);
     this.replaceGraphElement();
   }
 
-  getLiveInitialData(): void {
-    console.log("Trying to get initial data.");
-    this.route.params.subscribe(x => this.id = x['id']);
+  getInitialData(): void {
+    console.log("Website Mode: Trying to get initial data.");
+
+    this.sharedService.getGraphLive(this.id).subscribe(result => {
+      this.data.nodes = result;
+
+      if (this.data.nodes.length > 0) {
+        this.initializeGraph();
+        this.intervalId = setInterval(() => this.getData(), 5000);
+      } 
+    });
   }
 
-  getLiveData(): void {
-    console.log("Trying to get new data after initial.");
+  getData(): void {
+    console.log("Website Mode: Trying to get new data after initial.");
 
-    this.sharedService.getGraphLive(this.id)
-      .subscribe(
-        result => this.AddNodes(result))
+    this.sharedService.getGraphLive(this.id).subscribe(result => {
+      this.CreateWebsiteLinks(result);
+    });
   }
 
   // Function to replace the graph element with a new one
@@ -64,16 +71,13 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
       currentGraphElement.replaceWith(newGraphElement);
 
       // Call the initializeGraph function again with the new element
-      //this.initializeGraph();
-      this.getLiveInitialData();
+      this.getInitialData();
     }
   }
 
   // Function to initialize the 3D Force Graph with the data and settings  
   initializeGraph() {
-    // Create the 3D Force Graph instance
-    //console.log(this.data.nodes);
-    this.CreateWebsiteLinks(this.data);
+    this.CreateWebsiteLinks(this.data.nodes);
     this.graph = ForceGraph3D()
       (document.getElementById('3d-graph-website')!) // Bind the graph to the specified DOM element
       .width(window.innerWidth)             // Set the graph width to match the window width
@@ -149,78 +153,39 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Function to create links between nodes based on the 'children' property of nodes
-  CreateWebsiteLinks(data: any) {
-    for (const parent of data.nodes){
-      if (parent.hasOwnProperty('children') && parent.children !== null){
-        for (const child of parent.children) {  
-          if (this.data.nodes.find(node => node.id !== child.id)){
-            this.data.nodes.push(child);
-          }
-          const link = { 'source': parent.id, 'target': child.id, color: '#000000'};
-          data.links.push(link);
-        }
-      }
-    }
-  }
-
-  AddNodes(data: any) {
+  CreateWebsiteLinks(data: any) { 
     for (const parent of data) {
-      if (parent.hasOwnProperty('children') && parent.children !== null){
-        for (const child of parent.children) {  
-          if (this.data.nodes.find(node => node.id !== child.id)) {
+      if (parent.hasOwnProperty('children') && parent.children.length > 0) {
+        for (const child of parent.children) {
+          if (!this.data.nodes.some(node => node.id === child.id)) {
             this.data.nodes.push(child);
           }
-          else {
-            //data.nodes.deleteThisElement
-            return;
+          if (!this.data.links.some(link => link.source.id === parent.id && link.target.id === child.id))
+          {
+            const link = { 'source': parent.id, 'target': child.id, color: '#000000' };
+            this.data.links.push(link);
           }
         }
       }
-      if (this.data.nodes.find(node => node.id !== parent.id)) {
+  
+      if (!this.data.nodes.some(node => node.id === parent.id)) {
         this.data.nodes.push(parent);
-      } 
+      }
     }
-
-    this.graph.graphData(this.data)
+    if (this.graph !== undefined)
+    {
+      this.graph.graphData(this.data);
+      console.log("nodes: ", this.data.nodes.length)
+      console.log("links: ", this.data.links.length)
+      console.log(this.data.links);
+    }
   }
 
-  ngOnDestroy()
-  {
+
+  ngOnDestroy() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
     console.log("Destorying website")
   }
 }
-
-// 
-
-// If crawling -> active/static || static
-// API - isCrawling, newNodes
-
- /*
-  @HostListener('window:resize', ['$event'])
-  public windowResize(event: Event): void {
-    const element = this.elementRef.nativeElement as HTMLElement;
-    const box = element.getBoundingClientRect();
-    this.graph.width(box.width);
-    this.graph.height(box.height);
-    // @ts-ignore
-    this.graph?.controls().handleResize();
-  }
-  */
-/*
-  function addNode(node) {
-    let domain = (new URL(node.Url));
-    //console.log(domain);
-    node.Domain = domain.hostname;
-    data["nodes"].push(node)
-    if (node.hasOwnProperty("nodes")) {
-        for (const child of node.nodes) {
-            const link = { "source": node.id ,"target": child.id };
-            //console.log(link)
-            data["links"].push(link)
-        }
-    }
-    Graph.graphData(data)
-    Graph.nodeAutoColorBy('Domain')
-}
-*/
