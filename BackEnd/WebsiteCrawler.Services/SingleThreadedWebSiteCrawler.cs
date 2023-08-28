@@ -287,7 +287,7 @@ namespace WebsiteCrawler.Service
         {
             TimeSpan duration = DateTime.Now.Subtract(startTime);
 
-            return duration;
+            return duration;  
         }
 
         public static string GetDomainFromUrl(string url)

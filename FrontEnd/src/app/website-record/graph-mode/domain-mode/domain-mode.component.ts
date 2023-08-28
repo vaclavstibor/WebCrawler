@@ -86,7 +86,7 @@ export class DomainModeComponent implements OnInit, OnDestroy {
       .height(window.innerHeight)           // Set the graph height to match the window height
       .backgroundColor('#FFFFFF')           // Set the background color of the graph
       .graphData(this.data)                      // Provide the graph data (nodes and links) to the graph instance
-      .nodeLabel('id')                      // Display the 'id' property as the node label
+      .nodeLabel('title')                      // Display the 'id' property as the node label
       .linkOpacity(0.3)                     // Set the opacity of the links
       .nodeOpacity(0.95)                    // Set the opacity of the nodes
       .linkDirectionalArrowRelPos(1)        // Set the relative position of the directional arrow on the links
@@ -113,7 +113,7 @@ export class DomainModeComponent implements OnInit, OnDestroy {
 
         // Display node details in the UI
         (document.getElementById('url-a') as HTMLInputElement).textContent=node.url;
-        (document.getElementById('crawl-time-a') as HTMLInputElement).textContent=node.crawlTime;
+        (document.getElementById('crawl-time-a') as HTMLInputElement).textContent=node.crawlTime.toFixed(2);
         
         // Delete previous record list and create a new one for the selected node's children        
         this.deleteRecordsList();
@@ -176,8 +176,8 @@ export class DomainModeComponent implements OnInit, OnDestroy {
     
     if (this.graph !== undefined) {
       this.graph.graphData({nodes, links});
-      console.log("domain nodes: ", nodes);
-      console.log("links: ", links);
+      console.log("domain: ", nodes.length);
+      console.log("links: ", links.length);
     } else {
       this.data.nodes = nodes;
       this.data.links = links;

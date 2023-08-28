@@ -22,6 +22,9 @@ body {
 
 #detail {
   border-radius: 6px;
+  max-height: 500px;
+  max-width: 600px;
+  overflow: scroll;
   background-color: rgba(196, 196, 196, 0.192);
 }
 

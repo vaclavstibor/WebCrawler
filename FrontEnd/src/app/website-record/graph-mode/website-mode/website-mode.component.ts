@@ -84,20 +84,18 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
       .height(window.innerHeight)           // Set the graph height to match the window height
       .backgroundColor('#FFFFFF')           // Set the background color of the graph
       .graphData(this.data)                 // Provide the graph data (nodes and links) to the graph instance
-      .nodeLabel('id')                      // Display the 'id' property as the node label
+      .nodeLabel('title')                      // Display the 'id' property as the node label
       .linkOpacity(0.3)                     // Set the opacity of the links
       .nodeOpacity(0.95)                    // Set the opacity of the nodes
       .linkDirectionalArrowRelPos(1)        // Set the relative position of the directional arrow on the links
       .linkDirectionalArrowLength(3.5)      // Set the length of the directional arrow on the links
       .linkCurvature(0.15)                  // Set the curvature of the links
       .nodeAutoColorBy('domain')            // Automatically color the nodes based on the 'domain' property
-      .onNodeClick((node: any, event: Event) => {
-        // Event handler for node click     
+      .onNodeClick((node: any, event: Event) => { 
         const untoggle = this.selectedNode.has(node);
         this.selectedNode.clear();
         if (!untoggle) {
           this.selectedNode.add(node);
-          this.sharedService.setSelectedNode(this.selectedNode);
         }
 
         // Move the camera closer to the clicked node
@@ -177,15 +175,17 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
       this.graph.graphData(this.data);
       console.log("nodes: ", this.data.nodes.length)
       console.log("links: ", this.data.links.length)
-      console.log(this.data.links);
     }
   }
 
 
   ngOnDestroy() {
+    console.log("Destorying website");
+
     if (this.intervalId) {
       clearInterval(this.intervalId);
     }
-    console.log("Destorying website")
+
+    this.selectedNode.clear();
   }
 }
