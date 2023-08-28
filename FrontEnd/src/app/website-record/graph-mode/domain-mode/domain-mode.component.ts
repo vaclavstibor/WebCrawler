@@ -112,6 +112,7 @@ export class DomainModeComponent implements OnInit, OnDestroy {
         this.graph.cameraPosition(newPos, node, 1000);
 
         // Display node details in the UI
+        (document.getElementById('title-a') as HTMLInputElement).textContent=node.title;
         (document.getElementById('url-a') as HTMLInputElement).textContent=node.url;
         (document.getElementById('crawl-time-a') as HTMLInputElement).textContent=node.crawlTime.toFixed(2);
         

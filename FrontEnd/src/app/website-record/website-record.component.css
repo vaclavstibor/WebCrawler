@@ -4,6 +4,10 @@ html, body {
   height: 100%;
 }
 
+#title-a {
+  font-weight: bold;
+}
+
 /* Set body's display to flex to enable vertical layout */
 body {
   display: flex;
