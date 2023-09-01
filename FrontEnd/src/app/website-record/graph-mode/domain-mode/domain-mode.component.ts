@@ -1,6 +1,6 @@
 // https://github.com/vasturiano/3d-force-graph
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SharedService } from '../../../shared.service';
 import { Node } from '../../../models/Node';
@@ -9,6 +9,7 @@ import ForceGraph3D, {
   ConfigOptions, 
   ForceGraph3DInstance 
 } from "3d-force-graph";
+import { State, Mode } from '../../website-record.component';
 
 @Component({
   selector: 'app-domain-mode',
@@ -16,6 +17,8 @@ import ForceGraph3D, {
   styleUrls: ['./domain-mode.component.css']
 })
 export class DomainModeComponent implements OnInit, OnDestroy {
+  @Input() state!: State;
+  mode: Mode = Mode.Domain;
   private graph!: ForceGraph3DInstance;
   public selectedNode = new Set<Node>();
   private domainToNodeMap: { [key: string]: Node } = {};
@@ -38,21 +41,33 @@ export class DomainModeComponent implements OnInit, OnDestroy {
     this.replaceGraphElement();
   }
 
-  getInitialData(): void {
-    console.log("Domain Mode: Trying to get initial data.");
+  getInitialStaticData(): void {
+    console.log(`${Mode[this.mode]} Mode: Trying to get initial ${State[this.state]} data.`);  
+
+    this.sharedService.getGraph(this.id).subscribe(result => {
+      this.data.nodes = result;
+
+      if (this.data.nodes.length > 0) {
+        this.initializeGraph();
+      } 
+    });       
+  }
+
+  getInitialLiveData(): void {
+    console.log(`${Mode[this.mode]} Mode: Trying to get initial ${State[this.state]} data.`);    
 
     this.sharedService.getGraphLive(this.id).subscribe(result => {
       this.data.nodes = result;
 
       if (this.data.nodes.length > 0) {
         this.initializeGraph();
-        this.intervalId = setInterval(() => this.getData(), 5000);
+        this.intervalId = setInterval(() => this.getLiveData(), 5000);
       } 
     });
   }
 
-  getData(): void {
-    console.log("Trying to get new data after initial.");
+  getLiveData(): void {
+    console.log(`${Mode[this.mode]} Mode: Trying to get periodically new data.`);
 
     this.sharedService.getGraphLive(this.id).subscribe(result => {
       this.CreateWebsiteLinks(result);
@@ -71,30 +86,36 @@ export class DomainModeComponent implements OnInit, OnDestroy {
       // Replace the existing element with the new one
       currentGraphElement.replaceWith(newGraphElement);
 
-      // Call the initializeGraph function again with the new element
-      this.getInitialData();
+      this.sharedService.getExecutionStatus(this.id).subscribe(executionStatus => {
+        switch (executionStatus) {
+          case "executed":
+            this.getInitialStaticData();
+            break;
+          case "executing":
+            this.getInitialLiveData();
+            break;
+          default:
+            console.log("Unknownd executing status: ", executionStatus)
+            break;
+        }
+      });
     }
   }
 
   // Function to initialize the 3D Force Graph with the data and settings  
   initializeGraph() {
-    // Create the 3D Force Graph instance
     this.CreateWebsiteLinks(this.data.nodes);
-    this.graph = ForceGraph3D()
+    this.graph = ForceGraph3D({ controlType: 'orbit' })
       (document.getElementById('3d-graph-domain')!) // Bind the graph to the specified DOM element
-      .width(window.innerWidth)             // Set the graph width to match the window width
-      .height(window.innerHeight)           // Set the graph height to match the window height
-      .backgroundColor('#FFFFFF')           // Set the background color of the graph
-      .graphData(this.data)                      // Provide the graph data (nodes and links) to the graph instance
-      .nodeLabel('title')                      // Display the 'id' property as the node label
-      .linkOpacity(0.3)                     // Set the opacity of the links
-      .nodeOpacity(0.95)                    // Set the opacity of the nodes
-      .linkDirectionalArrowRelPos(1)        // Set the relative position of the directional arrow on the links
-      .linkDirectionalArrowLength(3.5)      // Set the length of the directional arrow on the links
-      .linkCurvature(0.15)                  // Set the curvature of the links
-      .nodeAutoColorBy('domain')            // Automatically color the nodes based on the 'domain' property
+      .width(window.innerWidth)                     // Set the graph width to match the window width
+      .height(window.innerHeight)                   // Set the graph height to match the window height
+      .backgroundColor('#FFFFFF')                   // Set the background color of the graph
+      .graphData(this.data)                         // Provide the graph data (nodes and links) to the graph instance
+      .nodeLabel('title')                           // Display the 'id' property as the node label
+      .linkDirectionalArrowRelPos(1)                // Set the relative position of the directional arrow on the links
+      .linkDirectionalArrowLength(3.5)              // Set the length of the directional arrow on the links
+      .nodeAutoColorBy('domain')                    // Automatically color the nodes based on the 'domain' property
       .onNodeClick((node: any, event: Event) => {
-        // Event handler for node click     
         const untoggle = this.selectedNode.has(node);
         this.selectedNode.clear();
         if (!untoggle) {
@@ -121,9 +142,6 @@ export class DomainModeComponent implements OnInit, OnDestroy {
         if (node.hasOwnProperty('children') && node.children != null) {
           (document.getElementById('record-a') as HTMLInputElement).appendChild(this.createRecordList(node.children));
         }
-
-        // Store the selected node's 'id' in session storage        
-        sessionStorage.setItem('first', node.id);
       })
       .onNodeDragEnd((node: any) => {
         // Event handler for node drag end - set the node's fixed position after dragging     
@@ -154,6 +172,13 @@ export class DomainModeComponent implements OnInit, OnDestroy {
       element.remove();
     }
   }
+
+  deleteTextContentOfElements(): void {
+    (document.getElementById('title-a') as HTMLInputElement).textContent='Title';
+    (document.getElementById('url-a') as HTMLInputElement).textContent='Url';
+    (document.getElementById('crawl-time-a') as HTMLInputElement).textContent='Crawl time';
+    this.deleteRecordsList();
+  }  
 
   CreateWebsiteLinks(data: any) {     
     let nodes: Node[] = [];
@@ -192,13 +217,16 @@ export class DomainModeComponent implements OnInit, OnDestroy {
       this.domainToNodeMap[domain] = node;
       console.log("Mapping domain: ", domain);
     }
-  }
-  
+  }  
 
   ngOnDestroy() {
+    console.log("Destroying domain");
+
     if (this.intervalId) {
       clearInterval(this.intervalId);
     }
-    console.log("Destroying domain");
+
+    this.selectedNode.clear();
+    this.deleteTextContentOfElements();
   }
 }

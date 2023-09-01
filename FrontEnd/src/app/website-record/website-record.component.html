@@ -15,18 +15,17 @@
     </div>
     
     <div [ngSwitch]="mode">
-        <div *ngSwitchCase="Mode.Website"><app-website-mode></app-website-mode></div>
-        <div *ngSwitchCase="Mode.Domain"><app-domain-mode ></app-domain-mode></div>
+        <div *ngSwitchCase="Mode.Website"><app-website-mode [state]="state"></app-website-mode></div>
+        <div *ngSwitchCase="Mode.Domain"><app-domain-mode   [state]="state"></app-domain-mode></div>
     </div>
 
     <div id="switch-mode">
-        <input class="tgl tgl-flip-mode" id="toggle-mode" type="checkbox" [(ngModel)]="mode">
+        <input class="tgl tgl-flip-mode" id="toggle-mode" type="checkbox" (click)="onModeClick()">
         <label class="tgl-btn-mode" data-tg-off="Website" data-tg-on="Domain" for="toggle-mode"></label>
     </div>
     
     <div id="switch-state">
-        <input class="tgl tgl-flip-state" id="toggle-state" type="checkbox">
+        <input class="tgl tgl-flip-state" id="toggle-state" type="checkbox" (click)="onStateClick()">
         <label class="tgl-btn-state" data-tg-off="Live" data-tg-on="Static" for="toggle-state"></label>
     </div>    
-    
 </div>

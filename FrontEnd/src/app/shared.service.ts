@@ -95,20 +95,9 @@ export class SharedService {
   getExecutionStatus(recordId: number): Observable<string> {
     return this.http.get<Execution[]>(`${this.ApiUrl}/Crawler/all`).pipe(
       map((executions: Execution[]) => {
-        const matchingExecution = executions.find(execution => execution.websiteRecordId === recordId);
+        const matchingExecution = executions.find(execution => execution.websiteRecordId == recordId);
         return matchingExecution ? matchingExecution.executionStatus : '';
       })
     );
-  }
-
-  // Graph selected node
-  private data = undefined;
-
-  setSelectedNode(data:any) {
-    this.data = data;
-  }
-
-  getSelectedNode():any {
-    return this.data;
   }
 }

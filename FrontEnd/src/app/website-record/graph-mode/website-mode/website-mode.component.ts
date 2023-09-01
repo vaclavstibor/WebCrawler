@@ -1,6 +1,6 @@
 // https://github.com/vasturiano/3d-force-graph
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, OnChanges } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SharedService } from '../../../shared.service';
 import { Node } from '../../../models/Node';
@@ -9,6 +9,7 @@ import ForceGraph3D, {
   ConfigOptions, 
   ForceGraph3DInstance 
 } from "3d-force-graph";
+import { State, Mode } from '../../website-record.component';
 
 @Component({
   selector: 'app-website-mode',
@@ -16,9 +17,11 @@ import ForceGraph3D, {
   styleUrls: ['./website-mode.component.css']
 })
 export class WebsiteModeComponent implements OnInit, OnDestroy {
+  @Input() state!: State;
+  mode: Mode = Mode.Website;
   private graph!: ForceGraph3DInstance;
   public selectedNode = new Set<Node>();
-  private intervalId: any;
+  private interval: any;
 
   id: number = 0;
   
@@ -30,28 +33,40 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
     links: []
   };
 
-  constructor(private sharedService:SharedService, private route: ActivatedRoute,private sharedService2:SharedService) {}
-  
+  constructor(private sharedService:SharedService, private route: ActivatedRoute) {}
+
   ngOnInit(): void {
     this.route.params.subscribe(x => this.id = x['id']);
     this.replaceGraphElement();
   }
 
-  getInitialData(): void {
-    console.log("Website Mode: Trying to get initial data.");
+  getInitialStaticData(): void {
+    console.log(`${Mode[this.mode]} Mode: Trying to get initial ${State[this.state]} data.`);  
+
+    this.sharedService.getGraph(this.id).subscribe(result => {
+      this.data.nodes = result;
+
+      if (this.data.nodes.length > 0) {
+        this.initializeGraph();
+      } 
+    });    
+  }
+
+  getInitialLiveData(): void {
+    console.log(`${Mode[this.mode]} Mode: Trying to get initial ${State[this.state]} data.`);    
 
     this.sharedService.getGraphLive(this.id).subscribe(result => {
       this.data.nodes = result;
 
       if (this.data.nodes.length > 0) {
         this.initializeGraph();
-        this.intervalId = setInterval(() => this.getData(), 5000);
+        this.interval = setInterval(() => this.getLiveData(), 50000);
       } 
     });
-  }
+  }  
 
-  getData(): void {
-    console.log("Website Mode: Trying to get new data after initial.");
+  getLiveData(): void {
+    console.log(`${Mode[this.mode]} Mode: Trying to get periodically new data.`);
 
     this.sharedService.getGraphLive(this.id).subscribe(result => {
       this.CreateWebsiteLinks(result);
@@ -69,28 +84,39 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
 
       // Replace the existing element with the new one
       currentGraphElement.replaceWith(newGraphElement);
-
-      // Call the initializeGraph function again with the new element
-      this.getInitialData();
+      
+      this.sharedService.getExecutionStatus(this.id).subscribe(executionStatus => {
+        switch (executionStatus) {
+          case "executed":
+            //TODO: better remove
+            if ((document.getElementById('switch-state') as HTMLInputElement))
+            {(document.getElementById('switch-state') as HTMLInputElement).remove();}
+            this.getInitialStaticData();
+            break;
+          case "executing":
+            this.getInitialLiveData();
+            break;
+          default:
+            console.log("Unknownd executing status: ", executionStatus)
+            break;
+        }
+      });
     }
   }
 
   // Function to initialize the 3D Force Graph with the data and settings  
   initializeGraph() {
     this.CreateWebsiteLinks(this.data.nodes);
-    this.graph = ForceGraph3D()
+    this.graph = ForceGraph3D({ controlType: 'orbit' })
       (document.getElementById('3d-graph-website')!) // Bind the graph to the specified DOM element
-      .width(window.innerWidth)             // Set the graph width to match the window width
-      .height(window.innerHeight)           // Set the graph height to match the window height
-      .backgroundColor('#FFFFFF')           // Set the background color of the graph
-      .graphData(this.data)                 // Provide the graph data (nodes and links) to the graph instance
-      .nodeLabel('title')                      // Display the 'id' property as the node label
-      .linkOpacity(0.3)                     // Set the opacity of the links
-      .nodeOpacity(0.95)                    // Set the opacity of the nodes
-      .linkDirectionalArrowRelPos(1)        // Set the relative position of the directional arrow on the links
-      .linkDirectionalArrowLength(3.5)      // Set the length of the directional arrow on the links
-      .linkCurvature(0.15)                  // Set the curvature of the links
-      .nodeAutoColorBy('domain')            // Automatically color the nodes based on the 'domain' property
+      .width(window.innerWidth)                      // Set the graph width to match the window width
+      .height(window.innerHeight)                    // Set the graph height to match the window height
+      .backgroundColor('#FFFFFF')                    // Set the background color of the graph
+      .graphData(this.data)                          // Provide the graph data (nodes and links) to the graph instance
+      .nodeLabel('title')                            // Display the 'id' property as the node label
+      .linkDirectionalArrowRelPos(1)                 // Set the relative position of the directional arrow on the links
+      .linkDirectionalArrowLength(3.5)               // Set the length of the directional arrow on the links
+      .nodeAutoColorBy('domain')                     // Automatically color the nodes based on the 'domain' property
       .onNodeClick((node: any, event: Event) => { 
         const untoggle = this.selectedNode.has(node);
         this.selectedNode.clear();
@@ -118,9 +144,6 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
         if (node.hasOwnProperty('children') && node.children != null) {
           (document.getElementById('record-a') as HTMLInputElement).appendChild(this.createRecordList(node.children));
         }
-
-        // Store the selected node's 'id' in session storage        
-        sessionStorage.setItem('first', node.id);
       })
       .onNodeDragEnd((node: any) => {
         // Event handler for node drag end - set the node's fixed position after dragging     
@@ -152,20 +175,25 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
     }
   }
 
+  deleteTextContentOfElements(): void {
+    (document.getElementById('title-a') as HTMLInputElement).textContent='Title';
+    (document.getElementById('url-a') as HTMLInputElement).textContent='Url';
+    (document.getElementById('crawl-time-a') as HTMLInputElement).textContent='Crawl time';
+    this.deleteRecordsList();
+  }
+
   CreateWebsiteLinks(data: any) { 
     for (const parent of data) {
-      if (parent.hasOwnProperty('children') && parent.children.length > 0) {
-        for (const child of parent.children) {
-          if (!this.data.nodes.some(node => node.id === child.id)) {
-            this.data.nodes.push(child);
-          }
-          if (!this.data.links.some(link => link.source.id === parent.id && link.target.id === child.id))
-          {
-            const link = { 'source': parent.id, 'target': child.id, color: '#000000' };
-            this.data.links.push(link);
-          }
+      for (const child of parent.children) {
+        if (!this.data.nodes.some(node => node.id === child.id)) {
+          this.data.nodes.push(child);
         }
-      }
+        if (!this.data.links.some(link => link.source.id === parent.id && link.target.id === child.id))
+        {
+          const link = { 'source': parent.id, 'target': child.id, color: '#000000' };
+          this.data.links.push(link);
+        }
+      } 
   
       if (!this.data.nodes.some(node => node.id === parent.id)) {
         this.data.nodes.push(parent);
@@ -174,19 +202,23 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
     if (this.graph !== undefined)
     {
       this.graph.graphData(this.data);
-      console.log("nodes: ", this.data.nodes.length)
-      console.log("links: ", this.data.links.length)
+      console.log("Count of nodes: ", this.data.nodes.length)
+      console.log("Count of links: ", this.data.links.length)
     }
   }
-
 
   ngOnDestroy() {
     console.log("Destorying website");
 
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
+    if (this.interval) {
+      clearInterval(this.interval);
     }
 
     this.selectedNode.clear();
+    this.deleteTextContentOfElements();
   }
 }
+
+// Animatiopn of graph is more optiaplzation then last time. But Domai  mode is not enough
+// It hase smoother load without line courcave
+// Need TODO optialization of searching new nodes.
