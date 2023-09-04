@@ -153,7 +153,7 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
         (document.getElementById('title-a') as HTMLInputElement).textContent=node.title;
         (document.getElementById('url-a') as HTMLInputElement).textContent=node.url;
         (document.getElementById('crawl-time-a') as HTMLInputElement).textContent=node.crawlTime;
-        
+
         // Delete previous record list and create a new one for the selected node's children        
         this.deleteRecordsList();
         if (node.hasOwnProperty('children') && node.children != null) {
@@ -201,6 +201,12 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
     for (const parent of data) {
       for (const child of parent.children) {
         if (!this.data.nodes.some(node => node.id === child.id)) {
+          /*
+          if (child.regExpMatch === false) {
+            child.color = '#000000';
+          }
+          */
+
           this.data.nodes.push(child);
         }
         if (!this.data.links.some(link => link.source.id === parent.id && link.target.id === child.id))
@@ -211,6 +217,12 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
       } 
   
       if (!this.data.nodes.some(node => node.id === parent.id)) {
+        /*
+        if (parent.regExpMatch === false) {
+          parent.color = '#000000';
+        }
+        */
+
         this.data.nodes.push(parent);
       }
     }
