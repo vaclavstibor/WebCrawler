@@ -1,6 +1,6 @@
 // https://github.com/vasturiano/3d-force-graph
 
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, SimpleChanges } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SharedService } from '../../../shared.service';
 import { Node } from '../../../models/Node';
@@ -22,7 +22,7 @@ export class DomainModeComponent implements OnInit, OnDestroy {
   private graph!: ForceGraph3DInstance;
   public selectedNode = new Set<Node>();
   private domainToNodeMap: { [key: string]: Node } = {};
-  private intervalId: any;
+  private interval: any;
   
   id: number = 0;
 
@@ -39,6 +39,21 @@ export class DomainModeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.route.params.subscribe(x => this.id = x['id']);
     this.replaceGraphElement();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    let state = changes['state'];
+    if (!state.firstChange) {
+      switch(state.currentValue) {
+        case 1: // Current state is Static
+          clearInterval(this.interval);
+          break;
+        case 0: // Current state is Live
+          this.getLiveData();
+          this.interval = setInterval(() => this.getLiveData(), 5000);
+          break;
+      }
+    }
   }
 
   getInitialStaticData(): void {
@@ -61,7 +76,7 @@ export class DomainModeComponent implements OnInit, OnDestroy {
 
       if (this.data.nodes.length > 0) {
         this.initializeGraph();
-        this.intervalId = setInterval(() => this.getLiveData(), 5000);
+        this.interval = setInterval(() => this.getLiveData(), 5000);
       } 
     });
   }
@@ -222,8 +237,8 @@ export class DomainModeComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     console.log("Destroying domain");
 
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
+    if (this.interval) {
+      clearInterval(this.interval);
     }
 
     this.selectedNode.clear();
