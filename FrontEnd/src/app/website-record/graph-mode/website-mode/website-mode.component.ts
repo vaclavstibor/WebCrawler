@@ -1,6 +1,6 @@
 // https://github.com/vasturiano/3d-force-graph
 
-import { Component, Input, OnInit, OnDestroy, OnChanges } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChange, SimpleChanges } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SharedService } from '../../../shared.service';
 import { Node } from '../../../models/Node';
@@ -35,6 +35,21 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
 
   constructor(private sharedService:SharedService, private route: ActivatedRoute) {}
 
+  ngOnChanges(changes: SimpleChanges) {
+    let state = changes['state'];
+    if (!state.firstChange) {
+      switch(state.currentValue) {
+        case 1: // Current state is Static
+          clearInterval(this.interval);
+          break;
+        case 0: // Current state is Live
+          this.getLiveData();
+          this.interval = setInterval(() => this.getLiveData(), 5000);
+          break;
+      }
+    }
+  }
+
   ngOnInit(): void {
     this.route.params.subscribe(x => this.id = x['id']);
     this.replaceGraphElement();
@@ -60,7 +75,7 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
 
       if (this.data.nodes.length > 0) {
         this.initializeGraph();
-        this.interval = setInterval(() => this.getLiveData(), 50000);
+        this.interval = setInterval(() => this.getLiveData(), 5000);
       } 
     });
   }  
@@ -218,7 +233,3 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
     this.deleteTextContentOfElements();
   }
 }
-
-// Animatiopn of graph is more optiaplzation then last time. But Domai  mode is not enough
-// It hase smoother load without line courcave
-// Need TODO optialization of searching new nodes.
