@@ -9,17 +9,23 @@ import { HttpHeaders } from '@angular/common/http';
 import { Execution } from './models/Execution';
 import { map } from 'rxjs/operators';
 import { Node } from './models/Node';
+import { ExecutionState } from './models/ExecutionState';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SharedService {
-  ApiUrl = "http://localhost:4200/api";
+  ApiUrl = "https://localhost:44352/api";
+  //ApiUrl = "http://localhost:4200/api";
 
   constructor(private http: HttpClient) { }
 
   getGraph(id: number): Observable<Node[]> {
-    return this.http.get<Node[]>(this.ApiUrl + "/Crawler/getGraph/" + id)
+    return this.http.get<Node[]>(this.ApiUrl + "/Crawler/getGraph/" + id);
+  }
+
+  getGraphLive(id: number, lastUpdateState: number): Observable<ExecutionState> {
+    return this.http.get<ExecutionState>(this.ApiUrl + "/Crawler/getGraph/live?id=" + id + "&updateState=" + lastUpdateState);
   }
 
   getWebRecord(id: number): Observable<WebsiteRecord> {
@@ -85,20 +91,9 @@ export class SharedService {
   getExecutionStatus(recordId: number): Observable<string> {
     return this.http.get<Execution[]>(`${this.ApiUrl}/Crawler/all`).pipe(
       map((executions: Execution[]) => {
-        const matchingExecution = executions.find(execution => execution.websiteRecordId === recordId);
+        const matchingExecution = executions.find(execution => execution.websiteRecordId == recordId);
         return matchingExecution ? matchingExecution.executionStatus : '';
       })
     );
-  }
-
-  // Graph selected node
-  private data:any = undefined;
-
-  setSelectedNode(data:any) {
-    this.data = data;
-  }
-
-  getSelectedNode():any {
-    return this.data;
   }
 }

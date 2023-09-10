@@ -4,10 +4,11 @@ using Polly;
 using Polly.Retry;
 using System.Net;
 using System.Text.RegularExpressions;
+using WebCrawler.BusinessLayer.Services;
 using WebCrawler.DataAccessLayer.Context;
 using WebCrawler.DataAccessLayer.Models;
 using WebsiteCrawler.Infrastructure.interfaces;
-using WebCrawler.DataAccessLayer.Cache;
+using WebsiteCrawler.Infrastructure.Storage;
 
 namespace WebsiteCrawler.Service
 {
@@ -17,23 +18,28 @@ namespace WebsiteCrawler.Service
         private readonly IHtmlParser htmlParser;
         private readonly HttpClient httpClient;
         private readonly Queue<Node> jobQueue;
-        private readonly HashSet<Node> nodes;
-        private readonly AppDbContext db;   
+        private readonly AppDbContext db;
+        private readonly DateTime startTime;
+        private ICrawlingNodeStorage crawlingNodeStorage;
 
         public StartingNode StartingNode { get; set; }
 
         public SingleThreadedWebSiteCrawler(IHtmlParser htmlParser, HttpClient httpClient, AppDbContext db)
         {
+            this.startTime = DateTime.Now;
+
             this.htmlParser = htmlParser;
             this.httpClient = httpClient;
             this.db = db;
 
             jobQueue = new Queue<Node>();
-            nodes = new HashSet<Node>();
+            this.db = db;
         }
 
-        public async Task<StartingNode> Run(WebsiteRecord record, int executionId, int? maximumCountOfNodes = null)
+        public async Task<StartingNode> Run(WebsiteRecord record, int executionId, ICrawlingNodeStorage crawlingNodeStorage, int? maximumCountOfNodes = null)
         {
+            this.crawlingNodeStorage = crawlingNodeStorage;
+
             httpClient.DefaultRequestHeaders.Clear();
             httpClient.DefaultRequestHeaders.Add("User-Agent", "Other");
 
@@ -43,28 +49,40 @@ namespace WebsiteCrawler.Service
                 Domain = GetDomainFromUrl(record.URL),
                 Children = new List<Node>(),
                 WebsiteRecordId = record.Id,
-                ExecutionId = executionId
+                ExecutionId = executionId,
+                Title = ""
             };
-
-            await db.Nodes.AddAsync(node);
-            await db.SaveChangesAsync();
-
-            nodes.Add(node);
 
             StartingNode = new StartingNode()
             {
                 Node = node
             };
 
-            jobQueue.Enqueue(node);
-
-            while (jobQueue.Count > 0 && (maximumCountOfNodes != null ? (nodes.Count < maximumCountOfNodes) : true))
+            var url = new Uri(record.URL, UriKind.RelativeOrAbsolute);
+            try
             {
-                await DiscoverLinks(DateTime.Now, new Regex(record.RegExp ?? ""), record.Id, executionId);
-                await Console.Out.WriteLineAsync($"Current number of nodes is: {nodes.Count}");
+                string? pageContents = await DownloadPage(url);
+                node.Title = Regex.Match(pageContents, @"\<title\b[^>]*\>\s*(?<Title>[\s\S]*?)\</title\>", RegexOptions.IgnoreCase)?.Groups["Title"]?.Value ?? "";
+            }
+            catch (Exception ex) 
+            {
+                await crawlingNodeStorage.FinalizeCrawlingAsync(record.Id);
+                StartingNode.NumberOfSites = await db.Nodes.CountAsync(x => x.ExecutionId == executionId);
+                return StartingNode;
             }
 
-            StartingNode.NumberOfSites = nodes.Count;
+            crawlingNodeStorage.CreateNewExecution(record.Id);
+            await crawlingNodeStorage.AddOrUpdateNodeAsync(node, record.Id);
+
+            jobQueue.Enqueue(node);
+
+            while (jobQueue.Count > 0 && (maximumCountOfNodes != null ? (await db.Nodes.CountAsync(x => x.ExecutionId == executionId) < maximumCountOfNodes) : true))
+            {
+                await DiscoverLinks(string.IsNullOrEmpty(record.RegExp) ? null : new Regex(record.RegExp!), record.Id, executionId);
+            }
+
+            await crawlingNodeStorage.FinalizeCrawlingAsync(record.Id);
+            StartingNode.NumberOfSites = await db.Nodes.CountAsync(x => x.ExecutionId == executionId);
             return StartingNode;
         }
 
@@ -78,121 +96,118 @@ namespace WebsiteCrawler.Service
                 attempt => TimeSpan.FromSeconds(Math.Pow(2, attempt)));
         }
 
-        private async Task DiscoverLinks(DateTime startCrawlTime, Regex? regex, int websiteRecordId, int executionId)
+        private async Task DiscoverLinks(Regex? regex, int websiteRecordId, int executionId)
         {
             var parentNode = jobQueue.Dequeue();
             var parentUri = new Uri(parentNode.Url, UriKind.RelativeOrAbsolute);
 
-            string? pageContents = await DownloadPage(parentUri);
+            string? pageContents = "";
 
-            if (pageContents == null)
+            try
+            {
+                pageContents = await DownloadPage(parentUri);
+            }
+            catch (Exception ex) 
             {
                 return;
             }
-            var links = FindLinksWithinHtml(pageContents);
 
-            var currentNewNodes = new List<Node>();
+            var links = FindLinksWithinHtml(pageContents);
 
             foreach (var rawLink in links)
             {
                 Node? node = null;
+                var link = rawLink.Trim().Trim('\n');
+                Uri uri;
+                if (link.StartsWith('/') || link.StartsWith('\\'))
+                {
+                    uri = new Uri(parentUri, link);
+                }
+                else
+                {
+                    uri = new Uri(link, UriKind.RelativeOrAbsolute);
+                }
+                link = uri.ToString();
+
+                node = await crawlingNodeStorage.GetNodeOrDefaultAsync(websiteRecordId, link, executionId);
+
+                bool nodeAlreadyVisited = true;
+
+                if (node is null)
+                {
+                    nodeAlreadyVisited = false;
+
+                    if (!uri.IsAbsoluteUri)
+                    {
+                        continue;
+                    }
+
+                    node = new Node
+                    {
+                        Url = link,
+                        Domain = uri.Host,
+                        Children = new List<Node>(),
+                        WebsiteRecordId = websiteRecordId,
+                        ExecutionId = executionId,
+                        Title = ""
+                    };
+                }
+
+                if (regex is not null)
+                {
+                    node.RegExpMatch = regex.IsMatch(link);
+                }
+
+                bool isLinkAcceptable = IsLinkAcceptable(link);
+
+                if (!isLinkAcceptable)
+                {
+                    continue;
+                }
+
+                if (
+                (uri.Host.ToLower() == parentUri.Host.ToLower()) &&
+                (uri.PathAndQuery.ToLower() == parentUri.PathAndQuery.ToLower())
+                )
+                {
+                    continue;
+                }
+
                 try
                 {
-                    var link = rawLink.Trim().Trim('\n');
-                    Uri uri;
-                    if (link.StartsWith('/') || link.StartsWith('\\'))
+                    if (!nodeAlreadyVisited)
                     {
-                        uri = new Uri(parentUri, link);
-                    }
-                    else
-                    {
-                        uri = new Uri(link, UriKind.RelativeOrAbsolute);
-                    }
-                    link = uri.ToString();
-
-                    node = nodes.SingleOrDefault(x => x.Url == link);
-
-                    bool nodeAlreadyVisited = true;
-
-                    if (node is null)
-                    {
-                        nodeAlreadyVisited = false;
-
-                        if (!uri.IsAbsoluteUri)
-                        {
-                            continue;
-                        }
-
-                        node = new Node
-                        {
-                            Url = link,
-                            Domain = uri.Host,
-                            Children = new List<Node>(),
-                            WebsiteRecordId = websiteRecordId,
-                            ExecutionId = executionId
-                        };
-                        nodes.Add(node);
-                    }
-
-                    if (regex is not null)
-                    {
-                        node.RegExpMatch = regex.IsMatch(link);
-                    }
-
-                    bool isLinkAcceptable = IsLinkAcceptable(link);
-
-                    if (!isLinkAcceptable)
-                    {
-                        continue;
-                    }
-
-                    if (
-                    (uri.Host.ToLower() == parentUri.Host.ToLower()) &&
-                    (uri.PathAndQuery.ToLower() == parentUri.PathAndQuery.ToLower())
-                    )
-                    {
-                        continue;
-                    }
-
-                    try
-                    {
-                        if (!nodeAlreadyVisited)
+                        try
                         {
                             pageContents = await DownloadPage(uri);
+                            node.Title = Regex.Match(pageContents, @"\<title\b[^>]*\>\s*(?<Title>[\s\S]*?)\</title\>", RegexOptions.IgnoreCase).Groups["Title"].Value ?? "";
                         }
-                    }
-                    catch
-                    {
-                        pageContents = null;
-                    }
-
-                    if (!parentNode.Children.Any(x => x == node))
-                    {
-                        parentNode.Children.Add(node);
-
-                        if (!nodeAlreadyVisited)
+                        catch
                         {
-                            currentNewNodes.Add(node);
-                        }
-
-                        CrawlingCache.AddOrUpdateNode(parentNode, websiteRecordId);
-                        CrawlingCache.AddOrUpdateNode(node, websiteRecordId);
-
-                        if (node.RegExpMatch != false && pageContents != null && !nodeAlreadyVisited)
-                        {
-                            jobQueue.Enqueue(node);
+                            continue;
                         }
                     }
                 }
                 catch
                 {
-                    currentNewNodes.Remove(node);
+                    pageContents = null;
+                }
+
+                if (!parentNode.Children.Any(x => x == node))
+                {
+                    parentNode.Children.Add(node);
+
+                    node.CrawlTime = GetCrawlTime();
+
+                    await crawlingNodeStorage.AddOrUpdateNodeAsync(parentNode, websiteRecordId);
+                    await crawlingNodeStorage.AddOrUpdateNodeAsync(node, websiteRecordId);
+
+                    if (node.RegExpMatch != false && pageContents != null && !nodeAlreadyVisited)
+                    {
+                        jobQueue.Enqueue(node);
+                    }
                 }
             }
-
-            await db.Nodes.AddRangeAsync(currentNewNodes);
-            await db.SaveChangesAsync();
-            parentNode.CrawlTime = GetCrawlTime(startCrawlTime);
         }
 
         private async Task<string> DownloadPage(Uri uri)
@@ -266,11 +281,11 @@ namespace WebsiteCrawler.Service
             return true;
         }
 
-        private TimeSpan GetCrawlTime(DateTime startTime)
+        private TimeSpan GetCrawlTime()
         {
             TimeSpan duration = DateTime.Now.Subtract(startTime);
 
-            return duration;
+            return duration;  
         }
 
         public static string GetDomainFromUrl(string url)

@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using WebCrawler.BusinessLayer.Services;
 using WebCrawler.DataAccessLayer.Context;
+using WebsiteCrawler.Services;
+using GraphQL.AspNet.Configuration;
+using WebsiteCrawler.Infrastructure.Storage;
+using WebsiteCrawler.Services.Storage;
 
 namespace WebCrawler.Api;
 
@@ -15,23 +17,22 @@ public class Startup
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
         services.AddHttpClient();
+        services.AddGraphQL();
 
-        //Uncomment this for local connection
-
-        //services.AddDbContext<AppDbContext>(options =>
-            //options.UseSqlServer("Data Source=localhost;Initial Catalog=CrawlerDB;Integrated Security=True; TrustServerCertificate=true")
-            //options.UseSqlServer("Data Source=localhost,1433;User Id=sa;Initial Catalog=CrawlerDB;Password=YourStrong!Passw0rd;MultipleActiveResultSets=true;TrustServerCertificate=True")
-        //); 
-
-        //Uncomment this for docker connection
+        services.AddSingleton<DbContextOptionsBuilder>();
 
         services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer("Server=sql_server2022;Database=SalesDb;User Id=SA;Password=A&VeryComplex123Password;MultipleActiveResultSets=true;TrustServerCertificate=True")
+            //options.UseSqlServer("Server=sql_server2022;Database=SalesDb;User Id=SA;Password=A&VeryComplex123Password;MultipleActiveResultSets=true;TrustServerCertificate=True")
+            options.UseSqlServer("Data Source=localhost;Initial Catalog=CrawlerDB;Integrated Security=True; TrustServerCertificate=true"),
+            optionsLifetime: ServiceLifetime.Singleton
         );
+
+        services.AddDbContextFactory<AppDbContext>(options => options.UseSqlServer("Data Source=localhost;Initial Catalog=CrawlerDB;Integrated Security=True; TrustServerCertificate=true"));
 
         services.AddHttpClient();
         services.AddScoped<RecordsService>();
         services.AddScoped<CrawlerService>();
+        services.AddSingleton<ICrawlingNodeStorage, CrawlingNodeStorage>();
 
         services.AddCors(c =>
         {
@@ -41,10 +42,11 @@ public class Startup
             });
         });
     }
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ICrawlingNodeStorage crawlingNodeStorage)
     {
         app.UseSwagger();
         app.UseSwaggerUI();
+        app.UseGraphQL();
 
         app.UseHttpsRedirection();
 
@@ -59,7 +61,7 @@ public class Startup
             endpoints.MapControllers();
         });
 
-        Executor crawlerStartup = new Executor();
+        Executor crawlerStartup = new Executor(crawlingNodeStorage);
         Task.Run(() => crawlerStartup.Run());
     }
 }

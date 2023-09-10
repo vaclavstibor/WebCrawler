@@ -6,7 +6,7 @@ import { Execution } from '../models/Execution';
 @Component({
   selector: 'app-website-records',
   templateUrl: './execution-manager.component.html',
-  styleUrls: ['./execution-manager.component.css']
+  styleUrls: ['./execution-manager.component.css', '../app.component.css']
 })
 export class ExecutionManagerComponent implements OnInit {
   allExecutions: Execution[] = [];

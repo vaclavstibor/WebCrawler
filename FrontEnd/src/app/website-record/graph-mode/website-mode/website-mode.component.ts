@@ -1,6 +1,6 @@
 // https://github.com/vasturiano/3d-force-graph
 
-import { Component, Renderer2, OnInit, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChange, SimpleChanges } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SharedService } from '../../../shared.service';
 import { Node } from '../../../models/Node';
@@ -9,6 +9,7 @@ import ForceGraph3D, {
   ConfigOptions, 
   ForceGraph3DInstance 
 } from "3d-force-graph";
+import { State, Mode } from '../../website-record.component';
 
 @Component({
   selector: 'app-website-mode',
@@ -16,102 +17,79 @@ import ForceGraph3D, {
   styleUrls: ['./website-mode.component.css']
 })
 export class WebsiteModeComponent implements OnInit, OnDestroy {
+  @Input() state!: State;
+  mode: Mode = Mode.Website;
   private graph!: ForceGraph3DInstance;
   public selectedNode = new Set<Node>();
-  
+  private interval: any;
+
   id: number = 0;
-  // Data structure to store the graph nodes and links for Website mode
+
+  lastUpdateState: number = 0;
   
   data: {
-    nodes: Node[]; 
+    nodes: Node[];
     links: any[];
   } = {
     nodes: [],
     links: []
   };
-  
-  /*
-  data: {
-    nodes: Node[]; 
-    links: any[];
-  } = {
-  nodes:[
-   {
-       'id': 0,             
-       'url': 'https://www.google.com/bla', 
-       'domain': 'www.google.com',
-       'crawlTime': '00:30',
-       'regExpMatch': null, 
-       'children': [ 
-           {
-               'id': 1,                    
-               'url':'https://www.google.com/bla/bla', 
-               'domain': 'www.google.com',
-               'crawlTime':'01:30', 
-               'regExpMatch': null,                    
-               'children': null                    
-           }, 
-           {
-               'id': 2,                    
-               'url':'https://www.google.com/bla/bla/bla', 
-               'domain': 'www.google.com',
-               'crawlTime':'01:40', 
-               'regExpMatch': null,                    
-               'children': null                    
-           },                 
-           {
-               'id': 3,  
-               'url': 'http://www.twitter.com/bla',
-               'domain': 'www.twitter.com',  
-               'crawlTime':'01:30', 
-               'regExpMatch': null,
-               'children': null
-           } 
-       ]
-   },
-   {
-       'id': 1,                    
-       'url':'https://www.google.com/bla/bla', 
-       'domain': 'www.google.com',
-       'crawlTime':'01:30', 
-       'regExpMatch': null,                    
-       'children': null 
-   },
-   {
-       'id': 2,                    
-       'url':'https://www.google.com/bla/bla/bla', 
-       'domain': 'www.google.com',
-       'crawlTime':'01:40', 
-       'regExpMatch': null,                    
-       'children': null 
-   },
-   {
-       'id': 3,  
-       'url': 'http://www.twitter.com/bla',
-       'domain': 'www.twitter.com',  
-       'crawlTime':'01:30', 
-       'regExpMatch': null,
-       'children': null
-   }
-  ],
-    //nodes: [],
-    links: []
-  };
-  */
 
-  constructor(private sharedService:SharedService, private route: ActivatedRoute, private renderer: Renderer2, private elementRef: ElementRef) {}
-  
+  constructor(private sharedService:SharedService, private route: ActivatedRoute) {}
+
+  ngOnChanges(changes: SimpleChanges) {
+    let state = changes['state'];
+    if (!state.firstChange) {
+      switch(state.currentValue) {
+        case 1: // Current state is Static
+          clearInterval(this.interval);
+          break;
+        case 0: // Current state is Live
+          this.getLiveData();
+          this.interval = setInterval(() => this.getLiveData(), 5000);
+          break;
+      }
+    }
+  }
+
   ngOnInit(): void {
     this.route.params.subscribe(x => this.id = x['id']);
-
-    this.sharedService.getGraph(this.id).subscribe(x => 
-    {
-      this.data.nodes = x;
-    });
-
-    console.log(this.data);
-     
     this.replaceGraphElement();
+  }
+
+  getInitialStaticData(): void {
+    console.log(`${Mode[this.mode]} Mode: Trying to get initial ${State[this.state]} data.`);  
+
+    this.sharedService.getGraph(this.id).subscribe(result => {
+      this.data.nodes = result;
+
+      if (this.data.nodes.length > 0) {
+        this.initializeGraph();
+      } 
+    });    
+  }
+
+  getInitialLiveData(): void {
+    console.log(`${Mode[this.mode]} Mode: Trying to get initial ${State[this.state]} data.`);    
+
+    this.sharedService.getGraphLive(this.id, this.lastUpdateState).subscribe(result => {
+      this.data.nodes = result.nodes;
+      this.lastUpdateState = result.updateState;
+
+      if (this.data.nodes.length > 0) {
+        this.initializeGraph();
+        this.interval = setInterval(() => this.getLiveData(), 2000);
+      } 
+    });
+  }  
+
+  getLiveData(): void {
+    console.log(`${Mode[this.mode]} Mode: Trying to get periodically new data.`);
+
+    this.sharedService.getGraphLive(this.id, this.lastUpdateState).subscribe(result => {
+      this.lastUpdateState = result.updateState;
+      this.CreateWebsiteLinks(result.nodes);
+    });
   }
 
   // Function to replace the graph element with a new one
@@ -125,36 +103,44 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
 
       // Replace the existing element with the new one
       currentGraphElement.replaceWith(newGraphElement);
-
-      // Call the initializeGraph function again with the new element
-      this.initializeGraph(this.data);
+      
+      this.sharedService.getExecutionStatus(this.id).subscribe(executionStatus => {
+        switch (executionStatus) {
+          case "executed":
+            //TODO: better remove
+            if ((document.getElementById('switch-state') as HTMLInputElement))
+            {(document.getElementById('switch-state') as HTMLInputElement).remove();}
+            this.getInitialStaticData();
+            break;
+          case "executing":
+            this.getInitialLiveData();
+            break;
+          default:
+            console.log("Unknownd executing status: ", executionStatus)
+            break;
+        }
+      });
     }
   }
 
   // Function to initialize the 3D Force Graph with the data and settings  
-  initializeGraph(data: any) {
-    // Create the 3D Force Graph instance
-    this.CreateWebsiteLinks(data)
-    this.graph = ForceGraph3D()
+  initializeGraph() {
+    this.CreateWebsiteLinks(this.data.nodes);
+    this.graph = ForceGraph3D({ controlType: 'orbit' })
       (document.getElementById('3d-graph-website')!) // Bind the graph to the specified DOM element
-      .width(window.innerWidth)             // Set the graph width to match the window width
-      .height(window.innerHeight)           // Set the graph height to match the window height
-      .backgroundColor('#FFFFFF')           // Set the background color of the graph
-      .graphData(data)                      // Provide the graph data (nodes and links) to the graph instance
-      .nodeLabel('id')                      // Display the 'id' property as the node label
-      .linkOpacity(0.3)                     // Set the opacity of the links
-      .nodeOpacity(0.95)                    // Set the opacity of the nodes
-      .linkDirectionalArrowRelPos(1)        // Set the relative position of the directional arrow on the links
-      .linkDirectionalArrowLength(3.5)      // Set the length of the directional arrow on the links
-      .linkCurvature(0.15)                  // Set the curvature of the links
-      .nodeAutoColorBy('domain')            // Automatically color the nodes based on the 'domain' property
-      .onNodeClick((node: any, event: Event) => {
-        // Event handler for node click     
+      .width(window.innerWidth)                      // Set the graph width to match the window width
+      .height(window.innerHeight)                    // Set the graph height to match the window height
+      .backgroundColor('#FFFFFF')                    // Set the background color of the graph
+      .graphData(this.data)                          // Provide the graph data (nodes and links) to the graph instance
+      .nodeLabel('title')                            // Display the 'id' property as the node label
+      .linkDirectionalArrowRelPos(1)                 // Set the relative position of the directional arrow on the links
+      .linkDirectionalArrowLength(3.5)               // Set the length of the directional arrow on the links
+      .nodeAutoColorBy('domain')                     // Automatically color the nodes based on the 'domain' property
+      .onNodeClick((node: any, event: Event) => { 
         const untoggle = this.selectedNode.has(node);
         this.selectedNode.clear();
         if (!untoggle) {
           this.selectedNode.add(node);
-          this.sharedService.setSelectedNode(this.selectedNode);
         }
 
         // Move the camera closer to the clicked node
@@ -168,17 +154,15 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
         this.graph.cameraPosition(newPos, node, 1000);
 
         // Display node details in the UI
+        (document.getElementById('title-a') as HTMLInputElement).textContent=node.title;
         (document.getElementById('url-a') as HTMLInputElement).textContent=node.url;
         (document.getElementById('crawl-time-a') as HTMLInputElement).textContent=node.crawlTime;
-        
+
         // Delete previous record list and create a new one for the selected node's children        
         this.deleteRecordsList();
         if (node.hasOwnProperty('children') && node.children != null) {
           (document.getElementById('record-a') as HTMLInputElement).appendChild(this.createRecordList(node.children));
         }
-
-        // Store the selected node's 'id' in session storage        
-        sessionStorage.setItem('first', node.id);
       })
       .onNodeDragEnd((node: any) => {
         // Event handler for node drag end - set the node's fixed position after dragging     
@@ -210,35 +194,62 @@ export class WebsiteModeComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Function to create links between nodes based on the 'children' property of nodes
-  CreateWebsiteLinks(data: any) {
-    for (const parent of data.nodes){
-      if (parent.hasOwnProperty('children') && parent.children !== null){
-        for (const child of parent.children) {  
-          const link = { 'source': parent.id, 'target': child.id, color: '#000000'};
-          data.links.push(link);
+  deleteTextContentOfElements(): void {
+    (document.getElementById('title-a') as HTMLInputElement).textContent='Title';
+    (document.getElementById('url-a') as HTMLInputElement).textContent='Url';
+    (document.getElementById('crawl-time-a') as HTMLInputElement).textContent='Crawl time';
+    this.deleteRecordsList();
+  }
+
+  CreateWebsiteLinks(data: any) { 
+    for (const parent of data) {
+      for (const child of parent.children) {
+        if (!this.data.nodes.some(node => node.id === child.id)) {
+          /*
+          if (child.regExpMatch === false) {
+            child.color = '#000000';
+          }
+          */
+
+          this.data.nodes.push(child);
         }
+        if (!this.data.links.some(link => link.source.id === parent.id && link.target.id === child.id))
+        {
+          const link = { 'source': parent.id, 'target': child.id, color: '#000000' };
+          this.data.links.push(link);
+        }
+      } 
+  
+      if (!this.data.nodes.some(node => node.id === parent.id)) {
+        /*
+        if (parent.regExpMatch === false) {
+          parent.color = '#000000';
+        }
+        */
+
+        this.data.nodes.push(parent);
       }
+    }
+    if (this.graph !== undefined)
+    {
+      this.graph.graphData(this.data);
+      console.log("Count of nodes: ", this.data.nodes.length)
+      console.log("Count of links: ", this.data.links.length)
     }
   }
 
-  ngOnDestroy()
-  {
-    console.log("Destorying website")
+  ngOnDestroy() {
+    console.log("Destorying website");
+
+    if (this.interval) {
+      clearInterval(this.interval);
+    }
+
+    this.selectedNode.clear();
+    this.deleteTextContentOfElements();
   }
 }
 
-// If crawling -> active/static || static
-// API - isCrawling, newNodes
-
- /*
-  @HostListener('window:resize', ['$event'])
-  public windowResize(event: Event): void {
-    const element = this.elementRef.nativeElement as HTMLElement;
-    const box = element.getBoundingClientRect();
-    this.graph.width(box.width);
-    this.graph.height(box.height);
-    // @ts-ignore
-    this.graph?.controls().handleResize();
-  }
-  */
+// Animatiopn of graph is more optiaplzation then last time. But Domai  mode is not enough
+// It hase smoother load without line courcave
+// Need TODO optialization of searching new nodes.

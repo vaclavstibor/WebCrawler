@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-website-records',
   templateUrl: './website-records.component.html',
-  styleUrls: ['./website-records.component.css']
+  styleUrls: ['./website-records.component.css', '../app.component.css']
 })
 export class WebsiteRecordsComponent implements OnInit {
   allWebRecords: WebsiteRecord[] = [];
@@ -75,26 +75,25 @@ export class WebsiteRecordsComponent implements OnInit {
     this.newRecord.tagDTOs.push(this.newTag);
     this.newTag = <Tag>{};
   }
-
-  updateRecord() : void {
-    this.sharedService.updateRecord(this.newRecord).subscribe(data => 
-      {
-        this.newRecord.id = data;
-      });
-
-    var record: number = this.allWebRecords.findIndex(x => x.id == this.newRecord.id);  
-    
-    if (record === -1)
+  
+  async updateRecord() {
+    this.sharedService.updateRecord(this.newRecord).subscribe(async data => 
     {
-      this.allWebRecords.push(this.newRecord);
-    }
-    else 
-    {
-      this.allWebRecords[record] = this.newRecord;
-    }
-    
-    this.newRecord = <WebsiteRecord>{};
-    this.newRecord.tagDTOs = [];
+        this.newRecord = await data;
+
+        var record: number = this.allWebRecords.findIndex(x => x.id == this.newRecord.id);  
+        if (record === -1)
+        {
+          this.allWebRecords.push(this.newRecord);
+        }
+        else 
+        {
+          this.allWebRecords[record] = this.newRecord;
+        }
+        
+        this.newRecord = <WebsiteRecord>{};
+        this.newRecord.tagDTOs = [];
+    });
   }
 
   deleteARecord(record: WebsiteRecord) : void
@@ -206,19 +205,23 @@ export class WebsiteRecordsComponent implements OnInit {
   [
     {
       name: "URL",
-      field: "url"
+      field: "url",
+      style: "width: 15%; word-break: break-all;"
     },
     {
       name: "Label",
-      field: "label"
+      field: "label",
+      style: "width: 5%; word-break: break-all;"
     },
     {
       name: "Last Execution",
-      field: "lastExecution"
+      field: "lastExecution",
+      style: "width: 10%; word-break: break-all;"
     },
     {
       name: "Status of last Execution",
       field: "executionStatus",
+      style: "width: 5%; word-break: break-all;"
     }
   ];
 

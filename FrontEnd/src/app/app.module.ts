@@ -7,6 +7,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { PaginatorModule } from 'primeng/paginator';
 import { TableModule } from "primeng/table";
 import { MenubarModule } from "primeng/menubar";
+;
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';

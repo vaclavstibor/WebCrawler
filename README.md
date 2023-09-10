@@ -6,6 +6,8 @@ WebCrawler
 
 The objective is to implement a [Web crawler](https://cs.wikipedia.org/wiki/Web_crawler) with a web-based interface.
 
+![Large graph (~5K nodes)](./images/large-graph.png)
+
 Site management
 ---------------
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebCrawler.DataAccessLayer.Models;
+using Microsoft.EntityFrameworkCore.SqlServer;
 
 namespace WebCrawler.DataAccessLayer.Context
 {

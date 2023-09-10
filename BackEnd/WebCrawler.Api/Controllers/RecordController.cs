@@ -33,10 +33,9 @@ namespace WebCrawler.Api.Controllers
         }
 
         [HttpPost("updateSingle")]
-        public async Task<int> UpdateSingle([FromBody] WebsiteRecordDTO record)
+        public async Task<JsonResult> UpdateSingle([FromBody] WebsiteRecordDTO record)
         {
-            var id = await recordsService.UpdateWebsiteRecord(record);
-            return id;
+            return new JsonResult(await recordsService.UpdateWebsiteRecord(record));
         }
 
         [HttpGet("all")]

@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using WebCrawler.DataAccessLayer.Models;
+﻿using WebCrawler.DataAccessLayer.Models;
+using WebsiteCrawler.Infrastructure.Storage;
 
 namespace WebsiteCrawler.Infrastructure.interfaces
 {
@@ -15,6 +14,6 @@ namespace WebsiteCrawler.Infrastructure.interfaces
         /// <param name="url">The URL of the web page</param>
         /// <param name="maxPagesToSearch">An upper limit on the maximum number of discovered pages to crawl. This becomes a stopping criteria</param>
         /// <returns></returns>
-        public Task<StartingNode> Run(WebsiteRecord record, int executionId, int? maximumCountOfNodes = null);
+        public Task<StartingNode> Run(WebsiteRecord record, int executionId, ICrawlingNodeStorage crawlingNodeStorage, int? maximumCountOfNodes = null);
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebCrawler.BusinessLayer.Services;
-using WebCrawler.DataAccessLayer.Cache;
 
 namespace WebCrawler.Api.Controllers
 {
@@ -34,10 +33,10 @@ namespace WebCrawler.Api.Controllers
             return new JsonResult(await crawlerService.GetAllNodes(id));
         }
 
-        [HttpGet("getGraph/live/{id:int}")]
-        public JsonResult GetGraphStatisticLive(int id)
+        [HttpGet("getGraph/live")]
+        public async Task<JsonResult> GetGraphLive([FromQuery] int id, [FromQuery] long updateState)
         {
-            return new JsonResult(crawlerService.GetAllNodesLive(id));
+            return new JsonResult(await crawlerService.GetNewNodesLive(id, updateState));
         }
     }
 }

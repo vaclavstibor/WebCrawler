@@ -1,20 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using WebCrawler.BusinessLayer.Services;
 using WebCrawler.DataAccessLayer.Context;
 using WebCrawler.DataAccessLayer.Models;
 using WebsiteCrawler.Infrastructure.interfaces;
 using WebsiteCrawler.Service;
+using WebsiteCrawler.Infrastructure.Storage;
 
 namespace WebsiteCrawler.Services
 {
     public class Executor
     {
         private IServiceProvider provider;
+        private readonly ICrawlingNodeStorage nodeStorage;
 
-        public Executor()
+        public Executor(ICrawlingNodeStorage nodeStorage)
         {
             provider = ConfigureServices();
+            this.nodeStorage = nodeStorage;
         }
 
         private ServiceProvider ConfigureServices()
@@ -28,8 +30,8 @@ namespace WebsiteCrawler.Services
             serviceCollection.AddTransient<HttpClient>();
 
             serviceCollection.AddDbContext<AppDbContext>(options =>
-                //options.UseSqlServer("Data Source=localhost;Initial Catalog=CrawlerDB;Integrated Security=True"),
-                options.UseSqlServer("Server=sql_server2022;Database=SalesDb;User Id=SA;Password=A&VeryComplex123Password;MultipleActiveResultSets=true;TrustServerCertificate=True"),
+                options.UseSqlServer("Data Source=localhost;Initial Catalog=CrawlerDB;Integrated Security=True; TrustServerCertificate=true"),
+                //options.UseSqlServer("Server=sql_server2022;Database=SalesDb;User Id=SA;Password=A&VeryComplex123Password;MultipleActiveResultSets=true;TrustServerCertificate=True"),    
                 contextLifetime: ServiceLifetime.Transient
             );
 
@@ -50,7 +52,7 @@ namespace WebsiteCrawler.Services
                 WebsiteRecordId = record.Id
             };
 
-            db.Add(newExecution);
+            db.Executions.Add(newExecution);
             db.SaveChanges();
 
             Task.Run(async () => {
@@ -60,7 +62,7 @@ namespace WebsiteCrawler.Services
 
                 var crawler = provider.GetRequiredService<IWebSiteCrawler>();
                 
-                await crawler!.Run(record, 1000)
+                await crawler!.Run(record, newExecution.Id, crawlingNodeStorage: nodeStorage)
                 .ContinueWith(async x => 
                 {
                     record.ExecutionStatus = ExecutionStatus.Executed;
@@ -104,14 +106,15 @@ namespace WebsiteCrawler.Services
 
                 var crawler = provider.GetService<IWebSiteCrawler>();
 
-                await crawler!.Run(execution.WebsiteRecord, execution.Id, 1000)
+                await crawler!.Run(execution.WebsiteRecord, execution.Id, crawlingNodeStorage: nodeStorage)
                 .ContinueWith(async x =>
                 {
                     execution.WebsiteRecord.ExecutionStatus = ExecutionStatus.Executed;
 
                     execution.EndTime = DateTime.Now;
                     execution.ExecutionStatus = ExecutionStatus.Executed;
-                    execution.NumberOfSites = (await x).NumberOfSites;
+
+                    execution.NumberOfSites = (await x)?.NumberOfSites ?? 0;
 
                     var db = provider.GetRequiredService<AppDbContext>();
                     db = provider.GetRequiredService<AppDbContext>();
@@ -147,6 +150,22 @@ namespace WebsiteCrawler.Services
             {
                 orphan.ExecutionStatus = ExecutionStatus.Created;
                 orphan.WebsiteRecord.ExecutionStatus = ExecutionStatus.Created;
+
+                var orphanedNodes = await db.Nodes.Where(x => x.ExecutionId == orphan.Id).ToListAsync();
+
+                foreach (var orphanedNode in orphanedNodes)
+                {
+                    orphanedNode.Children = null;
+                    orphanedNode.Parents = null;
+                }
+
+                db.UpdateRange(orphanedNodes);
+
+                await db.SaveChangesAsync();
+
+                db.RemoveRange(orphanedNodes);
+
+                await db.SaveChangesAsync();
             }
 
             db.Executions.UpdateRange(orphaned);
@@ -161,6 +180,7 @@ namespace WebsiteCrawler.Services
             while (true)
             {
                 Thread.Sleep(1000);
+
                 var crawler = provider.GetService<IWebSiteCrawler>();
                 var db = provider.GetRequiredService<AppDbContext>();
 

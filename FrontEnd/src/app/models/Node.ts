@@ -5,4 +5,5 @@ export interface Node {
     domain: string;
     regExpMatch: boolean | null;
     children: Node[] | null;
+    title: string;
 }

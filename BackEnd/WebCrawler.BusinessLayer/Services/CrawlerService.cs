@@ -2,70 +2,119 @@
 using WebCrawler.DataAccessLayer.Models;
 using WebCrawler.BusinessLayer.DataTransferObjects;
 using Microsoft.EntityFrameworkCore;
-using WebCrawler.DataAccessLayer.Cache;
+using WebCrawler.BusinessLayer.Mappings;
+using WebCrawler.BusinessLayer.GraphQLModels;
+using WebsiteCrawler.Infrastructure.Storage;
 
 namespace WebCrawler.BusinessLayer.Services
 {
     public class CrawlerService
     {
         private readonly AppDbContext db;
-        public CrawlerService(AppDbContext db)
-        { 
+        private readonly ICrawlingNodeStorage crawlingNodeStorage;
+
+        public CrawlerService(AppDbContext db, ICrawlingNodeStorage crawlingNodeStorage)
+        {
             this.db = db;
+            this.crawlingNodeStorage = crawlingNodeStorage;
+        }
+
+        private WebPage GetWebPage(int id)
+        {
+            var record = db.Records.SingleOrDefault(x => x.Id == id);
+
+            return new WebPage()
+            {
+                Identifier = record?.Id.ToString() ?? "",
+                Label = record?.Label ?? "",
+                Url = record?.URL ?? "",
+                Regexp = record?.RegExp ?? "",
+                Tags = record?.Tags?.Select(y => y.Content).ToList() ?? new List<string>(),
+                Active = record?.Active ?? false
+            };
+        }
+
+        public async Task<List<GraphQLModels.Node>> GetALlNodes(List<string> ids)
+        {
+            var iDS = new List<int>();
+
+            foreach (var id in ids)
+            {
+                if (int.TryParse(id, out var i))
+                {
+                    iDS.Add(i);
+                }
+            }
+
+            return await db.Nodes.Where(x => iDS.Contains(x.WebsiteRecordId))
+                .Include(x => x.Children)
+                .Select(x => new GraphQLModels.Node
+                {
+                    Title = x.Title,
+                    Url = x.Url,
+                    CrawlTime = x.CrawlTime.ToString(),
+                    Links = x.Children.Select(y => new GraphQLModels.Node
+                    {
+                        Title = y.Title,
+                        Url = y.Url,
+                        CrawlTime = y.CrawlTime.ToString(),
+                        Links = new List<GraphQLModels.Node>(),
+                        Owner = db.Records.SingleOrDefault(z => z.Id == x.WebsiteRecordId).ToWebPage()
+
+                    }).ToList(),
+                    Owner = db.Records.SingleOrDefault(z => z.Id == x.WebsiteRecordId).ToWebPage()
+                })
+                .ToListAsync();
         }
 
         public async Task<List<NodeDto>> GetAllNodes(int websiteRecordId)
         {
+            var liveExecution = await db.Executions.SingleOrDefaultAsync(x => x.WebsiteRecordId == websiteRecordId);
+
+            if (liveExecution != null)
+            {
+                return await db.Nodes.Where(x => x.WebsiteRecordId == websiteRecordId && x.ExecutionId != liveExecution.Id)
+                .Include(x => x.Children)
+                .Select(x => x.MapToDto())
+                .ToListAsync();
+            }
+
             return await db.Nodes.Where(x => x.WebsiteRecordId == websiteRecordId)
                 .Include(x => x.Children)
-                .Select(x => new NodeDto
-                { 
-                    Id = x.Id,
-                    Url = x.Url,
-                    Domain = x.Domain,
-                    CrawlTime = x.CrawlTime,
-                    RegExpMatch = x.RegExpMatch,
-                    Children = x.Children.Select(y => new NodeDto()
-                    { 
-                        Id = y.Id,
-                        Url = y.Url,
-                        Domain = y.Domain,
-                        CrawlTime = y.CrawlTime,
-                        RegExpMatch = y.RegExpMatch,
-                        WebsiteRecordId = websiteRecordId,
-                        ExecutionId = y.ExecutionId,
-                        Children = new List<NodeDto>()
-                    }).ToList(),
-                    WebsiteRecordId = x.WebsiteRecordId,
-                    ExecutionId = x.ExecutionId
-                }).ToListAsync();
+                .Select(x => x.MapToDto())
+                .ToListAsync();
         }
 
-        public List<NodeDto> GetAllNodesLive(int websiteRecordId)
+        public async Task<UpdateStateDto> GetNewNodesLive(int websiteRecordId, long updateState)
         {
-            return CrawlingCache.GetAndDeleteCachedNodes(websiteRecordId)
-                .Select(x => new NodeDto
-                { 
-                    Id = x.Id,
-                    Url = x.Url,
-                    Domain = x.Domain,
-                    CrawlTime = x.CrawlTime,
-                    RegExpMatch = x.RegExpMatch,
-                    Children = x.Children.Select(y => new NodeDto()
-                    { 
-                        Id = y.Id,
-                        Url = y.Url,
-                        Domain = y.Domain,
-                        CrawlTime = y.CrawlTime,
-                        RegExpMatch = y.RegExpMatch,
-                        WebsiteRecordId = websiteRecordId,
-                        ExecutionId = y.ExecutionId,
-                        Children = new List<NodeDto>()
-                    }).ToList(),
-                    WebsiteRecordId = x.WebsiteRecordId,
-                    ExecutionId = x.ExecutionId
-                })
-                .ToList();
+            try
+            {
+                var execution = await db.Executions.SingleOrDefaultAsync(x => x.ExecutionStatus == ExecutionStatus.Executing);
+                var result = new UpdateStateDto();
+
+                if (execution != null)
+                {
+                    var executionState = (await crawlingNodeStorage.GetNodesAsync(websiteRecordId, updateState, execution.Id));
+
+                    result.Nodes = executionState.Nodes
+                        .Select(x => x.MapToDto())
+                        .ToList();
+
+                    result.UpdateState = executionState.UpdateState;
+
+                    return result;
+                }
+
+                result.UpdateState = 0;
+                result.Nodes = new List<NodeDto>();
+
+                return result;
+            }
+            catch
+            { 
+                
+            }
+            return null;
         }
 
         public async Task<List<ExecutionDto>> GetAllExecutions()
@@ -84,7 +133,7 @@ namespace WebCrawler.BusinessLayer.Services
                     WebsiteRecordLabel = x.WebsiteRecord.Label
                 })
                 .ToList();
-        }   
+        }
 
         public async Task StartExecution(int websiteRecordId)
         {
@@ -94,7 +143,7 @@ namespace WebCrawler.BusinessLayer.Services
             }
 
             var newExecution = new Execution()
-            { 
+            {
                 WebsiteRecordId = websiteRecordId,
                 ExecutionStatus = ExecutionStatus.Created,
             };

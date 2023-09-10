@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebCrawler.DataAccessLayer.Context;
 
@@ -11,9 +12,11 @@ using WebCrawler.DataAccessLayer.Context;
 namespace WebCrawler.DataAccessLayer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230827190547_TitleOnNode")]
+    partial class TitleOnNode
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +37,7 @@ namespace WebCrawler.DataAccessLayer.Migrations
 
                     b.HasIndex("ParentsId");
 
-                    b.ToTable("NodeNode", (string)null);
+                    b.ToTable("NodeNode");
                 });
 
             modelBuilder.Entity("WebCrawler.DataAccessLayer.Models.Execution", b =>
@@ -64,7 +67,7 @@ namespace WebCrawler.DataAccessLayer.Migrations
 
                     b.HasIndex("WebsiteRecordId");
 
-                    b.ToTable("Executions", (string)null);
+                    b.ToTable("Executions");
                 });
 
             modelBuilder.Entity("WebCrawler.DataAccessLayer.Models.Node", b =>
@@ -101,7 +104,7 @@ namespace WebCrawler.DataAccessLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Nodes", (string)null);
+                    b.ToTable("Nodes");
                 });
 
             modelBuilder.Entity("WebCrawler.DataAccessLayer.Models.StartingNode", b =>
@@ -122,7 +125,7 @@ namespace WebCrawler.DataAccessLayer.Migrations
 
                     b.HasIndex("NodeId");
 
-                    b.ToTable("StartingNodes", (string)null);
+                    b.ToTable("StartingNodes");
                 });
 
             modelBuilder.Entity("WebCrawler.DataAccessLayer.Models.Tag", b =>
@@ -144,7 +147,7 @@ namespace WebCrawler.DataAccessLayer.Migrations
 
                     b.HasIndex("WebsiteRecordId");
 
-                    b.ToTable("Tags", (string)null);
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("WebCrawler.DataAccessLayer.Models.WebsiteRecord", b =>
@@ -185,7 +188,7 @@ namespace WebCrawler.DataAccessLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Records", (string)null);
+                    b.ToTable("Records");
                 });
 
             modelBuilder.Entity("NodeNode", b =>
