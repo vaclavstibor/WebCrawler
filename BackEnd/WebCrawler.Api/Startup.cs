@@ -22,17 +22,15 @@ public class Startup
 
         //Uncomment this for local connection
 
-        services.AddDbContext<AppDbContext>(options =>
-            //options.UseSqlServer("Data Source=localhost;Initial Catalog=CrawlerDB;Integrated Security=True; TrustServerCertificate=true")
-            options.UseSqlServer("Server=127.0.0.1,1401;Initial Catalog=MyDB;User Id=SA;Password=&VeryComplex123Password;TrustServerCertificate=True")
-        ); 
+        //services.AddDbContext<AppDbContext>(options =>
+        //    options.UseSqlServer("Data Source=localhost;Initial Catalog=CrawlerDB;Integrated Security=True; TrustServerCertificate=true")
+        //); 
 
         //Uncomment this for docker connection
-        /*
+        
         services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer("Server=sql_server2022;Database=SalesDb;User Id=SA;Password=A&VeryComplex123Password;MultipleActiveResultSets=true;TrustServerCertificate=True")
         );
-        */
 
         services.AddHttpClient();
         services.AddScoped<RecordsService>();
@@ -64,13 +62,10 @@ public class Startup
         {
             endpoints.MapControllers();
         });
-
-        Executor crawlerStartup = new Executor();
-        Task.Run(() => crawlerStartup.Run());
     }
 }
 
-public static class MigrationExtensions
+public static class StartupExtensions
 {
     public static IWebHost MigrateDatabase<T>(this IWebHost webHost) where T : DbContext
     {
@@ -88,6 +83,14 @@ public static class MigrationExtensions
                 logger.LogError(ex, "An error occurred while migrating the database.");
             }
         }
+        return webHost;
+    }
+
+    public static IWebHost RunCrawler(this IWebHost webHost)
+    {
+        Executor crawlerStartup = new Executor();
+        Task.Run(() => crawlerStartup.Run());
+
         return webHost;
     }
 }

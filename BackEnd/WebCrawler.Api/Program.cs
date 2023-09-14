@@ -8,7 +8,7 @@ namespace WebCrawler.Api
     {
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().MigrateDatabase<AppDbContext>().Run();
+            CreateWebHostBuilder(args).Build().MigrateDatabase<AppDbContext>().RunCrawler().Run();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
